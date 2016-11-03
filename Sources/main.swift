@@ -7,6 +7,10 @@
 //
 
 import Foundation
+import SwiftCLI
 
-print("Hello, World!")
+CLI.setup(name: "chaitools", version: "0.1.0", description: "Brew some awesome apps with ChaiTools")
 
+
+
+CLI.go()
