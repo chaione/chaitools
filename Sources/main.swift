@@ -9,7 +9,7 @@
 import Foundation
 import SwiftCLI
 
-CLI.setup(name: "chaitools", version: "1.0", description: "Brew some awesome apps with ChaiTools")
+CLI.setup(name: "chaitools", version: "0.1.0", description: "Brew some awesome apps with ChaiTools")
 
 
 
