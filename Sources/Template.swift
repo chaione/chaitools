@@ -68,7 +68,6 @@ class Template: Command {
     private var action: Action?
     private var force: Bool = false
 
-
     func setupOptions(options: OptionRegistry) {
         options.add(flags: ["-f", "force"]) {
             self.force = true
@@ -76,8 +75,36 @@ class Template: Command {
     }
 
     func execute(arguments: CommandArguments) throws {
-        action = Action(arguments.requiredArgument("action"))
-        
-        action?.generate()
+        let command = GitCommand()
+        command.localURL = setDirectory()
+        command.action = .clone
+        command.remoteURL = URL(string: "https://bitbucket.org/chaione/chaitemplates")
+        command.execute()
+    }
+
+    func setDirectory() -> URL {
+        let homeDirectory = FileManager.default.homeDirectoryForCurrentUser
+        let templateDirectory = homeDirectory.appendingPathComponent("Library/Developer/Xcode/Templates/ChaiOne", isDirectory: true)
+
+        // check if ~/Library/Developer/Xcode/Templates/ChaiOne exists
+        print("Checking template directory \(templateDirectory.path)")
+
+        if(!FileManager.default.fileExists(atPath: templateDirectory.path)) {
+
+            print("Need to create directory")
+
+            do {
+                // If not, create it
+                print("Creating template folder")
+                try FileManager.default.createDirectory(atPath: templateDirectory.path, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("Error creating template path. Aborting. \(error)")
+            }
+            print("Must have succeeded")
+        } else {
+            print("Template folder already exists")
+        }
+
+        return templateDirectory
     }
 }
