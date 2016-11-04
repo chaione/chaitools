@@ -32,6 +32,33 @@ enum Action: String {
     }
 }
 
+class GitCommand {
+    enum GitAction {
+        case clone
+        case update
+    }
+
+    let process = Process()
+    var action: GitAction?
+    var remoteURL: URL?
+    var localURL: URL?
+
+    init() {
+        process.launchPath = "/usr/bin/git"
+    }
+
+    func execute() {
+        guard let action = action, let remoteURL = remoteURL, let localURL = localURL else { return } // TODO: Do something more obvious
+
+        process.currentDirectoryPath = localURL.path
+        process.arguments = [String(describing: action), remoteURL.absoluteString, "."]
+
+        process.launch()
+        process.waitUntilExit()
+        print(process.terminationStatus)
+    }
+}
+
 class Template: Command {
 
     var name: String = "template"
