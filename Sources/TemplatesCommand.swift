@@ -1,5 +1,5 @@
 //
-//  Template.swift
+//  TemplatesCommand.swift
 //  chaitools
 //
 //  Created by Alex Du Bois on 11/4/16.
