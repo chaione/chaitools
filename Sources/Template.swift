@@ -33,9 +33,16 @@ enum Action: String {
 }
 
 class GitCommand {
-    enum GitAction {
-        case clone
-        case update
+    enum GitAction: String {
+        case clone = "install"
+        case pull = "update"
+
+        func arguments(with url: String) -> [String] {
+            switch self {
+                case .clone: return [String(describing: self), url, "."]
+                case .pull: return [String(describing: self), url]
+            }
+        }
     }
 
     let process = Process()
@@ -51,11 +58,10 @@ class GitCommand {
         guard let action = action, let remoteURL = remoteURL, let localURL = localURL else { return } // TODO: Do something more obvious
 
         process.currentDirectoryPath = localURL.path
-        process.arguments = [String(describing: action), remoteURL.absoluteString, "."]
+        process.arguments = action.arguments(with: remoteURL.absoluteString)
 
         process.launch()
         process.waitUntilExit()
-        print(process.terminationStatus)
     }
 }
 
@@ -77,7 +83,7 @@ class Template: Command {
     func execute(arguments: CommandArguments) throws {
         let command = GitCommand()
         command.localURL = setDirectory()
-        command.action = .clone
+        command.action = GitCommand.GitAction(rawValue: arguments.requiredArgument("action"))
         command.remoteURL = URL(string: "https://bitbucket.org/chaione/chaitemplates")
         command.execute()
     }
@@ -100,9 +106,9 @@ class Template: Command {
             } catch {
                 print("Error creating template path. Aborting. \(error)")
             }
-            print("Must have succeeded")
+            print("Must have succeeded. Continuing operation.")
         } else {
-            print("Template folder already exists")
+            print("Template folder already exists. Continuing operation.")
         }
 
         return templateDirectory
