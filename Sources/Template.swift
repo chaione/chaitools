@@ -55,9 +55,9 @@ class GitCommand {
     }
 }
 
-class Template: Command {
+class TemplatesCommand: Command {
 
-    var name: String = "template"
+    var name: String = "templates"
     var signature: String = "<action>"
     var shortDescription: String = "Install, update, or remove Xcode templates"
 
