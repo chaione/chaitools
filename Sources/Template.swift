@@ -55,6 +55,7 @@ class GitCommand {
     }
 }
 
+@available(OSX 10.12, *)
 class TemplatesCommand: Command {
 
     var name: String = "templates"

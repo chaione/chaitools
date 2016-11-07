@@ -9,9 +9,13 @@
 import Foundation
 import SwiftCLI
 
-CLI.setup(name: "chaitools", version: "0.1.0", description: "Brew some awesome apps with ChaiTools")
+CLI.setup(name: "chaitools", version: "0.1.1", description: "Brew some awesome apps with ChaiTools")
 
-CLI.register(command: TemplatesCommand())
+if #available(OSX 10.12, *) {
+    CLI.register(command: TemplatesCommand())
+} else {
+    print("macOS 10.12 is required to manage Xcode templates.")
+}
 
 let result = CLI.go()
 exit(result)
