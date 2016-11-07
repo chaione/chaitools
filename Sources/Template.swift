@@ -40,8 +40,18 @@ class GitCommand {
         process.currentDirectoryPath = localURL.path
         process.arguments = action.arguments(with: remoteURL.absoluteString)
 
+        if action == .clone && !localURLIsEmpty() {
+            return print("Git cannot clone into a non-empty directory. Aborting operation.")
+        }
+
         process.launch()
         process.waitUntilExit()
+    }
+
+    func localURLIsEmpty() -> Bool {
+        guard let directoryPath = localURL?.path, let directoryContents = FileManager.default.contents(atPath: directoryPath) else { return false }
+
+        return directoryContents.isEmpty
     }
 }
 
