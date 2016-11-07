@@ -65,7 +65,7 @@ class TemplatesCommand: Command {
         let command = GitCommand()
         command.localURL = setDirectory()
         command.action = GitCommand.GitAction(rawValue: arguments.requiredArgument("action"))
-        command.remoteURL = URL(string: "https://bitbucket.org/chaione/chaitemplates")
+        command.remoteURL = URL(string: "git@bitbucket.org:chaione/chaitemplates.git")
         command.execute()
     }
 
