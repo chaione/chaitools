@@ -62,7 +62,14 @@ class TemplatesCommand: Command {
     var signature: String = "<action>"
     var shortDescription: String = "Install, update, or remove Xcode templates"
 
+    private let templateDirectory = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/Templates/ChaiOne", isDirectory: true)
+
     func execute(arguments: CommandArguments) throws {
+        if arguments.requiredArgument("action") == "remove" {
+            try? FileManager.default.removeItem(atPath: templateDirectory.path)
+            return
+        }
+
         let command = GitCommand()
         command.localURL = setDirectory()
         command.action = GitCommand.GitAction(rawValue: arguments.requiredArgument("action"))
@@ -71,9 +78,6 @@ class TemplatesCommand: Command {
     }
 
     func setDirectory() -> URL {
-        let homeDirectory = FileManager.default.homeDirectoryForCurrentUser
-        let templateDirectory = homeDirectory.appendingPathComponent("Library/Developer/Xcode/Templates/ChaiOne", isDirectory: true)
-
         print("Checking template directory \(templateDirectory.path)")
 
         if(!FileManager.default.fileExists(atPath: templateDirectory.path)) {
