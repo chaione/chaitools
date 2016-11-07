@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		9810ED0C1DCD0E8400265BF4 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9810ED0A1DCCF0F600265BF4 /* Template.swift */; };
+		982B1D031DD12A5600B7A4A6 /* String+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */; };
+		982B1D041DD12A5600B7A4A6 /* String+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */; };
+		982B1D061DD12A7100B7A4A6 /* URL+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */; };
+		982B1D071DD12A7100B7A4A6 /* URL+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */; };
+		982B1D091DD12B3500B7A4A6 /* GitCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D081DD12B3500B7A4A6 /* GitCommand.swift */; };
+		982B1D0A1DD12B3500B7A4A6 /* GitCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D081DD12B3500B7A4A6 /* GitCommand.swift */; };
 		_LinkFileRef_SwiftCLI_via_chaitools /* SwiftCLI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "_____Product_SwiftCLI" /* SwiftCLI.framework */; };
 		_LinkFileRef_SwiftCLI_via_chaitoolsTests /* SwiftCLI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "_____Product_SwiftCLI" /* SwiftCLI.framework */; };
 		_LinkFileRef_chaitools_via_chaitoolsTests /* chaitools in Frameworks */ = {isa = PBXBuildFile; fileRef = "_____Product_chaitools" /* chaitools */; };
@@ -53,6 +59,9 @@
 
 /* Begin PBXFileReference section */
 		9810ED0A1DCCF0F600265BF4 /* Template.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
+		982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+ChaiTools.swift"; sourceTree = "<group>"; };
+		982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+ChaiTools.swift"; sourceTree = "<group>"; };
+		982B1D081DD12B3500B7A4A6 /* GitCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitCommand.swift; sourceTree = "<group>"; };
 		__PBXFileRef_Package.swift /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		"__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/CLI.swift" /* CLI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
 		"__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/ChainableCommand.swift" /* ChainableCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainableCommand.swift; sourceTree = "<group>"; };
@@ -192,9 +201,12 @@
 		"_______Group_chaitools" /* chaitools */ = {
 			isa = PBXGroup;
 			children = (
+				982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */,
+				982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */,
 				__PBXFileRef_Sources/chaitools.swift /* chaitools.swift */,
 				__PBXFileRef_Sources/main.swift /* main.swift */,
 				9810ED0A1DCCF0F600265BF4 /* Template.swift */,
+				982B1D081DD12B3500B7A4A6 /* GitCommand.swift */,
 			);
 			name = chaitools;
 			path = Sources;
@@ -305,6 +317,7 @@
 			files = (
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/ChainableCommand.swift" /* ChainableCommand.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/CLI.swift" /* CLI.swift in Sources */,
+				982B1D091DD12B3500B7A4A6 /* GitCommand.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/Command.swift" /* Command.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/CommandArgumentParser.swift" /* CommandArgumentParser.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/CommandArguments.swift" /* CommandArguments.swift in Sources */,
@@ -312,9 +325,11 @@
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/CommandSignature.swift" /* CommandSignature.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/Extensions.swift" /* Extensions.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/HelpCommand.swift" /* HelpCommand.swift in Sources */,
+				982B1D061DD12A7100B7A4A6 /* URL+ChaiTools.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/Input.swift" /* Input.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/LightweightCommand.swift" /* LightweightCommand.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/OptionParser.swift" /* OptionParser.swift in Sources */,
+				982B1D031DD12A5600B7A4A6 /* String+ChaiTools.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/OptionRegistry.swift" /* OptionRegistry.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/Output.swift" /* Output.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/RawArgumentParser.swift" /* RawArgumentParser.swift in Sources */,
@@ -330,6 +345,9 @@
 			files = (
 				__src_cc_ref_Sources/chaitools.swift /* chaitools.swift in Sources */,
 				__src_cc_ref_Sources/main.swift /* main.swift in Sources */,
+				982B1D0A1DD12B3500B7A4A6 /* GitCommand.swift in Sources */,
+				982B1D041DD12A5600B7A4A6 /* String+ChaiTools.swift in Sources */,
+				982B1D071DD12A7100B7A4A6 /* URL+ChaiTools.swift in Sources */,
 				9810ED0C1DCD0E8400265BF4 /* Template.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
