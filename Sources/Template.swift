@@ -33,7 +33,7 @@ class GitCommand {
 
     func execute() {
         guard let action = action, let remoteURL = remoteURL, let localURL = localURL else {
-            NSLog("Git cannot operate without an action, remote URL, and local URL.")
+            print("Git cannot operate without an action, remote URL, and local URL.")
             return
         }
 
@@ -73,7 +73,6 @@ class Template: Command {
         let homeDirectory = FileManager.default.homeDirectoryForCurrentUser
         let templateDirectory = homeDirectory.appendingPathComponent("Library/Developer/Xcode/Templates/ChaiOne", isDirectory: true)
 
-        // check if ~/Library/Developer/Xcode/Templates/ChaiOne exists
         print("Checking template directory \(templateDirectory.path)")
 
         if(!FileManager.default.fileExists(atPath: templateDirectory.path)) {
@@ -81,15 +80,14 @@ class Template: Command {
             print("Need to create directory")
 
             do {
-                // If not, create it
                 print("Creating template folder")
                 try FileManager.default.createDirectory(atPath: templateDirectory.path, withIntermediateDirectories: true, attributes: nil)
             } catch {
                 print("Error creating template path. Aborting. \(error)")
             }
-            print("Must have succeeded. Continuing operation.")
+            print("Must have succeeded. Continuing operation...")
         } else {
-            print("Template folder already exists. Continuing operation.")
+            print("Template folder already exists. Continuing operation...")
         }
 
         return templateDirectory
