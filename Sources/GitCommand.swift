@@ -10,8 +10,8 @@ import Foundation
 
 class GitCommand {
     enum GitAction: String {
-        case clone = "install"
-        case pull = "update"
+        case clone
+        case pull
 
         func arguments(with url: String) -> [String] {
             switch self {

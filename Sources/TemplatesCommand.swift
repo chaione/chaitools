@@ -26,8 +26,18 @@ class TemplatesCommand: Command {
 
         let command = GitCommand()
         command.localURL = templateDirectory
-        command.action = GitCommand.GitAction(rawValue: arguments.requiredArgument("action"))
+        command.action = arguments.requiredArgument("action").toGitAction()
         command.remoteURL = URL(string: "git@bitbucket.org:chaione/chaitemplates.git")
         command.execute()
+    }
+}
+
+fileprivate extension String {
+    func toGitAction() -> GitCommand.GitAction? {
+        switch self {
+            case "install": return GitCommand.GitAction.clone
+            case "update": return GitCommand.GitAction.pull
+            default: return nil
+        }
     }
 }
