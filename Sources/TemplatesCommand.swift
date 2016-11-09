@@ -16,27 +16,46 @@ class TemplatesCommand: Command {
     var signature: String = "<action>"
     var shortDescription: String = "Install, update, or remove Xcode templates"
 
+    private let templateRepoURL = URL(string: "git@bitbucket.org:chaione/chaitemplates.git")!
     private let templateDirectory = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/Templates/ChaiOne", isDirectory: true)
 
     func execute(arguments: CommandArguments) throws {
         if arguments.requiredArgument("action") == "remove" {
-            try? FileManager.default.removeItem(atPath: templateDirectory.path)
+            removeDirectory()
             return
         }
 
-        let command = GitCommand()
-        command.localURL = templateDirectory
-        command.action = arguments.requiredArgument("action").toGitAction()
-        command.remoteURL = URL(string: "git@bitbucket.org:chaione/chaitemplates.git")
-        command.execute()
+        guard let action = arguments.requiredArgument("action").toGitAction() else {
+            return print("❗️\"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.")
+        }
+
+        let repo = GitRepo(withLocalURL: templateDirectory, andRemoteURL: templateRepoURL)
+        repo.execute(action)
+    }
+
+    private func removeDirectory() {
+        var isDirectory: ObjCBool = ObjCBool(true)
+
+        print("Attempting to remove the templates directory...")
+
+        if FileManager.default.fileExists(atPath: templateDirectory.path, isDirectory: &isDirectory) {
+            do {
+                try FileManager.default.removeItem(atPath: templateDirectory.path)
+                print("Successfully removed the templates directory. 🎉")
+            } catch {
+                print("❗️Error removing the directory. \(error)")
+            }
+        } else {
+            print("The templates directory does not exist, so it cannot be removed. 🤔")
+        }
     }
 }
 
 fileprivate extension String {
-    func toGitAction() -> GitCommand.GitAction? {
+    func toGitAction() -> GitAction? {
         switch self {
-            case "install": return GitCommand.GitAction.clone
-            case "update": return GitCommand.GitAction.pull
+            case "install": return GitAction.clone
+            case "update": return GitAction.pull
             default: return nil
         }
     }
