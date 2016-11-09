@@ -55,11 +55,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplatesCommand.swift; sourceTree = "<group>"; };
-		982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+ChaiTools.swift"; sourceTree = "<group>"; };
-		982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+ChaiTools.swift"; sourceTree = "<group>"; };
-		989413591DD265540059DF5A /* GitRepo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitRepo.swift; sourceTree = "<group>"; };
-		9894135C1DD376320059DF5A /* Process+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Process+ChaiTools.swift"; sourceTree = "<group>"; };
+		9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TemplatesCommand.swift; path = ../TemplatesCommand.swift; sourceTree = "<group>"; };
+		982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "String+ChaiTools.swift"; path = "../String+ChaiTools.swift"; sourceTree = "<group>"; };
+		982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "URL+ChaiTools.swift"; path = "../URL+ChaiTools.swift"; sourceTree = "<group>"; };
+		989413591DD265540059DF5A /* GitRepo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GitRepo.swift; path = ../GitRepo.swift; sourceTree = "<group>"; };
+		9894135C1DD376320059DF5A /* Process+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Process+ChaiTools.swift"; path = "../Process+ChaiTools.swift"; sourceTree = "<group>"; };
 		__PBXFileRef_Package.swift /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		"__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/CLI.swift" /* CLI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLI.swift; sourceTree = "<group>"; };
 		"__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/ChainableCommand.swift" /* ChainableCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainableCommand.swift; sourceTree = "<group>"; };
@@ -115,6 +115,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9811363D1DD384CE00CEE7B3 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				989413591DD265540059DF5A /* GitRepo.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		9894135E1DD376EA0059DF5A /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				9894135C1DD376320059DF5A /* Process+ChaiTools.swift */,
+				982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */,
+				982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		9894135F1DD3771F0059DF5A /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */,
+			);
+			path = Commands;
+			sourceTree = "<group>";
+		};
 		Dependencies_ /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -198,12 +224,10 @@
 		"_______Group_chaitools" /* chaitools */ = {
 			isa = PBXGroup;
 			children = (
-				9894135C1DD376320059DF5A /* Process+ChaiTools.swift */,
-				989413591DD265540059DF5A /* GitRepo.swift */,
-				982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */,
-				982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */,
+				9811363D1DD384CE00CEE7B3 /* Helpers */,
+				9894135F1DD3771F0059DF5A /* Commands */,
+				9894135E1DD376EA0059DF5A /* Extensions */,
 				__PBXFileRef_Sources/main.swift /* main.swift */,
-				9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */,
 			);
 			name = chaitools;
 			path = Sources;
