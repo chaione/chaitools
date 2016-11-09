@@ -4,7 +4,7 @@
 
 ChaiTools can be installed using Homebrew and a custom Homebrew tap.
 
-```brew tap chaione/tap```
+```brew tap chaione/c1tap```
 
 ```brew install chaitools```
 
