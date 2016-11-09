@@ -33,7 +33,7 @@ class TemplatesCommand: Command {
     func execute(arguments: CommandArguments) throws {
 
         guard let action = TemplateActions(rawValue:arguments.requiredArgument("action")) else {
-            return print("❗️\"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.")
+            return print("❗️ \"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.")
         }
         
         switch action {
@@ -50,7 +50,7 @@ class TemplatesCommand: Command {
         if status {
             print("Successfully installed Xcode templates. 🎉")
         } else {
-            print("❗️Xcode template installation failed.")
+            print("❗️ Xcode template installation failed.")
         }
     }
     
@@ -60,7 +60,7 @@ class TemplatesCommand: Command {
         if status {
             print("Successfully updated Xcode templates. 🎉")
         } else {
-            print("❗️Xcode template update failed.")
+            print("❗️ Xcode template update failed.")
         }
     }
 
@@ -74,7 +74,7 @@ class TemplatesCommand: Command {
                 try FileManager.default.removeItem(atPath: templateDirectory.path)
                 print("Successfully removed the templates directory. 🎉")
             } catch {
-                print("❗️Error removing the directory. \(error)")
+                print("❗️ Error removing the directory. \(error)")
             }
         } else {
             print("The templates directory does not exist, so it cannot be removed. 🤔")

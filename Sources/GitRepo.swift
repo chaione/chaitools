@@ -57,7 +57,7 @@ class GitRepo {
             print("`git \(action)` was a success! 🎉")
             return true
         } else {
-            print("❗️`git \(action)` failed! Sad!")
+            print("❗️ `git \(action)` failed! Sad!")
             return false
         }
     }
@@ -78,19 +78,19 @@ class GitRepo {
                 try FileManager.default.createDirectory(at: localURL, withIntermediateDirectories: true)
                 print("Successfully created the directory.")
             } catch {
-                print("❗️Error creating the directory. \(error)")
+                print("❗️ Error creating the directory. \(error)")
             }
         }
     }
 
     private func isSafeToProceed(forAction action: GitAction) -> Bool {
         if (action == .pull) && (!localURL.isGitRepo()) {
-            print("❗️ Can't update a git repo if it isn't there!")
+            print("A git repo can't be updated if it doesn't exist. 🤔")
             return false
         }
 
         if (action == .clone) && (!localURL.isEmpty()) {
-            print("❗️ Can't clone a git repo if the directory isn't empty!")
+            print("❗️ Can't clone a git repo into a non-empty directory.")
             return false
         }
 
