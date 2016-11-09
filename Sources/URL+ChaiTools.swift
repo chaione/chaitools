@@ -10,7 +10,7 @@ import Foundation
 
 extension URL {
     func isEmpty() -> Bool {
-        guard let contents = try? FileManager.default.contentsOfDirectory(atPath: self.path) else { return false }
+        guard let contents = try? FileManager.default.contentsOfDirectory(atPath: self.path) else { return true }
 
         return contents.isEmpty
     }

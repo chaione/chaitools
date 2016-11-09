@@ -9,6 +9,12 @@
 import Foundation
 import SwiftCLI
 
+enum TemplateActions : String {
+    case install
+    case update
+    case remove
+}
+
 @available(OSX 10.12, *)
 class TemplatesCommand: Command {
 
@@ -18,19 +24,44 @@ class TemplatesCommand: Command {
 
     private let templateRepoURL = URL(string: "git@bitbucket.org:chaione/chaitemplates.git")!
     private let templateDirectory = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/Templates/ChaiOne", isDirectory: true)
+    private let repo: GitRepo
+    
+    init() {
+        repo = GitRepo(withLocalURL: templateDirectory, andRemoteURL: templateRepoURL)
+    }
 
     func execute(arguments: CommandArguments) throws {
-        if arguments.requiredArgument("action") == "remove" {
-            removeDirectory()
-            return
+
+        guard let action = TemplateActions(rawValue:arguments.requiredArgument("action")) else {
+            return print("❗️ \"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.")
+        }
+        
+        switch action {
+            case .install: installTemplates()
+            case .update: updateTemplates()
+            case .remove: removeDirectory()
         }
 
-        guard let action = arguments.requiredArgument("action").toGitAction() else {
-            return print("❗️\"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.")
+    }
+    
+    private func installTemplates() {
+        print("Attempting to install Xcode templates...")
+        let status = repo.execute(GitAction.clone)
+        if status {
+            print("Successfully installed Xcode templates. 🎉")
+        } else {
+            print("❗️ Xcode template installation failed.")
         }
-
-        let repo = GitRepo(withLocalURL: templateDirectory, andRemoteURL: templateRepoURL)
-        repo.execute(action)
+    }
+    
+    private func updateTemplates() {
+        print("Attempting to update Xcode templates...")
+        let status = repo.execute(GitAction.pull)
+        if status {
+            print("Successfully updated Xcode templates. 🎉")
+        } else {
+            print("❗️ Xcode template update failed.")
+        }
     }
 
     private func removeDirectory() {
@@ -43,20 +74,10 @@ class TemplatesCommand: Command {
                 try FileManager.default.removeItem(atPath: templateDirectory.path)
                 print("Successfully removed the templates directory. 🎉")
             } catch {
-                print("❗️Error removing the directory. \(error)")
+                print("❗️ Error removing the directory. \(error)")
             }
         } else {
             print("The templates directory does not exist, so it cannot be removed. 🤔")
-        }
-    }
-}
-
-fileprivate extension String {
-    func toGitAction() -> GitAction? {
-        switch self {
-            case "install": return GitAction.clone
-            case "update": return GitAction.pull
-            default: return nil
         }
     }
 }
