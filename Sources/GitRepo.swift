@@ -46,7 +46,10 @@ class GitRepo {
         // It would be nice to check if a repo is clean, and then clean if necessary.
         // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`
         // if (action == .pull) { clean() }
-        createLocalURLIfNeeded()
+
+        if !isSafeToProceed(forAction: action) {
+            return false
+        }
 
         print("Running `git \(action) \(process.arguments![1])`...")
         process.execute()
@@ -78,5 +81,21 @@ class GitRepo {
                 print("❗️Error creating the directory. \(error)")
             }
         }
+    }
+
+    private func isSafeToProceed(forAction action: GitAction) -> Bool {
+        if (action == .pull) && (!localURL.isGitRepo()) {
+            print("❗️ Can't update a git repo if it isn't there!")
+            return false
+        }
+
+        if (action == .clone) && (!localURL.isEmpty()) {
+            print("❗️ Can't clone a git repo if the directory isn't empty!")
+            return false
+        }
+
+        createLocalURLIfNeeded()
+
+        return true
     }
 }
