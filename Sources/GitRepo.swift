@@ -43,7 +43,13 @@ class GitRepo {
         // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`
         // if (action == .pull) { clean() }
 
+        print("Running `git \(action) \(process.arguments![1])`...")
         process.execute()
+        if process.terminationStatus == 0 {
+            print("`git \(action)` was a success! 🎉")
+        } else {
+            print("❗️`git \(action)` failed! Sad!")
+        }
     }
 
     // private func isClean() -> Bool { }
@@ -58,9 +64,11 @@ class GitRepo {
         var isDirectory: ObjCBool = ObjCBool(true)
         if !FileManager.default.fileExists(atPath: localURL.path, isDirectory: &isDirectory) {
             do {
-                try FileManager.default.createDirectory(at: localURL, withIntermediateDirectories: true, attributes: nil)
+                print("The local directory does not exist. Attempting to create it...")
+                try FileManager.default.createDirectory(at: localURL, withIntermediateDirectories: true)
+                print("Successfully created the directory.")
             } catch {
-                print("Error creating directory for git repo. \(error)")
+                print("❗️Error creating the directory. \(error)")
             }
         }
     }

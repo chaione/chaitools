@@ -21,16 +21,33 @@ class TemplatesCommand: Command {
 
     func execute(arguments: CommandArguments) throws {
         if arguments.requiredArgument("action") == "remove" {
-            try? FileManager.default.removeItem(atPath: templateDirectory.path)
+            removeDirectory()
             return
         }
 
         guard let action = arguments.requiredArgument("action").toGitAction() else {
-            return print("\(arguments.requiredArgument("action")) is not a valid option. Aborting operation.")
+            return print("❗️\"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.")
         }
 
         let repo = GitRepo(withLocalURL: templateDirectory, andRemoteURL: templateRepoURL)
         repo.execute(action)
+    }
+
+    private func removeDirectory() {
+        var isDirectory: ObjCBool = ObjCBool(true)
+
+        print("Attempting to remove the templates directory...")
+
+        if FileManager.default.fileExists(atPath: templateDirectory.path, isDirectory: &isDirectory) {
+            do {
+                try FileManager.default.removeItem(atPath: templateDirectory.path)
+                print("Successfully removed the templates directory. 🎉")
+            } catch {
+                print("❗️Error removing the directory. \(error)")
+            }
+        } else {
+            print("The templates directory does not exist, so it cannot be removed. 🤔")
+        }
     }
 }
 
