@@ -46,12 +46,22 @@ class TemplatesCommand: Command {
     
     private func installTemplates() {
         print("Attempting to install Xcode templates...")
-        repo.execute(GitAction.clone)
+        let status = repo.execute(GitAction.clone)
+        if status {
+            print("Successfully installed Xcode templates. 🎉")
+        } else {
+            print("❗️Xcode template installation failed.")
+        }
     }
     
     private func updateTemplates() {
         print("Attempting to update Xcode templates...")
-        repo.execute(GitAction.pull)
+        let status = repo.execute(GitAction.pull)
+        if status {
+            print("Successfully updated Xcode templates. 🎉")
+        } else {
+            print("❗️Xcode template update failed.")
+        }
     }
 
     private func removeDirectory() {

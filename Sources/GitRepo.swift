@@ -33,22 +33,29 @@ class GitRepo {
         self.localURL = localURL
         self.remoteURL = remoteURL
         process = Process(withLaunchPath: launchPath, currentDirectoryPath: localURL.path)
-        createLocalURLIfNeeded()
     }
 
-    func execute(_ action: GitAction) {
+    
+    /// Execute the git action
+    ///
+    /// - Parameter action: The action to be executed, defined by the GitAction enum
+    /// - Returns: True if action succeeded, false otherwise
+    func execute(_ action: GitAction) -> Bool {
         process.arguments = action.arguments(withRemoteURL: remoteURL.path)
 
         // It would be nice to check if a repo is clean, and then clean if necessary.
         // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`
         // if (action == .pull) { clean() }
+        createLocalURLIfNeeded()
 
         print("Running `git \(action) \(process.arguments![1])`...")
         process.execute()
         if process.terminationStatus == 0 {
             print("`git \(action)` was a success! 🎉")
+            return true
         } else {
             print("❗️`git \(action)` failed! Sad!")
+            return false
         }
     }
 
