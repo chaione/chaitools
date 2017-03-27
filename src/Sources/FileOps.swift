@@ -26,12 +26,11 @@ class FileOps: NSObject {
     /// - Parameter dirURL: The local URL of the directory to be created
     /// - Returns: True if succeeds and false otherwise.
     func ensureDirectory(_ dirURL: URL) -> Bool {
-        var isDirectory: ObjCBool = ObjCBool(true)
-        if !FileManager.default.fileExists(atPath: dirURL.path, isDirectory: &isDirectory) {
+        if doesDirectoryExist(dirURL) {
             do {
                 print("The local directory does not exist. Attempting to create it...")
                 try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
-                print("Successfully created the directory.")
+                print("Successfully created the directory. 🎉")
                 return true
             } catch {
                 print("❗️ Error creating the directory. \(error)")
@@ -40,6 +39,14 @@ class FileOps: NSObject {
         }
 
         return true
+    }
+
+    /// Convenience method to check if a directory exists
+    ///
+    /// - Returns: True if the directory exists, false otherwise.
+    func doesDirectoryExist(_ url: URL) -> Bool {
+        var isDirectory: ObjCBool = ObjCBool(true)
+        return FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory)
     }
 
     /// Generic actions to delete a given directory.
@@ -78,5 +85,20 @@ class FileOps: NSObject {
             // handle the error
         }
         return nil
+    }
+
+    /// Convenience method to create a subdirectory of a given directory
+    ///
+    /// - Parameters:
+    ///   - name: The name of the subdirectory to create
+    ///   - parent: The parent directory. Defaults to the current directory.
+    func createSubDirectory(_ name: String, parent: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)) {
+        // create substructure for project
+        do {
+            try FileManager.default.createDirectory(at: parent.appendingPathComponent(name), withIntermediateDirectories: true)
+            print("Successfully created \(name) subdirectory. 🎉")
+        } catch {
+            print("❗️ Failed to create \(name) subdirectory.")
+        }
     }
 }
