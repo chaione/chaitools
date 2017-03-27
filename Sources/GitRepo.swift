@@ -20,6 +20,7 @@ enum GitAction: String {
     }
 }
 
+@available(OSX 10.12, *)
 class GitRepo {
 
     var localURL: URL
@@ -70,19 +71,6 @@ class GitRepo {
         process.execute()
     }
 
-    private func createLocalURLIfNeeded() {
-        var isDirectory: ObjCBool = ObjCBool(true)
-        if !FileManager.default.fileExists(atPath: localURL.path, isDirectory: &isDirectory) {
-            do {
-                print("The local directory does not exist. Attempting to create it...")
-                try FileManager.default.createDirectory(at: localURL, withIntermediateDirectories: true)
-                print("Successfully created the directory.")
-            } catch {
-                print("❗️ Error creating the directory. \(error)")
-            }
-        }
-    }
-
     private func isSafeToProceed(forAction action: GitAction) -> Bool {
         if (action == .pull) && (!localURL.isGitRepo()) {
             print("A git repo can't be updated if it doesn't exist. 🤔")
@@ -94,8 +82,6 @@ class GitRepo {
             return false
         }
 
-        createLocalURLIfNeeded()
-
-        return true
+        return FileOps.defaultOps.ensureDirectory(localURL)
     }
 }
