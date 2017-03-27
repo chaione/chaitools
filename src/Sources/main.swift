@@ -13,6 +13,7 @@ CLI.setup(name: "chaitools", version: "0.2.1", description: "Brew some awesome a
 
 if #available(OSX 10.12, *) {
     CLI.register(command: TemplatesCommand())
+    CLI.register(command: BootstrapCommand())
 } else {
     print("macOS 10.12 is required to manage Xcode templates.")
 }

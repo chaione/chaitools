@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F01EFAF1E88F627006A2DE3 /* BootstrapCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F01EFAE1E88F627006A2DE3 /* BootstrapCommand.swift */; };
 		1F0EE5101E8402E9005331A0 /* FileOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0EE50F1E8402E9005331A0 /* FileOps.swift */; };
 		981A52C91DD242A700C5CA95 /* TemplatesCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */; };
 		981A52CB1DD242AE00C5CA95 /* URL+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */; };
@@ -56,6 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1F01EFAE1E88F627006A2DE3 /* BootstrapCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BootstrapCommand.swift; sourceTree = "<group>"; };
 		1F0EE50F1E8402E9005331A0 /* FileOps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileOps.swift; sourceTree = "<group>"; };
 		9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplatesCommand.swift; sourceTree = "<group>"; };
 		982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+ChaiTools.swift"; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 			isa = PBXGroup;
 			children = (
 				9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */,
+				1F01EFAE1E88F627006A2DE3 /* BootstrapCommand.swift */,
 			);
 			name = Commands;
 			sourceTree = "<group>";
@@ -370,6 +373,7 @@
 				981A52CC1DD242B100C5CA95 /* String+ChaiTools.swift in Sources */,
 				981A52CB1DD242AE00C5CA95 /* URL+ChaiTools.swift in Sources */,
 				9894135D1DD376320059DF5A /* Process+ChaiTools.swift in Sources */,
+				1F01EFAF1E88F627006A2DE3 /* BootstrapCommand.swift in Sources */,
 				__src_cc_ref_Sources/main.swift /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
