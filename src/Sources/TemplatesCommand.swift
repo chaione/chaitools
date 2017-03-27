@@ -15,6 +15,7 @@ enum TemplateActions: String {
     case remove
 }
 
+@available(OSX 10.12, *)
 struct TemplatesSet {
     var remoteURL: URL
     var localDir: URL
@@ -88,7 +89,7 @@ class TemplatesCommand: Command {
         var status = true
         print("Attempting to remove the templates directory...")
         for template in templates {
-            FileOps.defaultOps.removeDirectory(template.localDir)
+            status = status && FileOps.defaultOps.removeDirectory(template.localDir)
         }
         if status {
             print("Successfully removed Xcode templates. 🎉")
