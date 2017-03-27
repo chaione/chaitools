@@ -51,8 +51,6 @@ class FileOps : NSObject, URLSessionDownloadDelegate {
     func removeDirectory(_ dirURL : URL) -> Bool {
         var isDirectory: ObjCBool = ObjCBool(true)
         
-        print("Attempting to remove the directory...")
-        
         if FileManager.default.fileExists(atPath: dirURL.path, isDirectory: &isDirectory) {
             do {
                 try FileManager.default.removeItem(atPath: dirURL.path)

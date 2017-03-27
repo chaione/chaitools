@@ -37,7 +37,6 @@ class TemplatesCommand: Command {
     var shortDescription: String = "Install, update, or remove Xcode templates"
     
     private var templates: [TemplatesSet] = []
-
     
     init() {
         
@@ -57,9 +56,8 @@ class TemplatesCommand: Command {
         switch action {
             case .install: installTemplates()
             case .update: updateTemplates()
-            case .remove: removeDirectory()
+            case .remove: removeTemplates()
         }
-
     }
     
     private func installTemplates() {
@@ -88,21 +86,17 @@ class TemplatesCommand: Command {
         }
     }
 
-    private func removeDirectory() {
-        var isDirectory: ObjCBool = ObjCBool(true)
-
+    private func removeTemplates() {
+     
+        var status = true;
         print("Attempting to remove the templates directory...")
         for template in templates {
-            if FileManager.default.fileExists(atPath: template.localDir.path, isDirectory: &isDirectory) {
-                do {
-                    try FileManager.default.removeItem(atPath: template.localDir.path)
-                    print("Successfully removed the templates directory. 🎉")
-                } catch {
-                    print("❗️ Error removing the directory. \(error)")
-                }
-            } else {
-                print("The templates directory does not exist, so it cannot be removed. 🤔")
-            }
+            FileOps.defaultOps.removeDirectory(template.localDir)
+        }
+        if status {
+            print("Successfully removed Xcode templates. 🎉")
+        } else {
+            print("❗️ Xcode template removal failed.")
         }
     }
 }
