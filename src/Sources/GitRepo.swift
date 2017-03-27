@@ -36,7 +36,6 @@ class GitRepo {
         process = Process(withLaunchPath: launchPath, currentDirectoryPath: localURL.path)
     }
 
-    
     /// Execute the git action
     ///
     /// - Parameter action: The action to be executed, defined by the GitAction enum

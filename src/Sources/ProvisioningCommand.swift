@@ -9,7 +9,7 @@
 import Foundation
 import SwiftCLI
 
-enum ProvisioningActions : String {
+enum ProvisioningActions: String {
     case install
     case enable
 }
@@ -23,7 +23,7 @@ class ProvisioningCommand: Command {
 
     func execute(arguments: CommandArguments) throws {
 
-        guard let action = ProvisioningActions(rawValue:arguments.requiredArgument("action")) else {
+        guard let action = ProvisioningActions(rawValue: arguments.requiredArgument("action")) else {
             return print("❗️ \"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.")
         }
 
@@ -31,32 +31,23 @@ class ProvisioningCommand: Command {
         case .install: installQuickLook()
         case .enable: enableCopy()
         }
-
     }
 
     private func installQuickLook() {
-        
-        
 
         let quickLookURLString = "https://github.com/chockenberry/Provisioning/releases/download/1.0.4/Provisioning-1.0.4.zip"
-        
+
         if let tempDirectory = FileOps.defaultOps.createTempDirectory() {
-          
-            
+
             // download zip to temp directory.
-            FileOps.defaultOps.downloadFile(quickLookURLString, to:tempDirectory)
+            FileOps.defaultOps.downloadFile(quickLookURLString, to: tempDirectory)
             // unzip file
-            
-            
-            
+
             // create ~/Library/QuickLook if doesn't exist
             //    FileOps.defaultOps.ensureDirectory(FileOps.defaultOps.expandLocalLibraryPath("QuickLook"))
             // copy quicklook plugin to directory
             // restart qlmanage
-    
         }
-        
-        
     }
 
     private func enableCopy() {

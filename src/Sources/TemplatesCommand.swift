@@ -9,25 +9,23 @@
 import Foundation
 import SwiftCLI
 
-enum TemplateActions : String {
+enum TemplateActions: String {
     case install
     case update
     case remove
 }
 
-
 struct TemplatesSet {
     var remoteURL: URL
     var localDir: URL
     var repo: GitRepo
-    
-    init(repoURL : URL, dir : URL) {
+
+    init(repoURL: URL, dir: URL) {
         localDir = dir
         remoteURL = repoURL
         repo = GitRepo(withLocalURL: localDir, andRemoteURL: remoteURL)
     }
 }
-
 
 @available(OSX 10.12, *)
 class TemplatesCommand: Command {
@@ -35,31 +33,30 @@ class TemplatesCommand: Command {
     var name: String = "templates"
     var signature: String = "<action>"
     var shortDescription: String = "Install, update, or remove Xcode templates"
-    
+
     private var templates: [TemplatesSet] = []
-    
+
     init() {
-        
+
         templates.append(TemplatesSet(repoURL: URL(string: "git@bitbucket.org:chaione/chaitemplates.git")!,
                                       dir: FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/Templates/File Templates/ChaiOne", isDirectory: true)))
         templates.append(TemplatesSet(repoURL: URL(string: "git@bitbucket.org:chaione/chaixcodetemplates.git")!,
                                       dir: FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/Templates/Project Templates/ChaiOne", isDirectory: true)))
- 
     }
 
     func execute(arguments: CommandArguments) throws {
 
-        guard let action = TemplateActions(rawValue:arguments.requiredArgument("action")) else {
+        guard let action = TemplateActions(rawValue: arguments.requiredArgument("action")) else {
             return print("❗️ \"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.")
         }
-        
+
         switch action {
-            case .install: installTemplates()
-            case .update: updateTemplates()
-            case .remove: removeTemplates()
+        case .install: installTemplates()
+        case .update: updateTemplates()
+        case .remove: removeTemplates()
         }
     }
-    
+
     private func installTemplates() {
         print("Attempting to install Xcode templates...")
         var status = true
@@ -72,7 +69,7 @@ class TemplatesCommand: Command {
             print("❗️ Xcode template installation failed.")
         }
     }
-    
+
     private func updateTemplates() {
         print("Attempting to update Xcode templates...")
         var status = true
@@ -87,8 +84,8 @@ class TemplatesCommand: Command {
     }
 
     private func removeTemplates() {
-     
-        var status = true;
+
+        var status = true
         print("Attempting to remove the templates directory...")
         for template in templates {
             FileOps.defaultOps.removeDirectory(template.localDir)
