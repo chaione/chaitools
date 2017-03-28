@@ -14,12 +14,16 @@ enum GitAction: String {
     case ginit = "init"
     case add
     case commit
+    case remoteAdd
+    case push
 
     func arguments(withRemoteURL url: URL?) -> [String] {
         if let urlPath = url?.path {
             switch self {
             case .clone: return [self.rawValue, urlPath, "."]
             case .pull: return [self.rawValue, urlPath]
+            case .remoteAdd: return ["remote", "add", "origin", urlPath]
+            case .push: return [self.rawValue, "-u", "origin", "master"]
             default: return []
             }
 
@@ -66,7 +70,9 @@ class GitRepo {
         if !isSafeToProceed(forAction: action) {
             return false
         }
-
+        
+        let args = action.arguments(withRemoteURL: remoteURL)
+        print("\(args)")
         process.arguments = action.arguments(withRemoteURL: remoteURL)
 
         print("Running `git \(action.rawValue)`...")
