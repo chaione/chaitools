@@ -18,10 +18,23 @@ class BootstrapCommand: Command {
 
     private var projectName: String = ""
 
-    func execute(arguments _: CommandArguments) throws {
+    func execute(arguments: CommandArguments) throws {
         var success = true
 
         print("These boots are made for walking.")
+        let stack = arguments.optionalArgument("stack")
+        if stack == nil {
+            print("💁  chaitools bootstrap works best with a tech stack.")
+            print("Current supported tech stacks are:")
+            print("- none")
+
+            let shouldContinue = Input.awaitYesNoInput(message: "❓  Should we setup a base project structure?")
+            if !shouldContinue {
+                print("See you later, Space Cowboy! 💫")
+                return
+            }
+        }
+
         if let projectURL = setupDirectoryStructure() {
             success = success && setupReadMeDefaults(projectURL)
 
@@ -47,7 +60,7 @@ class BootstrapCommand: Command {
     /// |-- tests/
     func setupDirectoryStructure() -> URL? {
 
-        projectName = Input.awaitInput(message: "❓ What is the name of the project?")
+        projectName = Input.awaitInput(message: "❓  What is the name of the project?")
 
         let projectDirURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent(projectName, isDirectory: true)
 
