@@ -26,7 +26,7 @@ class FileOps: NSObject {
     /// - Parameter dirURL: The local URL of the directory to be created
     /// - Returns: True if succeeds and false otherwise.
     func ensureDirectory(_ dirURL: URL) -> Bool {
-        if doesDirectoryExist(dirURL) {
+        if !doesDirectoryExist(dirURL) {
             do {
                 print("The local directory does not exist. Attempting to create it...")
                 try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
@@ -37,7 +37,6 @@ class FileOps: NSObject {
                 return false
             }
         }
-
         return true
     }
 
@@ -95,7 +94,7 @@ class FileOps: NSObject {
     func createSubDirectory(_ name: String, parent: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)) {
         // create substructure for project
         do {
-            try FileManager.default.createDirectory(at: parent.appendingPathComponent(name), withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: parent.appendingPathComponent(name, isDirectory: true), withIntermediateDirectories: true)
             print("Successfully created \(name) subdirectory. 🎉")
         } catch {
             print("❗️ Failed to create \(name) subdirectory.")
