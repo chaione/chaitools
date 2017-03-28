@@ -14,7 +14,7 @@ enum GitAction: String {
     case ginit = "init"
     case add
     case commit
-    case remoteAdd
+    case remoteAdd = "remote"
     case push
 
     func arguments(withRemoteURL url: URL?) -> [String] {
@@ -70,9 +70,7 @@ class GitRepo {
         if !isSafeToProceed(forAction: action) {
             return false
         }
-        
-        let args = action.arguments(withRemoteURL: remoteURL)
-        print("\(args)")
+
         process.arguments = action.arguments(withRemoteURL: remoteURL)
 
         print("Running `git \(action.rawValue)`...")
