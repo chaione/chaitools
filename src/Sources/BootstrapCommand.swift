@@ -22,6 +22,7 @@ class BootstrapCommand: Command {
         print("These boots are made for walking.")
         if let projectURL = setupDirectoryStructure() {
             setupReadMeDefaults(projectURL)
+            setupGitRepo(projectURL)
         }
     }
 
@@ -74,5 +75,17 @@ class BootstrapCommand: Command {
         FileManager.default.createFile(atPath: projectURL.appendingPathComponent("scripts/ReadMe.md").path, contents: "Project external scripts go here.".data(using: .utf8))
         FileManager.default.createFile(atPath: projectURL.appendingPathComponent("tests/ReadMe.md").path, contents: "Automated tests goes here.".data(using: .utf8))
         FileManager.default.createFile(atPath: projectURL.appendingPathComponent("docs/ReadMe.md").path, contents: "Project documentation goes here.".data(using: .utf8))
+    }
+
+    func setupGitRepo(_ projectURL: URL) {
+
+        // Run git init and do first commit.
+        let repo = GitRepo(withLocalURL: projectURL)
+        let success = repo.execute(GitAction.ginit)
+        if success {
+            print("Git repository initialized")
+        }
+        // Prompt if remote exists.
+        // Setup remote if it doesn't.
     }
 }
