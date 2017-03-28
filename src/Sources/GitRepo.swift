@@ -12,6 +12,8 @@ enum GitAction: String {
     case clone
     case pull
     case ginit = "init"
+    case add
+    case commit
 
     func arguments(withRemoteURL url: URL?) -> [String] {
         if let urlPath = url?.path {
@@ -24,6 +26,8 @@ enum GitAction: String {
         } else {
             switch self {
             case .ginit: return [self.rawValue]
+            case .add: return [self.rawValue, "."]
+            case .commit: return [self.rawValue, "-m \"Initial commit by chaitools\""]
             default: return []
             }
         }
@@ -35,7 +39,7 @@ class GitRepo {
 
     var localURL: URL
     var remoteURL: URL?
-    private let process: Process
+
     private let launchPath = "/usr/bin/git"
     private let outputPipe = Pipe()
     private let outputText = String()
@@ -44,8 +48,6 @@ class GitRepo {
 
         self.localURL = localURL
         self.remoteURL = remoteURL
-
-        process = Process(withLaunchPath: launchPath, currentDirectoryPath: localURL.path)
     }
 
     /// Execute the git action
@@ -53,6 +55,9 @@ class GitRepo {
     /// - Parameter action: The action to be executed, defined by the GitAction enum
     /// - Returns: True if action succeeded, false otherwise
     func execute(_ action: GitAction) -> Bool {
+
+        // Spawn a new process before executing as you can only execute them once
+        let process = Process(withLaunchPath: launchPath, currentDirectoryPath: localURL.path)
 
         // It would be nice to check if a repo is clean, and then clean if necessary.
         // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`

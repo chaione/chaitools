@@ -36,7 +36,7 @@ class BootstrapCommand: Command {
 
         projectName = Input.awaitInput(message: "❓ What is the name of the project?")
 
-        let projectDirURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent(projectName)
+        let projectDirURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent(projectName, isDirectory: true)
 
         // Do not overwrite existing projects
         if FileOps.defaultOps.doesDirectoryExist(projectDirURL) {
@@ -48,7 +48,7 @@ class BootstrapCommand: Command {
             let success = FileOps.defaultOps.ensureDirectory(projectDirURL)
 
             if success {
-                print("Project directory created successfully.")
+                print("Successfully created \(projectName) project directory. 🎉")
             } else {
                 print("❗️ Project directory creation failed.")
             }
@@ -77,13 +77,25 @@ class BootstrapCommand: Command {
         FileManager.default.createFile(atPath: projectURL.appendingPathComponent("docs/ReadMe.md").path, contents: "Project documentation goes here.".data(using: .utf8))
     }
 
+    /// Setups the local git repository.
+    ///
+    /// - Parameter projectURL: File path URL for the main project directory.
     func setupGitRepo(_ projectURL: URL) {
 
-        // Run git init and do first commit.
+        // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
-        let success = repo.execute(GitAction.ginit)
-        if success {
-            print("Git repository initialized")
+        if repo.execute(GitAction.ginit) {
+            if repo.execute(GitAction.add) {
+                if repo.execute(GitAction.commit) {
+                    print("Successfully setup local git repo for project \(projectName). 🎉")
+                } else {
+                    print("❗️ Failed to commit initial code.")
+                }
+            } else {
+                print("❗️ Failed to add code to local git repo.")
+            }
+        } else {
+            print("❗️ Failed to initialize local git repo.")
         }
         // Prompt if remote exists.
         // Setup remote if it doesn't.
