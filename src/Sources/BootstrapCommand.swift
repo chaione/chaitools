@@ -134,21 +134,23 @@ class BootstrapCommand: Command {
             return false
         }
         // Prompt if remote exists.
-        let remoteRepo = Input.awaitInput(message: "❓ Enter the remote repo for \(projectName):")
-        repo.remoteURL = URL(string: remoteRepo)
-
-        if repo.execute(GitAction.remoteAdd) {
-            if repo.execute(GitAction.push) {
-                print("Successfully pushed to git remote for project \(projectName). 🎉")
+        let remoteRepo = Input.awaitInput(message: "❓ Enter the remote repo for \(projectName). Press <enter> to skip.")
+        if remoteRepo != "" {
+            repo.remoteURL = URL(string: remoteRepo)
+            
+            if repo.execute(GitAction.remoteAdd) {
+                if repo.execute(GitAction.push) {
+                    print("Successfully pushed to git remote for project \(projectName). 🎉")
+                } else {
+                    print("❗️ Failed to push to remote git repo.")
+                    return false
+                }
             } else {
-                print("❗️ Failed to push to remote git repo.")
+                print("❗️ Failed to add remote git repo.")
                 return false
             }
-        } else {
-            print("❗️ Failed to add remote git repo.")
-            return false
         }
-
+        
         // Setup remote if it doesn't.
         return true
     }
