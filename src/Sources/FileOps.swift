@@ -55,17 +55,16 @@ class FileOps: NSObject {
     func removeDirectory(_ dirURL: URL) -> Bool {
         var isDirectory: ObjCBool = ObjCBool(true)
 
-        if FileManager.default.fileExists(atPath: dirURL.path, isDirectory: &isDirectory) {
-            do {
-                try FileManager.default.removeItem(atPath: dirURL.path)
-                print("Successfully removed the directory. 🎉")
-                return true
-            } catch {
-                print("❗️ Error removing the directory. \(error)")
-                return false
-            }
-        } else {
+        guard FileManager.default.fileExists(atPath: dirURL.path, isDirectory: &isDirectory) else {
             print("The directory does not exist, so it cannot be removed. 🤔")
+            return false
+        }
+        do {
+            try FileManager.default.removeItem(atPath: dirURL.path)
+            print("Successfully removed the directory. 🎉")
+            return true
+        } catch {
+            print("❗️ Error removing the directory. \(error)")
             return false
         }
     }
