@@ -9,6 +9,36 @@
 import Foundation
 import SwiftCLI
 
+
+protocol BootstrapConfig {
+    
+    func bootstrap(_ projectDirURL : URL) -> Bool
+}
+
+
+enum TechStack : String {
+    case android
+    
+    static let allValues = [android]
+    
+    /// Returns the BootstrapConfig for the TechStack
+    ///
+    /// - Returns: BootstrapConfig for the TechStack
+    func bootstrapper() -> BootstrapConfig {
+        switch self {
+        case .android: return AndroidBootstrap()
+        }
+    }
+    
+    /// Prints all supported TechStacks
+    static func supportedStacks() {
+        print("Current supported tech stacks are:")
+        for stack in allValues {
+            print("- \(stack)")
+        }
+    }
+}
+
 @available(OSX 10.12, *)
 class BootstrapCommand: Command {
 
@@ -17,39 +47,67 @@ class BootstrapCommand: Command {
     var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
 
     private var projectName: String = ""
-
+    
+    /// Executes the bootstrap command
+    /// Bootstrap takes an optional tech stack arguments and the execution first validates
+    /// those arguments before proceeding. Actions that may be performed:
+    ///   * generate file structure and base ReadMe
+    ///   * specific boot strapping actions for a given tech stack
+    ///   * git configuration for the bootstrapped folders
+    /// - Parameter arguments: The arguments passed to the command 
     func execute(arguments: CommandArguments) throws {
-        var success = true
+        
+        var bootstrapper : BootstrapConfig?
 
         print("These boots are made for walking.")
-        let stack = arguments.optionalArgument("stack")
-        if stack == nil {
-            print("💁  chaitools bootstrap works best with a tech stack.")
-            print("Current supported tech stacks are:")
-            print("- none")
-
-            let shouldContinue = Input.awaitYesNoInput(message: "❓  Should we setup a base project structure?")
-            if !shouldContinue {
+        
+        if let stackName = arguments.optionalArgument("stack") {
+            
+            guard let stack = TechStack(rawValue:stackName) else {
+                print("💁  \(stackName) is an unrecognized tech stack.")
+                TechStack.supportedStacks()
+                print("Please try again with one of those tech stacks.")
                 print("See you later, Space Cowboy! 💫")
                 return
             }
-        }
-
-        if let projectURL = setupDirectoryStructure() {
-            success = success && setupReadMeDefaults(projectURL)
-
-            // Git repo work should be the last thing done by the bootstraper to capture
-            // all file changes in the initial commit
-            success = success && setupGitRepo(projectURL)
+            
+            bootstrapper = stack.bootstrapper()
+            
         } else {
-            success = false
-        }
+            print("💁  chaitools bootstrap works best with a tech stack.")
+            TechStack.supportedStacks()
 
-        if success {
-            print("Boot straps pulled. Time to start walking. 😎")
-        } else {
+            guard Input.awaitYesNoInput(message: "❓  Should we setup a base project structure?") else {
+                print("See you later, Space Cowboy! 💫")
+                return
+            }
+            
+            bootstrapper = nil
+        }
+        
+        guard let projectURL = setupDirectoryStructure() else {
             print("Bootstrapper completed with failures. 😭")
+            return
         }
+        
+        guard setupReadMeDefaults(projectURL) else {
+            print("Bootstrapper completed with failures. 😭")
+            return
+        }
+        
+        if let bootstrapper = bootstrapper {
+            guard bootstrapper.bootstrap(projectURL) else {
+                print("Bootstrapper completed with failures. 😭")
+                return
+            }
+        }
+        
+        guard setupGitRepo(projectURL) else {
+            print("Bootstrapper completed with failures. 😭")
+            return
+        }
+
+        print("Boot straps pulled. Time to start walking. 😎")
     }
 
     /// Setups the expected project folder structure:
@@ -58,6 +116,7 @@ class BootstrapCommand: Command {
     /// |-- scripts/
     /// |-- src/
     /// |-- tests/
+    /// Returns: File URL of the base directory for the project
     func setupDirectoryStructure() -> URL? {
 
         projectName = Input.awaitInput(message: "❓  What is the name of the project?")
@@ -93,6 +152,7 @@ class BootstrapCommand: Command {
     /// Adds a dummy ReadMe.md file to each directory in the default system.
     ///
     /// - Parameter projectURL: File path URL for the main project directory.
+    // Returns: True if project succeeded or false otherwise
     func setupReadMeDefaults(_ projectURL: URL) -> Bool {
 
         var status = true
@@ -113,6 +173,7 @@ class BootstrapCommand: Command {
     /// Setups the local git repository.
     ///
     /// - Parameter projectURL: File path URL for the main project directory.
+    /// Returns: True if git repo configuration succeeded and false otherwise
     func setupGitRepo(_ projectURL: URL) -> Bool {
 
         // Run git init
