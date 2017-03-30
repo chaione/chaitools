@@ -12,7 +12,7 @@ import Foundation
 class FileOps: NSObject {
 
     static let defaultOps = FileOps()
-    
+
     private override init() {
         super.init()
     }

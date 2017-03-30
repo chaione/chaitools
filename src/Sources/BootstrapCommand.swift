@@ -9,18 +9,17 @@
 import Foundation
 import SwiftCLI
 
-
 protocol BootstrapConfig {
-    
-    func bootstrap(_ projectDirURL : URL) -> Bool
+
+    func bootstrap(_ projectDirURL: URL) -> Bool
 }
 
 @available(OSX 10.12, *)
-enum TechStack : String {
+enum TechStack: String {
     case android
-    
+
     static let allValues = [android]
-    
+
     /// Returns the BootstrapConfig for the TechStack
     ///
     /// - Returns: BootstrapConfig for the TechStack
@@ -29,7 +28,7 @@ enum TechStack : String {
         case .android: return AndroidBootstrap()
         }
     }
-    
+
     /// Prints all supported TechStacks
     static func supportedStacks() {
         print("Current supported tech stacks are:")
@@ -47,32 +46,32 @@ class BootstrapCommand: Command {
     var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
 
     private var projectName: String = ""
-    
+
     /// Executes the bootstrap command
     /// Bootstrap takes an optional tech stack arguments and the execution first validates
     /// those arguments before proceeding. Actions that may be performed:
     ///   * generate file structure and base ReadMe
     ///   * specific boot strapping actions for a given tech stack
     ///   * git configuration for the bootstrapped folders
-    /// - Parameter arguments: The arguments passed to the command 
+    /// - Parameter arguments: The arguments passed to the command
     func execute(arguments: CommandArguments) throws {
-        
-        var bootstrapper : BootstrapConfig?
+
+        var bootstrapper: BootstrapConfig?
 
         print("These boots are made for walking.")
-        
+
         if let stackName = arguments.optionalArgument("stack") {
-            
-            guard let stack = TechStack(rawValue:stackName) else {
+
+            guard let stack = TechStack(rawValue: stackName) else {
                 print("💁  \(stackName) is an unrecognized tech stack.")
                 TechStack.supportedStacks()
                 print("Please try again with one of those tech stacks.")
                 print("See you later, Space Cowboy! 💫")
                 return
             }
-            
+
             bootstrapper = stack.bootstrapper()
-            
+
         } else {
             print("💁  chaitools bootstrap works best with a tech stack.")
             TechStack.supportedStacks()
@@ -81,27 +80,27 @@ class BootstrapCommand: Command {
                 print("See you later, Space Cowboy! 💫")
                 return
             }
-            
+
             bootstrapper = nil
         }
-        
+
         guard let projectURL = setupDirectoryStructure() else {
             print("Bootstrapper completed with failures. 😭")
             return
         }
-        
+
         if let bootstrapper = bootstrapper {
             guard bootstrapper.bootstrap(projectURL) else {
                 print("Bootstrapper completed with failures. 😭")
                 return
             }
         }
-        
+
         guard setupReadMeDefaults(projectURL) else {
             print("Bootstrapper completed with failures. 😭")
             return
         }
-        
+
         guard setupGitRepo(projectURL) else {
             print("Bootstrapper completed with failures. 😭")
             return
@@ -144,7 +143,7 @@ class BootstrapCommand: Command {
 
         return projectDirURL
     }
-    
+
     func setupProjectReadMe(_ projectURL: URL) -> Bool {
         return FileManager.default.createFile(atPath: projectURL.appendingPathComponent("ReadMe.md").path, contents: "#Welcome to the \(projectName) project\nProject created with chaitools bootstrap \(CLI.version).".data(using: .utf8))
     }
@@ -169,7 +168,7 @@ class BootstrapCommand: Command {
 
         return status
     }
-    
+
     func setupReadMePlaceholders(_ sourceURL: URL) -> Bool {
         do {
             if try FileManager.default.contentsOfDirectory(at: sourceURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles).isEmpty {
@@ -178,9 +177,8 @@ class BootstrapCommand: Command {
         } catch {
             print("Failed to setup ReadMe")
             return false
-            
         }
-        
+
         return true
     }
 
@@ -213,19 +211,19 @@ class BootstrapCommand: Command {
         let remoteRepo = Input.awaitInput(message: "❓ Enter the remote repo for \(projectName). Press <enter> to skip.")
         if remoteRepo != "" {
             repo.remoteURL = URL(string: remoteRepo)
-            
+
             guard repo.execute(GitAction.remoteAdd) else {
                 print("❗️ Failed to add remote git repo.")
                 return false
             }
-            
+
             guard repo.execute(GitAction.push) else {
                 print("❗️ Failed to push to remote git repo.")
                 return false
             }
             print("Successfully pushed to git remote for project \(projectName). 🎉")
         }
-        
+
         // Setup remote if it doesn't.
         return true
     }
