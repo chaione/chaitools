@@ -124,29 +124,25 @@ class BootstrapCommand: Command {
         let projectDirURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent(projectName, isDirectory: true)
 
         // Do not overwrite existing projects
-        if FileOps.defaultOps.doesDirectoryExist(projectDirURL) {
+        guard !FileOps.defaultOps.doesDirectoryExist(projectDirURL) else {
             print("❗️ Project \(projectName) already exists at this location.")
-        } else {
-
-            // create directory based on project name
-            print("Creating new project directory for project \(projectName)...")
-            let success = FileOps.defaultOps.ensureDirectory(projectDirURL)
-
-            if success {
-                print("Successfully created \(projectName) project directory. 🎉")
-            } else {
-                print("❗️ Project directory creation failed.")
-            }
-
-            FileOps.defaultOps.createSubDirectory("src", parent: projectDirURL)
-            FileOps.defaultOps.createSubDirectory("scripts", parent: projectDirURL)
-            FileOps.defaultOps.createSubDirectory("tests", parent: projectDirURL)
-            FileOps.defaultOps.createSubDirectory("docs", parent: projectDirURL)
-
-            return projectDirURL
+            return nil
         }
 
-        return nil
+        // create directory based on project name
+        print("Creating new project directory for project \(projectName)...")
+        guard FileOps.defaultOps.ensureDirectory(projectDirURL) else {
+            print("❗️ Project directory creation failed.")
+            return nil
+        }
+
+        print("Successfully created \(projectName) project directory. 🎉")
+        FileOps.defaultOps.createSubDirectory("src", parent: projectDirURL)
+        FileOps.defaultOps.createSubDirectory("scripts", parent: projectDirURL)
+        FileOps.defaultOps.createSubDirectory("tests", parent: projectDirURL)
+        FileOps.defaultOps.createSubDirectory("docs", parent: projectDirURL)
+
+        return projectDirURL
     }
 
     /// Adds a dummy ReadMe.md file to each directory in the default system.
@@ -178,38 +174,38 @@ class BootstrapCommand: Command {
 
         // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
-        if repo.execute(GitAction.ginit) {
-            if repo.execute(GitAction.add) {
-                if repo.execute(GitAction.commit) {
-                    print("Successfully setup local git repo for project \(projectName). 🎉")
-                } else {
-                    print("❗️ Failed to commit initial code.")
-                    return false
-                }
-            } else {
-                print("❗️ Failed to add code to local git repo.")
-                return false
-            }
-        } else {
+
+        guard repo.execute(GitAction.ginit) else {
             print("❗️ Failed to initialize local git repo.")
             return false
         }
+
+        guard repo.execute(GitAction.add) else {
+            print("❗️ Failed to add code to local git repo.")
+            return false
+        }
+
+        guard repo.execute(GitAction.commit) else {
+            print("❗️ Failed to commit initial code.")
+            return false
+        }
+        print("Successfully setup local git repo for project \(projectName). 🎉")
+
         // Prompt if remote exists.
         let remoteRepo = Input.awaitInput(message: "❓ Enter the remote repo for \(projectName). Press <enter> to skip.")
         if remoteRepo != "" {
             repo.remoteURL = URL(string: remoteRepo)
             
-            if repo.execute(GitAction.remoteAdd) {
-                if repo.execute(GitAction.push) {
-                    print("Successfully pushed to git remote for project \(projectName). 🎉")
-                } else {
-                    print("❗️ Failed to push to remote git repo.")
-                    return false
-                }
-            } else {
+            guard repo.execute(GitAction.remoteAdd) else {
                 print("❗️ Failed to add remote git repo.")
                 return false
             }
+            
+            guard repo.execute(GitAction.push) else {
+                print("❗️ Failed to push to remote git repo.")
+                return false
+            }
+            print("Successfully pushed to git remote for project \(projectName). 🎉")
         }
         
         // Setup remote if it doesn't.
