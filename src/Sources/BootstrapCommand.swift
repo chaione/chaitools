@@ -15,7 +15,7 @@ protocol BootstrapConfig {
     func bootstrap(_ projectDirURL : URL) -> Bool
 }
 
-
+@available(OSX 10.12, *)
 enum TechStack : String {
     case android
     

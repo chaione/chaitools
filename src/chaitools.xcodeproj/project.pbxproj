@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		1F01EFAF1E88F627006A2DE3 /* BootstrapCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F01EFAE1E88F627006A2DE3 /* BootstrapCommand.swift */; };
 		1F0EE5101E8402E9005331A0 /* FileOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0EE50F1E8402E9005331A0 /* FileOps.swift */; };
-		1FF4FDD21E8BA53C007CDF35 /* AndroidBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF4FDD11E8BA53C007CDF35 /* AndroidBootstrap.swift */; };
+		1F7FE0451E8CE48300D91EC4 /* AndroidBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF4FDD11E8BA53C007CDF35 /* AndroidBootstrap.swift */; };
 		981A52C91DD242A700C5CA95 /* TemplatesCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */; };
 		981A52CB1DD242AE00C5CA95 /* URL+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */; };
 		981A52CC1DD242B100C5CA95 /* String+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */; };
@@ -362,7 +362,6 @@
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/CommandSignature.swift" /* CommandSignature.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/Extensions.swift" /* Extensions.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/HelpCommand.swift" /* HelpCommand.swift in Sources */,
-				1FF4FDD21E8BA53C007CDF35 /* AndroidBootstrap.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/Input.swift" /* Input.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/LightweightCommand.swift" /* LightweightCommand.swift in Sources */,
 				"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/OptionParser.swift" /* OptionParser.swift in Sources */,
@@ -381,6 +380,7 @@
 			files = (
 				9894135B1DD2674F0059DF5A /* GitRepo.swift in Sources */,
 				981A52C91DD242A700C5CA95 /* TemplatesCommand.swift in Sources */,
+				1F7FE0451E8CE48300D91EC4 /* AndroidBootstrap.swift in Sources */,
 				1F0EE5101E8402E9005331A0 /* FileOps.swift in Sources */,
 				981A52CC1DD242B100C5CA95 /* String+ChaiTools.swift in Sources */,
 				981A52CB1DD242AE00C5CA95 /* URL+ChaiTools.swift in Sources */,
