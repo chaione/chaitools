@@ -84,7 +84,6 @@ class FileOps: NSObject {
                                                                     create: true)
             return temporaryDirectoryURL
         } catch {
-            // handle the error
             print("❗️ Failed to create temporary directory.")
         }
         return nil
