@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftCLI
 
 enum Verbosity : Int {
     case silent = 0
@@ -16,6 +17,20 @@ enum Verbosity : Int {
 }
 
 struct MessageTools {
+    
+    static func addVerbosityOptions(options: OptionRegistry) {
+        options.add(flags: ["-v", "--verbose"], usage: "chaitools is more verbose while it executes") {
+            MessageTools.verbosity = .verbose
+        }
+        
+        options.add(flags: ["-d", "--debug"], usage: "chaitools displays debugging statements while executing") {
+            MessageTools.verbosity = .debug
+        }
+        
+        options.add(flags: ["-s", "--silent"], usage: "chaitools runs with minimum statements printed") {
+            MessageTools.verbosity = .silent
+        }
+    }
     
     /// The current verbosity level for the system. Defaults to normal.
     static var verbosity = Verbosity.normal

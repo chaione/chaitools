@@ -29,11 +29,15 @@ struct TemplatesSet {
 }
 
 @available(OSX 10.12, *)
-class TemplatesCommand: Command {
+class TemplatesCommand: OptionCommand {
 
     var name: String = "templates"
     var signature: String = "<action>"
     var shortDescription: String = "Install, update, or remove Xcode templates"
+    
+    func setupOptions(options: OptionRegistry) {
+        MessageTools.addVerbosityOptions(options: options)
+    }
 
     private var templates: [TemplatesSet] = []
 
@@ -48,7 +52,7 @@ class TemplatesCommand: Command {
     func execute(arguments: CommandArguments) throws {
 
         guard let action = TemplateActions(rawValue: arguments.requiredArgument("action")) else {
-            return print("❗️ \"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.")
+            return MessageTools.error("\"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.", level: .silent)
         }
 
         switch action {
@@ -59,42 +63,42 @@ class TemplatesCommand: Command {
     }
 
     private func installTemplates() {
-        print("Attempting to install Xcode templates...")
+        MeesageTools.state("Attempting to install Xcode templates...")
         var status = true
         for template in templates {
             status = status && template.repo.execute(GitAction.clone)
         }
         if status {
-            print("Successfully installed Xcode templates. 🎉")
+            MessageTools.exclaim("Successfully installed Xcode templates.")
         } else {
-            print("❗️ Xcode template installation failed.")
+            MessageTools.error("Xcode template installation failed.")
         }
     }
 
     private func updateTemplates() {
-        print("Attempting to update Xcode templates...")
+        MessageTools.state("Attempting to update Xcode templates...")
         var status = true
         for template in templates {
             status = status && template.repo.execute(GitAction.pull)
         }
         if status {
-            print("Successfully updated Xcode templates. 🎉")
+            MessageTools.exclaim("Successfully updated Xcode templates.")
         } else {
-            print("❗️ Xcode template update failed.")
+            MessageTools.error("Xcode template update failed.")
         }
     }
 
     private func removeTemplates() {
 
         var status = true
-        print("Attempting to remove the templates directory...")
+        MessageTools.state("Attempting to remove the templates directory...")
         for template in templates {
             status = status && FileOps.defaultOps.removeDirectory(template.localDir)
         }
         if status {
-            print("Successfully removed Xcode templates. 🎉")
+            MessageTools.exclaim("Successfully removed Xcode templates.")
         } else {
-            print("❗️ Xcode template removal failed.")
+            MessageTools.error("Xcode template removal failed.")
         }
     }
 }

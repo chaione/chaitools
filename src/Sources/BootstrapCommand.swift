@@ -46,17 +46,7 @@ class BootstrapCommand: OptionCommand {
     var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
     
     func setupOptions(options: OptionRegistry) {
-        options.add(flags: ["-v", "--verbose"], usage: "bootstrap is more verbose while it executes") {
-            MessageTools.verbosity = .verbose
-        }
-        
-        options.add(flags: ["-d", "--debug"], usage: "bootstrap displays debugging statements while executing") {
-            MessageTools.verbosity = .debug
-        }
-        
-        options.add(flags: ["-s", "--silent"], usage: "bootstrap runs with minimum statements printed") {
-            MessageTools.verbosity = .silent
-        }
+        MessageTools.addVerbosityOptions(options: options)
     }
 
     private var projectName: String = ""
@@ -224,7 +214,7 @@ class BootstrapCommand: OptionCommand {
         MessageTools.exclaim("Successfully setup local git repo for project \(projectName).")
 
         // Prompt if remote exists.
-        let remoteRepo = Input.awaitInput(message: "❓ Enter the remote repo for \(projectName). Press <enter> to skip.")
+        let remoteRepo = Input.awaitInput(message: "❓  Enter the remote repo for \(projectName). Press <enter> to skip.")
         if remoteRepo != "" {
             repo.remoteURL = URL(string: remoteRepo)
 
