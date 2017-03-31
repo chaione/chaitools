@@ -15,24 +15,25 @@ struct AndroidBootstrap: BootstrapConfig {
 
         // Download jump start to temp folder
         guard let tempDir = FileOps.defaultOps.createTempDirectory() else {
-            print("❗️ Failed to create temp directory")
+            MessageTools.error("Failed to create temp directory.", level: .verbose)
             return false
         }
         let jumpstartRepoURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")
         let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: jumpstartRepoURL)
 
-        print("Androids wear 🚀  boots!")
+        MessageTools.state("Androids wear 🚀  boots!")
         guard repo.execute(GitAction.clone) else {
-            print("❗️ Failed to download jumpstart project. Do you have permission to access it?")
+            MessageTools.error("Failed to download jumpstart project. Do you have permission to access it?")
             return false
         }
 
-        print("Setting up Android jumpstart...")
+        MessageTools.state("Setting up Android jumpstart...")
         // move .gitignore to root of project
         do {
             try FileManager.default.copyItem(at: tempDir.appendingPathComponent(".gitignore"), to: projectDirURL.appendingPathComponent(".gitignore"))
         } catch {
-            print("❗️ Failed to move jumpstart files! \(error)")
+            MessageTools.error("Failed to move jumpstart files!")
+            MessageTools.error("Failed to move .gitingore with error \(error).", level: .verbose)
             return false
         }
 
@@ -47,9 +48,11 @@ struct AndroidBootstrap: BootstrapConfig {
             }
 
         } catch {
-            print("❗️ Failed to move jumpstart files! \(error)")
+            MessageTools.error("Failed to move jumpstart files!")
+            MessageTools.error("Failed to move project files with error \(error).", level: .verbose)
+            return false
         }
-        print("Android jumpstart successfully created! 🎉")
+        MessageTools.exclaim("Android jumpstart successfully created!")
 
         return true
     }

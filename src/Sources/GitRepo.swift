@@ -61,7 +61,11 @@ class GitRepo {
     func execute(_ action: GitAction) -> Bool {
 
         // Spawn a new process before executing as you can only execute them once
+        let outputPipe = Pipe()
+        let errorPipe = Pipe()
         let process = Process(withLaunchPath: launchPath, currentDirectoryPath: localURL.path)
+        process.standardOutput = outputPipe
+        process.standardError = errorPipe
 
         // It would be nice to check if a repo is clean, and then clean if necessary.
         // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`
@@ -73,13 +77,26 @@ class GitRepo {
 
         process.arguments = action.arguments(withRemoteURL: remoteURL)
 
-        print("Running `git \(action.rawValue)`...")
+        MessageTools.state("Running `git \(action.rawValue)`...", level: .verbose)
         process.execute()
         if process.terminationStatus == 0 {
-            print("`git \(action.rawValue)` was a success! 🎉")
+            
+            let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
+            let output = String(data: data, encoding: String.Encoding.utf8)
+            MessageTools.state(output!, level: .debug)
+            MessageTools.exclaim("`git \(action.rawValue)` was a success!", level: .verbose)
+            
             return true
         } else {
-            print("❗️ `git \(action.rawValue)` failed! Sad!")
+            let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
+            let output = String(data: outputData, encoding: String.Encoding.utf8)
+            MessageTools.state(output!, level: .debug)
+            
+            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+            let errorOut = String(data: errorData, encoding: String.Encoding.utf8)
+            MessageTools.state(errorOut!, level: .debug)
+            
+            MessageTools.error("`git \(action.rawValue)` failed! Sad!", level: .verbose)
             return false
         }
     }
@@ -95,22 +112,22 @@ class GitRepo {
     private func isSafeToProceed(forAction action: GitAction) -> Bool {
 
         if (action == .ginit) && (localURL.isGitRepo()) {
-            print("❗️ Can't initialize a git repo that's already initialized.")
+            MessageTools.error("Can't initialize a git repo that's already initialized.", level: .verbose)
             return false
         }
 
         if remoteURL == nil && (action == .pull || action == .clone) {
-            print("❗️ Can't perform \(action) when missing remote URL.")
+            MessageTools.error("Can't perform \(action) when missing remote URL.", level: .verbose)
             return false
         }
 
         if (action == .pull) && (!localURL.isGitRepo()) {
-            print("A git repo can't be updated if it doesn't exist. 🤔")
+            MessageTools.state("A git repo can't be updated if it doesn't exist. 🤔", level: .verbose)
             return false
         }
 
         if (action == .clone) && (!localURL.isEmpty()) {
-            print("❗️ Can't clone a git repo into a non-empty directory.")
+            MessageTools.error("Can't clone a git repo into a non-empty directory.", level: .verbose)
             return false
         }
 
