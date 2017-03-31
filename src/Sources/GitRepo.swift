@@ -11,11 +11,29 @@ import Foundation
 enum GitAction: String {
     case clone
     case pull
+    case ginit = "init"
+    case add
+    case commit
+    case remoteAdd = "remote"
+    case push
 
-    func arguments(withRemoteURL url: String) -> [String] {
-        switch self {
-        case .clone: return [String(describing: self), url, "."]
-        case .pull: return [String(describing: self), url]
+    func arguments(withRemoteURL url: URL?) -> [String] {
+        if let urlPath = url?.path {
+            switch self {
+            case .clone: return [self.rawValue, urlPath, "."]
+            case .pull: return [self.rawValue, urlPath]
+            case .remoteAdd: return ["remote", "add", "origin", urlPath]
+            case .push: return [self.rawValue, "-u", "origin", "master"]
+            default: return []
+            }
+
+        } else {
+            switch self {
+            case .ginit: return [self.rawValue]
+            case .add: return [self.rawValue, "."]
+            case .commit: return [self.rawValue, "-m \"Initial commit by chaitools\""]
+            default: return []
+            }
         }
     }
 }
@@ -24,16 +42,16 @@ enum GitAction: String {
 class GitRepo {
 
     var localURL: URL
-    var remoteURL: URL
-    private let process: Process
+    var remoteURL: URL?
+
     private let launchPath = "/usr/bin/git"
     private let outputPipe = Pipe()
     private let outputText = String()
 
-    init(withLocalURL localURL: URL, andRemoteURL remoteURL: URL) {
+    init(withLocalURL localURL: URL, andRemoteURL remoteURL: URL? = nil) {
+
         self.localURL = localURL
         self.remoteURL = remoteURL
-        process = Process(withLaunchPath: launchPath, currentDirectoryPath: localURL.path)
     }
 
     /// Execute the git action
@@ -41,7 +59,9 @@ class GitRepo {
     /// - Parameter action: The action to be executed, defined by the GitAction enum
     /// - Returns: True if action succeeded, false otherwise
     func execute(_ action: GitAction) -> Bool {
-        process.arguments = action.arguments(withRemoteURL: remoteURL.path)
+
+        // Spawn a new process before executing as you can only execute them once
+        let process = Process(withLaunchPath: launchPath, currentDirectoryPath: localURL.path)
 
         // It would be nice to check if a repo is clean, and then clean if necessary.
         // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`
@@ -51,13 +71,15 @@ class GitRepo {
             return false
         }
 
-        print("Running `git \(action) \(process.arguments![1])`...")
+        process.arguments = action.arguments(withRemoteURL: remoteURL)
+
+        print("Running `git \(action.rawValue)`...")
         process.execute()
         if process.terminationStatus == 0 {
-            print("`git \(action)` was a success! 🎉")
+            print("`git \(action.rawValue)` was a success! 🎉")
             return true
         } else {
-            print("❗️ `git \(action)` failed! Sad!")
+            print("❗️ `git \(action.rawValue)` failed! Sad!")
             return false
         }
     }
@@ -71,6 +93,17 @@ class GitRepo {
     }
 
     private func isSafeToProceed(forAction action: GitAction) -> Bool {
+
+        if (action == .ginit) && (localURL.isGitRepo()) {
+            print("❗️ Can't initialize a git repo that's already initialized.")
+            return false
+        }
+
+        if remoteURL == nil && (action == .pull || action == .clone) {
+            print("❗️ Can't perform \(action) when missing remote URL.")
+            return false
+        }
+
         if (action == .pull) && (!localURL.isGitRepo()) {
             print("A git repo can't be updated if it doesn't exist. 🤔")
             return false
