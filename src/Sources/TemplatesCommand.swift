@@ -34,7 +34,7 @@ class TemplatesCommand: OptionCommand {
     var name: String = "templates"
     var signature: String = "<action>"
     var shortDescription: String = "Install, update, or remove Xcode templates"
-    
+
     func setupOptions(options: OptionRegistry) {
         MessageTools.addVerbosityOptions(options: options)
     }
@@ -63,7 +63,7 @@ class TemplatesCommand: OptionCommand {
     }
 
     private func installTemplates() {
-        MeesageTools.state("Attempting to install Xcode templates...")
+        MessageTools.state("Attempting to install Xcode templates...")
         var status = true
         for template in templates {
             status = status && template.repo.execute(GitAction.clone)

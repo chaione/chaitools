@@ -44,7 +44,7 @@ class BootstrapCommand: OptionCommand {
     var name: String = "bootstrap"
     var signature: String = "[<stack>]"
     var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
-    
+
     func setupOptions(options: OptionRegistry) {
         MessageTools.addVerbosityOptions(options: options)
     }
@@ -68,7 +68,7 @@ class BootstrapCommand: OptionCommand {
 
             guard let stack = TechStack(rawValue: stackName) else {
                 MessageTools.instruct("\(stackName) is an unrecognized tech stack.",
-                    level: .silent)
+                                      level: .silent)
                 TechStack.supportedStacks()
                 MessageTools.state("Please try again with one of those tech stacks.")
                 MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)

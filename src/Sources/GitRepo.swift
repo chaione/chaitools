@@ -80,22 +80,22 @@ class GitRepo {
         MessageTools.state("Running `git \(action.rawValue)`...", level: .verbose)
         process.execute()
         if process.terminationStatus == 0 {
-            
+
             let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
             let output = String(data: data, encoding: String.Encoding.utf8)
             MessageTools.state(output!, level: .debug)
             MessageTools.exclaim("`git \(action.rawValue)` was a success!", level: .verbose)
-            
+
             return true
         } else {
             let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
             let output = String(data: outputData, encoding: String.Encoding.utf8)
             MessageTools.state(output!, level: .debug)
-            
+
             let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
             let errorOut = String(data: errorData, encoding: String.Encoding.utf8)
             MessageTools.state(errorOut!, level: .debug)
-            
+
             MessageTools.error("`git \(action.rawValue)` failed! Sad!", level: .verbose)
             return false
         }
