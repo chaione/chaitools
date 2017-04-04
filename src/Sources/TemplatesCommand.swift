@@ -29,15 +29,15 @@ struct TemplatesSet {
 }
 
 @available(OSX 10.12, *)
-class TemplatesCommand: Command {
+public class TemplatesCommand: Command {
 
-    var name: String = "templates"
-    var signature: String = "<action>"
-    var shortDescription: String = "Install, update, or remove Xcode templates"
+    public var name: String = "templates"
+    public var signature: String = "<action>"
+    public var shortDescription: String = "Install, update, or remove Xcode templates"
 
     private var templates: [TemplatesSet] = []
 
-    init() {
+    public init() {
 
         templates.append(TemplatesSet(repoURL: URL(string: "git@bitbucket.org:chaione/chaitemplates.git")!,
                                       dir: FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/Templates/File Templates/ChaiOne", isDirectory: true)))
@@ -45,7 +45,7 @@ class TemplatesCommand: Command {
                                       dir: FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/Templates/Project Templates/ChaiOne", isDirectory: true)))
     }
 
-    func execute(arguments: CommandArguments) throws {
+    public func execute(arguments: CommandArguments) throws {
 
         guard let action = TemplateActions(rawValue: arguments.requiredArgument("action")) else {
             return print("❗️ \"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.")

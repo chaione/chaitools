@@ -7,16 +7,18 @@
 //
 
 import Foundation
+import ChaiTools
 import SwiftCLI
 
 CLI.setup(name: "chaitools", version: "0.3.0", description: "Brew some awesome apps with ChaiTools")
 
 if #available(OSX 10.12, *) {
+
     CLI.register(command: TemplatesCommand())
     CLI.register(command: BootstrapCommand())
 } else {
     print("macOS 10.12 is required to manage Xcode templates.")
 }
 
-let result = CLI.go()
+let result = CLI.debugGo(with: "bootstrap android")//.go()
 exit(result)

@@ -10,15 +10,17 @@ import Foundation
 import SwiftCLI
 
 @available(OSX 10.12, *)
-class BootstrapCommand: Command {
+public class BootstrapCommand: Command {
 
-    var name: String = "bootstrap"
-    var signature: String = "[<stack>]"
-    var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
+    public var name: String = "bootstrap"
+    public var signature: String = "[<stack>]"
+    public var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
 
     private var projectName: String = ""
 
-    func execute(arguments _: CommandArguments) throws {
+    public init() {}
+    
+    public func execute(arguments _: CommandArguments) throws {
         var success = true
 
         print("These boots are made for walking.")

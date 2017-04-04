@@ -70,9 +70,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "OBJ_156"
-               BuildableName = "chaitools"
-               BlueprintName = "chaitools"
+               BlueprintIdentifier = "______Target_chaitools"
+               BuildableName = "chaitools-cli"
+               BlueprintName = "chaitools-cli"
                ReferencedContainer = "container:chaitools.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -82,9 +82,19 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "OBJ_84"
+            BuildableName = "StringScanner.framework"
+            BlueprintName = "StringScanner"
+            ReferencedContainer = "container:chaitools.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -98,15 +108,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "OBJ_84"
-            BuildableName = "StringScanner.framework"
-            BlueprintName = "StringScanner"
+            BlueprintIdentifier = "______Target_chaitools"
+            BuildableName = "chaitools-cli"
+            BlueprintName = "chaitools-cli"
             ReferencedContainer = "container:chaitools.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -116,6 +127,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "______Target_chaitools"
+            BuildableName = "chaitools-cli"
+            BlueprintName = "chaitools-cli"
+            ReferencedContainer = "container:chaitools.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
