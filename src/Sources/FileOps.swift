@@ -19,7 +19,7 @@ class FileOps: NSObject {
 
     /// Depending if the environment is set to DEBUG, method will return the appropriate `URL` object
     ///
-    /// - Returns: Returns `URL` object.
+    /// - Returns: `URL` object.
     func outputURLDirectory() -> URL {
         var outputDirectoryString: String! {
             // Get Bundle for Framework, not main app

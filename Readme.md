@@ -23,7 +23,7 @@ Running `bootstrap <techstack>` will run the bootstrapper specific for that tech
 
 ## Development
 
-During development any output from commands such as `bootstrap android`, `bootstrap ios` can be found inside of `src/output`. If the `src/output` directory does not exist, `chaitools` will create it.
+During development, any output from commands such as `bootstrap android`, `bootstrap ios` can be found inside of `src/output`. If the `src/output` directory does not exist, `chaitools` will create it.
 
 ### Bootstrap Android
 
