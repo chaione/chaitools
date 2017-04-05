@@ -522,6 +522,7 @@
 /* Begin XCBuildConfiguration section */
 		1F803B931E942679006B454F /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = __PBXFileRef_chaitools.xcodeproj/Configs/Project.xcconfig /* chaitools.xcodeproj/Configs/Project.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;

@@ -17,6 +17,23 @@ class FileOps: NSObject {
         super.init()
     }
 
+    /// Depending if the environment is set to DEBUG, method will return the appropriate `URL` object
+    ///
+    /// - Returns: Returns `URL` object.
+    func outputURLDirectory() -> URL {
+        var outputDirectoryString: String! {
+            // Get Bundle for Framework, not main app
+            guard let path = Bundle(for: FileOps.self).path(forResource: "Info", ofType: "plist"),
+            // Read `OutputDirectory` from plist/xcconfig file
+            let debugDirectory = NSDictionary(contentsOfFile: path)?["OutputDirectory"] as? String
+                else { return FileManager.default.currentDirectoryPath }
+
+            return debugDirectory
+        }
+
+        return URL(fileURLWithPath: outputDirectoryString)
+    }
+
     /// Takes a subpath and returns a full path going to the user's Library directory.
     ///
     /// - Parameter directory: A library subpath
@@ -94,7 +111,7 @@ class FileOps: NSObject {
     /// - Parameters:
     ///   - name: The name of the subdirectory to create
     ///   - parent: The parent directory. Defaults to the current directory.
-    func createSubDirectory(_ name: String, parent: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)) {
+    func createSubDirectory(_ name: String, parent: URL = FileOps.defaultOps.outputURLDirectory()) {
         // create substructure for project
         do {
             try FileManager.default.createDirectory(at: parent.appendingPathComponent(name, isDirectory: true), withIntermediateDirectories: true)

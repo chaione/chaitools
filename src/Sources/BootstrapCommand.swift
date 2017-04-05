@@ -39,13 +39,13 @@ enum TechStack: String {
 }
 
 @available(OSX 10.12, *)
-class BootstrapCommand: OptionCommand {
+public class BootstrapCommand: OptionCommand {
 
     public var name: String = "bootstrap"
     public var signature: String = "[<stack>]"
     public var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
 
-    func setupOptions(options: OptionRegistry) {
+    public func setupOptions(options: OptionRegistry) {
         MessageTools.addVerbosityOptions(options: options)
     }
 
@@ -60,7 +60,7 @@ class BootstrapCommand: OptionCommand {
     ///   * specific boot strapping actions for a given tech stack
     ///   * git configuration for the bootstrapped folders
     /// - Parameter arguments: The arguments passed to the command
-    func execute(arguments: CommandArguments) throws {
+    public func execute(arguments: CommandArguments) throws {
 
         var bootstrapper: BootstrapConfig?
 
@@ -127,7 +127,7 @@ class BootstrapCommand: OptionCommand {
 
         projectName = Input.awaitInput(message: "❓  What is the name of the project?")
 
-        let projectDirURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent(projectName, isDirectory: true)
+        let projectDirURL = FileOps.defaultOps.outputURLDirectory().appendingPathComponent(projectName, isDirectory: true)
 
         // Do not overwrite existing projects
         guard !FileOps.defaultOps.doesDirectoryExist(projectDirURL) else {

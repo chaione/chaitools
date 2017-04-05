@@ -20,5 +20,5 @@ if #available(OSX 10.12, *) {
     print("macOS 10.12 is required to manage Xcode templates or use bootstrapper.")
 }
 
-let result = CLI.debugGo(with: "bootstrap android")//.go()
+let result = CLI.go()
 exit(result)

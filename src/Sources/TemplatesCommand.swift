@@ -35,7 +35,7 @@ public class TemplatesCommand: OptionCommand {
     public var signature: String = "<action>"
     public var shortDescription: String = "Install, update, or remove Xcode templates"
 
-    func setupOptions(options: OptionRegistry) {
+    public func setupOptions(options: OptionRegistry) {
         MessageTools.addVerbosityOptions(options: options)
     }
 
