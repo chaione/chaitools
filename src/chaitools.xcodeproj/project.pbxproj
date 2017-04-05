@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1F01EFAF1E88F627006A2DE3 /* BootstrapCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F01EFAE1E88F627006A2DE3 /* BootstrapCommand.swift */; };
 		1F0EE5101E8402E9005331A0 /* FileOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0EE50F1E8402E9005331A0 /* FileOps.swift */; };
+		1F7FE0451E8CE48300D91EC4 /* AndroidBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF4FDD11E8BA53C007CDF35 /* AndroidBootstrap.swift */; };
 		981A52C91DD242A700C5CA95 /* TemplatesCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */; };
 		981A52CB1DD242AE00C5CA95 /* URL+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */; };
 		981A52CC1DD242B100C5CA95 /* String+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */; };
@@ -59,6 +60,7 @@
 /* Begin PBXFileReference section */
 		1F01EFAE1E88F627006A2DE3 /* BootstrapCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BootstrapCommand.swift; sourceTree = "<group>"; };
 		1F0EE50F1E8402E9005331A0 /* FileOps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileOps.swift; sourceTree = "<group>"; };
+		1FF4FDD11E8BA53C007CDF35 /* AndroidBootstrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AndroidBootstrap.swift; sourceTree = "<group>"; };
 		9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplatesCommand.swift; sourceTree = "<group>"; };
 		982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+ChaiTools.swift"; sourceTree = "<group>"; };
 		982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+ChaiTools.swift"; sourceTree = "<group>"; };
@@ -119,6 +121,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1FF4FDD01E8BA515007CDF35 /* Bootstrappers */ = {
+			isa = PBXGroup;
+			children = (
+				1FF4FDD11E8BA53C007CDF35 /* AndroidBootstrap.swift */,
+			);
+			name = Bootstrappers;
+			sourceTree = "<group>";
+		};
 		981136411DD38AF200CEE7B3 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
@@ -230,6 +240,7 @@
 		"_______Group_chaitools" /* chaitools */ = {
 			isa = PBXGroup;
 			children = (
+				1FF4FDD01E8BA515007CDF35 /* Bootstrappers */,
 				981136421DD38B0100CEE7B3 /* Extensions */,
 				981136431DD38B0800CEE7B3 /* Helpers */,
 				981136411DD38AF200CEE7B3 /* Commands */,
@@ -369,6 +380,7 @@
 			files = (
 				9894135B1DD2674F0059DF5A /* GitRepo.swift in Sources */,
 				981A52C91DD242A700C5CA95 /* TemplatesCommand.swift in Sources */,
+				1F7FE0451E8CE48300D91EC4 /* AndroidBootstrap.swift in Sources */,
 				1F0EE5101E8402E9005331A0 /* FileOps.swift in Sources */,
 				981A52CC1DD242B100C5CA95 /* String+ChaiTools.swift in Sources */,
 				981A52CB1DD242AE00C5CA95 /* URL+ChaiTools.swift in Sources */,
