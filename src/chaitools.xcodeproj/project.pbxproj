@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1F3511B11E942C37005E3068 /* SwiftCLI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "_____Product_SwiftCLI" /* SwiftCLI.framework */; };
+		1F7F93291E95864700B1301C /* AndroidBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF4FDD11E8BA53C007CDF35 /* AndroidBootstrap.swift */; };
+		1F7F932A1E95865900B1301C /* MessageTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7FE0461E8E5D1900D91EC4 /* MessageTools.swift */; };
 		1F803B961E94268A006B454F /* Process+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9894135C1DD376320059DF5A /* Process+ChaiTools.swift */; };
 		1F803B971E94268A006B454F /* String+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */; };
 		1F803B981E94268A006B454F /* URL+ChaiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */; };
@@ -74,9 +76,11 @@
 /* Begin PBXFileReference section */
 		1F01EFAE1E88F627006A2DE3 /* BootstrapCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BootstrapCommand.swift; sourceTree = "<group>"; };
 		1F0EE50F1E8402E9005331A0 /* FileOps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileOps.swift; sourceTree = "<group>"; };
+		1F7FE0461E8E5D1900D91EC4 /* MessageTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTools.swift; sourceTree = "<group>"; };
 		1F803B8E1E942679006B454F /* ChaiTools.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ChaiTools.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F803B901E942679006B454F /* ChaiTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChaiTools.h; sourceTree = "<group>"; };
 		1F803B911E942679006B454F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1FF4FDD11E8BA53C007CDF35 /* AndroidBootstrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AndroidBootstrap.swift; sourceTree = "<group>"; };
 		9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplatesCommand.swift; sourceTree = "<group>"; };
 		982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+ChaiTools.swift"; sourceTree = "<group>"; };
 		982B1D051DD12A7100B7A4A6 /* URL+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+ChaiTools.swift"; sourceTree = "<group>"; };
@@ -154,6 +158,14 @@
 			path = ChaiTools;
 			sourceTree = "<group>";
 		};
+		1FF4FDD01E8BA515007CDF35 /* Bootstrappers */ = {
+			isa = PBXGroup;
+			children = (
+				1FF4FDD11E8BA53C007CDF35 /* AndroidBootstrap.swift */,
+			);
+			name = Bootstrappers;
+			sourceTree = "<group>";
+		};
 		981136411DD38AF200CEE7B3 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
@@ -178,6 +190,7 @@
 			children = (
 				989413591DD265540059DF5A /* GitRepo.swift */,
 				1F0EE50F1E8402E9005331A0 /* FileOps.swift */,
+				1F7FE0461E8E5D1900D91EC4 /* MessageTools.swift */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -267,6 +280,7 @@
 		"_______Group_chaitools" /* chaitools */ = {
 			isa = PBXGroup;
 			children = (
+				1FF4FDD01E8BA515007CDF35 /* Bootstrappers */,
 				981136421DD38B0100CEE7B3 /* Extensions */,
 				981136431DD38B0800CEE7B3 /* Helpers */,
 				981136411DD38AF200CEE7B3 /* Commands */,
@@ -427,6 +441,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F7F932A1E95865900B1301C /* MessageTools.swift in Sources */,
+				1F7F93291E95864700B1301C /* AndroidBootstrap.swift in Sources */,
 				1F803B961E94268A006B454F /* Process+ChaiTools.swift in Sources */,
 				1F803B9A1E94268A006B454F /* FileOps.swift in Sources */,
 				1F803B981E94268A006B454F /* URL+ChaiTools.swift in Sources */,
