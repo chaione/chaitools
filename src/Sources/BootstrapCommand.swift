@@ -31,19 +31,23 @@ enum TechStack: String {
 
     /// Prints all supported TechStacks
     static func supportedStacks() {
-        print("Current supported tech stacks are:")
+        MessageTools.state("Current supported tech stacks are:")
         for stack in allValues {
-            print("- \(stack)")
+            MessageTools.state("- \(stack)")
         }
     }
 }
 
 @available(OSX 10.12, *)
-class BootstrapCommand: Command {
+class BootstrapCommand: OptionCommand {
 
     var name: String = "bootstrap"
     var signature: String = "[<stack>]"
     var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
+
+    func setupOptions(options: OptionRegistry) {
+        MessageTools.addVerbosityOptions(options: options)
+    }
 
     private var projectName: String = ""
 
@@ -58,26 +62,27 @@ class BootstrapCommand: Command {
 
         var bootstrapper: BootstrapConfig?
 
-        print("These boots are made for walking.")
+        MessageTools.state("These boots are made for walking.", level: .silent)
 
         if let stackName = arguments.optionalArgument("stack") {
 
             guard let stack = TechStack(rawValue: stackName) else {
-                print("💁  \(stackName) is an unrecognized tech stack.")
+                MessageTools.instruct("\(stackName) is an unrecognized tech stack.",
+                                      level: .silent)
                 TechStack.supportedStacks()
-                print("Please try again with one of those tech stacks.")
-                print("See you later, Space Cowboy! 💫")
+                MessageTools.state("Please try again with one of those tech stacks.")
+                MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
                 return
             }
 
             bootstrapper = stack.bootstrapper()
 
         } else {
-            print("💁  chaitools bootstrap works best with a tech stack.")
+            MessageTools.instruct("chaitools bootstrap works best with a tech stack.", level: .silent)
             TechStack.supportedStacks()
 
             guard Input.awaitYesNoInput(message: "❓  Should we setup a base project structure?") else {
-                print("See you later, Space Cowboy! 💫")
+                MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
                 return
             }
 
@@ -85,28 +90,28 @@ class BootstrapCommand: Command {
         }
 
         guard let projectURL = setupDirectoryStructure() else {
-            print("Bootstrapper completed with failures. 😭")
+            MessageTools.state("Bootstrapper completed with failures. 😭", level: .silent)
             return
         }
 
         if let bootstrapper = bootstrapper {
             guard bootstrapper.bootstrap(projectURL) else {
-                print("Bootstrapper completed with failures. 😭")
+                MessageTools.state("Bootstrapper completed with failures. 😭", level: .silent)
                 return
             }
         }
 
         guard setupReadMeDefaults(projectURL) else {
-            print("Bootstrapper completed with failures. 😭")
+            MessageTools.state("Bootstrapper completed with failures. 😭", level: .silent)
             return
         }
 
         guard setupGitRepo(projectURL) else {
-            print("Bootstrapper completed with failures. 😭")
+            MessageTools.state("Bootstrapper completed with failures. 😭", level: .silent)
             return
         }
 
-        print("Boot straps pulled. Time to start walking. 😎")
+        MessageTools.state("Boot straps pulled. Time to start walking. 😎", level: .silent)
     }
 
     /// Setups the expected project folder structure:
@@ -124,18 +129,18 @@ class BootstrapCommand: Command {
 
         // Do not overwrite existing projects
         guard !FileOps.defaultOps.doesDirectoryExist(projectDirURL) else {
-            print("❗️ Project \(projectName) already exists at this location.")
+            MessageTools.error("Project \(projectName) already exists at this location.")
             return nil
         }
 
         // create directory based on project name
-        print("Creating new project directory for project \(projectName)...")
+        MessageTools.state("Creating new project directory for project \(projectName)...")
         guard FileOps.defaultOps.ensureDirectory(projectDirURL) else {
-            print("❗️ Project directory creation failed.")
+            MessageTools.error("Project directory creation failed.")
             return nil
         }
 
-        print("Successfully created \(projectName) project directory. 🎉")
+        MessageTools.exclaim("Successfully created \(projectName) project directory.")
         FileOps.defaultOps.createSubDirectory("src", parent: projectDirURL)
         FileOps.defaultOps.createSubDirectory("scripts", parent: projectDirURL)
         FileOps.defaultOps.createSubDirectory("tests", parent: projectDirURL)
@@ -163,7 +168,7 @@ class BootstrapCommand: Command {
         status = status && setupReadMePlaceholders(projectURL.appendingPathComponent("docs", isDirectory: true))
 
         if !status {
-            print("❗️ Failed to create ReadMe files in all project directories.")
+            MessageTools.error("Failed to create ReadMe files in all project directories.")
         }
 
         return status
@@ -175,7 +180,8 @@ class BootstrapCommand: Command {
                 return FileManager.default.createFile(atPath: sourceURL.appendingPathComponent("ReadMe.md").path, contents: "ReadMe added by chaitools bootstrap \(CLI.version) to maintain directory structure.".data(using: .utf8))
             }
         } catch {
-            print("Failed to setup ReadMe")
+            MessageTools.error("Failed to setup ReadMe in \(sourceURL)", level: .verbose)
+            MessageTools.error("Error creating ReadMe: \(error)", level: .debug)
             return false
         }
 
@@ -192,36 +198,36 @@ class BootstrapCommand: Command {
         let repo = GitRepo(withLocalURL: projectURL)
 
         guard repo.execute(GitAction.ginit) else {
-            print("❗️ Failed to initialize local git repo.")
+            MessageTools.error("Failed to initialize local git repo.")
             return false
         }
 
         guard repo.execute(GitAction.add) else {
-            print("❗️ Failed to add code to local git repo.")
+            MessageTools.error("Failed to add code to local git repo.")
             return false
         }
 
         guard repo.execute(GitAction.commit) else {
-            print("❗️ Failed to commit initial code.")
+            MessageTools.error("Failed to commit initial code.")
             return false
         }
-        print("Successfully setup local git repo for project \(projectName). 🎉")
+        MessageTools.exclaim("Successfully setup local git repo for project \(projectName).")
 
         // Prompt if remote exists.
-        let remoteRepo = Input.awaitInput(message: "❓ Enter the remote repo for \(projectName). Press <enter> to skip.")
+        let remoteRepo = Input.awaitInput(message: "❓  Enter the remote repo for \(projectName). Press <enter> to skip.")
         if remoteRepo != "" {
             repo.remoteURL = URL(string: remoteRepo)
 
             guard repo.execute(GitAction.remoteAdd) else {
-                print("❗️ Failed to add remote git repo.")
+                MessageTools.error("Failed to add remote git repo.")
                 return false
             }
 
             guard repo.execute(GitAction.push) else {
-                print("❗️ Failed to push to remote git repo.")
+                MessageTools.error("Failed to push to remote git repo.")
                 return false
             }
-            print("Successfully pushed to git remote for project \(projectName). 🎉")
+            MessageTools.exclaim("Successfully pushed to git remote for project \(projectName).")
         }
 
         // Setup remote if it doesn't.
