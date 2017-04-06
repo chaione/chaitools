@@ -328,6 +328,7 @@
 				1F803B8A1E942679006B454F /* Frameworks */,
 				1F803B8B1E942679006B454F /* Headers */,
 				1F803B8C1E942679006B454F /* Resources */,
+				1FCA64861E9682A9002B84F7 /* Swift Format */,
 			);
 			buildRules = (
 			);
@@ -361,6 +362,7 @@
 			buildPhases = (
 				CompilePhase_chaitools /* Sources */,
 				"___LinkPhase_chaitools" /* Frameworks */,
+				1FCA64871E96839B002B84F7 /* Swift Format */,
 			);
 			buildRules = (
 			);
@@ -435,6 +437,37 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1FCA64861E9682A9002B84F7 /* Swift Format */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Format";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}/../scripts/swiftformat\" \"${SRCROOT}/Sources/\"";
+		};
+		1FCA64871E96839B002B84F7 /* Swift Format */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Format";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}/../scripts/swiftformat\" \"${SRCROOT}/Sources/\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1F803B891E942679006B454F /* Sources */ = {

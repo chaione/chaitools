@@ -24,9 +24,9 @@ class FileOps: NSObject {
         var outputDirectoryString: String! {
             // Get Bundle for Framework, not main app
             guard let path = Bundle(for: FileOps.self).path(forResource: "Info", ofType: "plist"),
-            // Read `OutputDirectory` from plist/xcconfig file
-            let debugDirectory = NSDictionary(contentsOfFile: path)?["OutputDirectory"] as? String
-                else { return FileManager.default.currentDirectoryPath }
+                // Read `OutputDirectory` from plist/xcconfig file
+                let debugDirectory = NSDictionary(contentsOfFile: path)?["OutputDirectory"] as? String
+            else { return FileManager.default.currentDirectoryPath }
 
             return debugDirectory
         }
