@@ -66,7 +66,7 @@ public class TemplatesCommand: OptionCommand {
         MessageTools.state("Attempting to install Xcode templates...")
         var status = true
         for template in templates {
-            status = status && template.repo.execute(GitAction.clone)
+            status = status && template.repo.execute(GitAction.clone).isSuccessful()
         }
         if status {
             MessageTools.exclaim("Successfully installed Xcode templates.")
@@ -79,7 +79,7 @@ public class TemplatesCommand: OptionCommand {
         MessageTools.state("Attempting to update Xcode templates...")
         var status = true
         for template in templates {
-            status = status && template.repo.execute(GitAction.pull)
+            status = status && template.repo.execute(GitAction.pull).isSuccessful()
         }
         if status {
             MessageTools.exclaim("Successfully updated Xcode templates.")

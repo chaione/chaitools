@@ -52,12 +52,12 @@ class GitRepoTests: XCTestCase {
 
     func testExecute_successfully() {
         let cloneSuccessfully = testRepo.execute(.clone)
-        XCTAssert(cloneSuccessfully)
+        XCTAssert(cloneSuccessfully == .success)
     }
 
     func testExecute_fail_isSafeToProceed() {
         testExecute_successfully()
         let repeatedCloneFail = testRepo.execute(.clone)
-        XCTAssertFalse(repeatedCloneFail)
+        XCTAssertFalse(repeatedCloneFail == .failure(.alreadyInitialized))
     }
 }

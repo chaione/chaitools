@@ -199,17 +199,17 @@ public class BootstrapCommand: OptionCommand {
         // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
 
-        guard repo.execute(GitAction.ginit) else {
+        guard repo.execute(GitAction.ginit).isSuccessful() else {
             MessageTools.error("Failed to initialize local git repo.")
             return false
         }
 
-        guard repo.execute(GitAction.add) else {
+        guard repo.execute(GitAction.add).isSuccessful() else {
             MessageTools.error("Failed to add code to local git repo.")
             return false
         }
 
-        guard repo.execute(GitAction.commit) else {
+        guard repo.execute(GitAction.commit).isSuccessful() else {
             MessageTools.error("Failed to commit initial code.")
             return false
         }
@@ -220,12 +220,12 @@ public class BootstrapCommand: OptionCommand {
         if remoteRepo != "" {
             repo.remoteURL = URL(string: remoteRepo)
 
-            guard repo.execute(GitAction.remoteAdd) else {
+            guard repo.execute(GitAction.remoteAdd).isSuccessful() else {
                 MessageTools.error("Failed to add remote git repo.")
                 return false
             }
 
-            guard repo.execute(GitAction.push) else {
+            guard repo.execute(GitAction.push).isSuccessful() else {
                 MessageTools.error("Failed to push to remote git repo.")
                 return false
             }

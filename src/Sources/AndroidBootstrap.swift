@@ -22,7 +22,7 @@ struct AndroidBootstrap: BootstrapConfig {
         let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: jumpstartRepoURL)
 
         MessageTools.state("Androids wear 🚀  boots!")
-        guard repo.execute(GitAction.clone) else {
+        guard repo.execute(GitAction.clone).isSuccessful() else {
             MessageTools.error("Failed to download jumpstart project. Do you have permission to access it?")
             return false
         }
