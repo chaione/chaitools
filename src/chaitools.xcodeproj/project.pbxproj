@@ -382,6 +382,7 @@
 			buildPhases = (
 				CompilePhase_chaitoolsTests /* Sources */,
 				"___LinkPhase_chaitoolsTests" /* Frameworks */,
+				1FCA648B1E9688EF002B84F7 /* Swift Format */,
 			);
 			buildRules = (
 			);
@@ -466,6 +467,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PROJECT_DIR}/../scripts/swiftformat\" \"${SRCROOT}/Sources/\"";
+		};
+		1FCA648B1E9688EF002B84F7 /* Swift Format */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Format";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}/../scripts/swiftformat\" \"${SRCROOT}/Tests/\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -716,8 +731,8 @@
 		_ReleaseConf_chaitoolsTests /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_TESTABILITY = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(PLATFORM_DIR)/Developer/Library/Frameworks";
 				INFOPLIST_FILE = chaitools.xcodeproj/chaitoolsTests_Info.plist;
@@ -766,8 +781,8 @@
 		"___DebugConf_chaitoolsTests" /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_TESTABILITY = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(PLATFORM_DIR)/Developer/Library/Frameworks";
 				INFOPLIST_FILE = chaitools.xcodeproj/chaitoolsTests_Info.plist;

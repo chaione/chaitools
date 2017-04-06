@@ -12,6 +12,8 @@ import Foundation
 
 class GitRepoTests: XCTestCase {
 
+    let dummyURL = FileOps.defaultOps.outputURLDirectory()
+
     override func setUp() {
         super.setUp()
     }
@@ -27,9 +29,8 @@ class GitRepoTests: XCTestCase {
             let nilURLArguments = action.arguments(withRemoteURL: nil)
             XCTAssertEqual(nilURLArguments, [], "nilURLArguments from GitAction.clone was supposed to return []")
 
-            let urlPath = "dummy/file/path"
-            let urlArguments = action.arguments(withRemoteURL: URL(fileURLWithPath: urlPath))
-            let correctArguments = ["clone", "/private/tmp/\(urlPath)", "."]
+            let urlArguments = action.arguments(withRemoteURL: dummyURL)
+            let correctArguments = ["clone", dummyURL.path, "."]
             XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.clone was supposed to return (correctArguments)")
         } else {
             XCTFail("The rawValue value `clone` does not return GitAction.clone")
@@ -43,9 +44,8 @@ class GitRepoTests: XCTestCase {
             let nilURLArguments = action.arguments(withRemoteURL: nil)
             XCTAssertEqual(nilURLArguments, [], "nilURLArguments from GitAction.pull was supposed to return []")
 
-            let urlPath = "dummy/file/path"
-            let urlArguments = action.arguments(withRemoteURL: URL(fileURLWithPath: urlPath))
-            let correctArguments = ["pull", "/private/tmp/\(urlPath)"]
+            let urlArguments = action.arguments(withRemoteURL: dummyURL)
+            let correctArguments = ["pull", dummyURL.path]
             XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.pull was supposed to return (correctArguments)")
         } else {
             XCTFail("The rawValue value `pull` does not return GitAction.pull")
@@ -59,8 +59,7 @@ class GitRepoTests: XCTestCase {
             let nilURLArguments = action.arguments(withRemoteURL: nil)
             XCTAssertEqual(nilURLArguments, [GitAction.ginit.rawValue], "nilURLArguments from GitAction.ginit was supposed to return []")
 
-            let urlPath = "dummy/file/path"
-            let urlArguments = action.arguments(withRemoteURL: URL(fileURLWithPath: urlPath))
+            let urlArguments = action.arguments(withRemoteURL: dummyURL)
             let correctArguments: [String] = []
             XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.ginit was supposed to return (correctArguments)")
         } else {
@@ -75,8 +74,7 @@ class GitRepoTests: XCTestCase {
             let nilURLArguments = action.arguments(withRemoteURL: nil)
             XCTAssertEqual(nilURLArguments, [GitAction.add.rawValue, "."], "nilURLArguments from GitAction.add was supposed to return \([GitAction.add, "."])")
 
-            let urlPath = "dummy/file/path"
-            let urlArguments = action.arguments(withRemoteURL: URL(fileURLWithPath: urlPath))
+            let urlArguments = action.arguments(withRemoteURL: dummyURL)
             let correctArguments: [String] = []
             XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.add was supposed to return (correctArguments)")
         } else {
@@ -91,8 +89,7 @@ class GitRepoTests: XCTestCase {
             let nilURLArguments = action.arguments(withRemoteURL: nil)
             XCTAssertEqual(nilURLArguments, [GitAction.commit.rawValue, "-m \"Initial commit by chaitools\""], "nilURLArguments from GitAction.commit was supposed to return \([GitAction.commit, "-m \"Initial commit by chaitools\""])")
 
-            let urlPath = "dummy/file/path"
-            let urlArguments = action.arguments(withRemoteURL: URL(fileURLWithPath: urlPath))
+            let urlArguments = action.arguments(withRemoteURL: dummyURL)
             let correctArguments: [String] = []
             XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.commit was supposed to return (correctArguments)")
         } else {
@@ -107,9 +104,8 @@ class GitRepoTests: XCTestCase {
             let nilURLArguments = action.arguments(withRemoteURL: nil)
             XCTAssertEqual(nilURLArguments, [], "nilURLArguments from GitAction.remoteAdd was supposed to return []")
 
-            let urlPath = "dummy/file/path"
-            let urlArguments = action.arguments(withRemoteURL: URL(fileURLWithPath: urlPath))
-            let correctArguments: [String] = ["remote", "add", "origin", "/private/tmp/\(urlPath)"]
+            let urlArguments = action.arguments(withRemoteURL: dummyURL)
+            let correctArguments: [String] = ["remote", "add", "origin", dummyURL.path]
             XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.remoteAdd was supposed to return (correctArguments)")
         } else {
             XCTFail("The rawValue value `remoteAdd` does not return GitAction.remoteAdd")
@@ -123,8 +119,7 @@ class GitRepoTests: XCTestCase {
             let nilURLArguments = action.arguments(withRemoteURL: nil)
             XCTAssertEqual(nilURLArguments, [], "nilURLArguments from GitAction.push was supposed to return []")
 
-            let urlPath = "dummy/file/path"
-            let urlArguments = action.arguments(withRemoteURL: URL(fileURLWithPath: urlPath))
+            let urlArguments = action.arguments(withRemoteURL: dummyURL)
             let correctArguments = ["push", "-u", "origin", "master"]
             XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.push was supposed to return (correctArguments)")
         } else {
