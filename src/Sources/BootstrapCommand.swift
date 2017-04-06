@@ -50,9 +50,9 @@ public class BootstrapCommand: OptionCommand {
     }
 
     private var projectName: String = ""
-    
+
     public init() {}
-    
+
     /// Executes the bootstrap command
     /// Bootstrap takes an optional tech stack arguments and the execution first validates
     /// those arguments before proceeding. Actions that may be performed:
