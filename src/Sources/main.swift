@@ -7,11 +7,13 @@
 //
 
 import Foundation
+import ChaiTools
 import SwiftCLI
 
 CLI.setup(name: "chaitools", version: "0.3.1", description: "Brew some awesome apps with ChaiTools")
 
 if #available(OSX 10.12, *) {
+
     CLI.register(command: TemplatesCommand())
     CLI.register(command: BootstrapCommand())
 } else {

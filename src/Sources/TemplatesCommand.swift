@@ -29,19 +29,19 @@ struct TemplatesSet {
 }
 
 @available(OSX 10.12, *)
-class TemplatesCommand: OptionCommand {
+public class TemplatesCommand: OptionCommand {
 
-    var name: String = "templates"
-    var signature: String = "<action>"
-    var shortDescription: String = "Install, update, or remove Xcode templates"
+    public var name: String = "templates"
+    public var signature: String = "<action>"
+    public var shortDescription: String = "Install, update, or remove Xcode templates"
 
-    func setupOptions(options: OptionRegistry) {
+    public func setupOptions(options: OptionRegistry) {
         MessageTools.addVerbosityOptions(options: options)
     }
 
     private var templates: [TemplatesSet] = []
 
-    init() {
+    public init() {
 
         templates.append(TemplatesSet(repoURL: URL(string: "git@bitbucket.org:chaione/chaitemplates.git")!,
                                       dir: FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/Templates/File Templates/ChaiOne", isDirectory: true)))
@@ -49,7 +49,7 @@ class TemplatesCommand: OptionCommand {
                                       dir: FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/Templates/Project Templates/ChaiOne", isDirectory: true)))
     }
 
-    func execute(arguments: CommandArguments) throws {
+    public func execute(arguments: CommandArguments) throws {
 
         guard let action = TemplateActions(rawValue: arguments.requiredArgument("action")) else {
             return MessageTools.error("\"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.", level: .silent)
