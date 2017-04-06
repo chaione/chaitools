@@ -22,6 +22,7 @@
 		1F803BB11E9428DE006B454F /* ChaiTools.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F803B8E1E942679006B454F /* ChaiTools.framework */; };
 		1FCA648A1E9684DA002B84F7 /* GitActionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FCA64881E968462002B84F7 /* GitActionTests.swift */; };
 		1FCA648D1E96901F002B84F7 /* GitRepoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FCA648C1E96901F002B84F7 /* GitRepoTests.swift */; };
+		1FCA64991E96C4F0002B84F7 /* chaitoolsTests_Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FCA64951E96BD20002B84F7 /* chaitoolsTests_Info.plist */; };
 		_LinkFileRef_SwiftCLI_via_chaitoolsTests /* SwiftCLI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "_____Product_SwiftCLI" /* SwiftCLI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/CLI.swift" /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = "__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/CLI.swift" /* CLI.swift */; };
 		"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/ChainableCommand.swift" /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = "__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/ChainableCommand.swift" /* ChainableCommand.swift */; };
@@ -83,6 +84,7 @@
 		1F803B911E942679006B454F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1FCA64881E968462002B84F7 /* GitActionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitActionTests.swift; sourceTree = "<group>"; };
 		1FCA648C1E96901F002B84F7 /* GitRepoTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitRepoTests.swift; sourceTree = "<group>"; };
+		1FCA64951E96BD20002B84F7 /* chaitoolsTests_Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = chaitoolsTests_Info.plist; path = Tests/chaitoolsTests_Info.plist; sourceTree = "<group>"; };
 		1FF4FDD11E8BA53C007CDF35 /* AndroidBootstrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AndroidBootstrap.swift; sourceTree = "<group>"; };
 		9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplatesCommand.swift; sourceTree = "<group>"; };
 		982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+ChaiTools.swift"; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 		"_______Tests_" /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				1FCA64951E96BD20002B84F7 /* chaitoolsTests_Info.plist */,
 				"_______Group_chaitoolsTests" /* chaitoolsTests */,
 			);
 			name = Tests;
@@ -386,6 +389,7 @@
 				CompilePhase_chaitoolsTests /* Sources */,
 				"___LinkPhase_chaitoolsTests" /* Frameworks */,
 				1FCA648B1E9688EF002B84F7 /* Swift Format */,
+				1FCA64931E96BC4A002B84F7 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -437,6 +441,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1FCA64931E96BC4A002B84F7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1FCA64991E96C4F0002B84F7 /* chaitoolsTests_Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -739,7 +751,7 @@
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_TESTABILITY = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(PLATFORM_DIR)/Developer/Library/Frameworks";
-				INFOPLIST_FILE = chaitools.xcodeproj/chaitoolsTests_Info.plist;
+				INFOPLIST_FILE = Tests/chaitoolsTests_Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -789,7 +801,7 @@
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_TESTABILITY = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(PLATFORM_DIR)/Developer/Library/Frameworks";
-				INFOPLIST_FILE = chaitools.xcodeproj/chaitoolsTests_Info.plist;
+				INFOPLIST_FILE = Tests/chaitoolsTests_Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
