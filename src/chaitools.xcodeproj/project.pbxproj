@@ -20,6 +20,7 @@
 		1F803BAB1E942838006B454F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = __PBXFileRef_Sources/main.swift /* main.swift */; };
 		1F803BAE1E9428CF006B454F /* SwiftCLI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "_____Product_SwiftCLI" /* SwiftCLI.framework */; };
 		1F803BB11E9428DE006B454F /* ChaiTools.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F803B8E1E942679006B454F /* ChaiTools.framework */; };
+		1FCA648A1E9684DA002B84F7 /* GitRepoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FCA64881E968462002B84F7 /* GitRepoTests.swift */; };
 		_LinkFileRef_SwiftCLI_via_chaitoolsTests /* SwiftCLI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "_____Product_SwiftCLI" /* SwiftCLI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/CLI.swift" /* CLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = "__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/CLI.swift" /* CLI.swift */; };
 		"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/ChainableCommand.swift" /* ChainableCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = "__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/ChainableCommand.swift" /* ChainableCommand.swift */; };
@@ -39,7 +40,6 @@
 		"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/RawArguments.swift" /* RawArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = "__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/RawArguments.swift" /* RawArguments.swift */; };
 		"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/Router.swift" /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = "__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/Router.swift" /* Router.swift */; };
 		"__src_cc_ref_Packages/SwiftCLI-2.0.2/Sources/VersionCommand.swift" /* VersionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = "__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/VersionCommand.swift" /* VersionCommand.swift */; };
-		__src_cc_ref_Tests/chaitoolsTests/chaitoolsTests.swift /* chaitoolsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = __PBXFileRef_Tests/chaitoolsTests/chaitoolsTests.swift /* chaitoolsTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +80,7 @@
 		1F803B8E1E942679006B454F /* ChaiTools.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ChaiTools.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F803B901E942679006B454F /* ChaiTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChaiTools.h; sourceTree = "<group>"; };
 		1F803B911E942679006B454F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1FCA64881E968462002B84F7 /* GitRepoTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitRepoTests.swift; sourceTree = "<group>"; };
 		1FF4FDD11E8BA53C007CDF35 /* AndroidBootstrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AndroidBootstrap.swift; sourceTree = "<group>"; };
 		9810ED0A1DCCF0F600265BF4 /* TemplatesCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplatesCommand.swift; sourceTree = "<group>"; };
 		982B1D021DD12A5600B7A4A6 /* String+ChaiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+ChaiTools.swift"; sourceTree = "<group>"; };
@@ -106,7 +107,6 @@
 		"__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/Router.swift" /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		"__PBXFileRef_Packages/SwiftCLI-2.0.2/Sources/VersionCommand.swift" /* VersionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionCommand.swift; sourceTree = "<group>"; };
 		__PBXFileRef_Sources/main.swift /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		__PBXFileRef_Tests/chaitoolsTests/chaitoolsTests.swift /* chaitoolsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chaitoolsTests.swift; sourceTree = "<group>"; };
 		__PBXFileRef_chaitools.xcodeproj/Configs/Project.xcconfig /* chaitools.xcodeproj/Configs/Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = chaitools.xcodeproj/Configs/Project.xcconfig; sourceTree = "<group>"; };
 		"_____Product_SwiftCLI" /* SwiftCLI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftCLI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"_____Product_chaitools" /* chaitools-cli */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = "chaitools-cli"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -293,7 +293,7 @@
 		"_______Group_chaitoolsTests" /* chaitoolsTests */ = {
 			isa = PBXGroup;
 			children = (
-				__PBXFileRef_Tests/chaitoolsTests/chaitoolsTests.swift /* chaitoolsTests.swift */,
+				1FCA64881E968462002B84F7 /* GitRepoTests.swift */,
 			);
 			name = chaitoolsTests;
 			path = Tests/chaitoolsTests;
@@ -523,7 +523,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				__src_cc_ref_Tests/chaitoolsTests/chaitoolsTests.swift /* chaitoolsTests.swift in Sources */,
+				1FCA648A1E9684DA002B84F7 /* GitRepoTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
