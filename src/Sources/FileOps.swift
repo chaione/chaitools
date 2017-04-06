@@ -18,9 +18,9 @@ class FileOps: NSObject {
     private override init() {
         super.init()
 
-        // Get Bundle for Framework, not main app and read `OutputDirectory` from plist/xcconfig file
-        if let path = Bundle(for: FileOps.self).path(forResource: "Info", ofType: "plist"),
-            let debugDirectory = NSDictionary(contentsOfFile: path)?["OutputDirectory"] as? String {
+        let infoPlist = Bundle(for: type(of: self)).infoDictionary
+        // read `OutputDirectory` from plist/xcconfig file
+        if let debugDirectory = infoPlist?["OutputDirectory"] as? String {
             outputDirectoryString = debugDirectory
         } else {
             outputDirectoryString = FileManager.default.currentDirectoryPath
