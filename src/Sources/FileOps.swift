@@ -12,9 +12,26 @@ import Foundation
 class FileOps: NSObject {
 
     static let defaultOps = FileOps()
-    
+
     private override init() {
         super.init()
+    }
+
+    /// Depending if the environment is set to DEBUG, method will return the appropriate `URL` object
+    ///
+    /// - Returns: `URL` object.
+    func outputURLDirectory() -> URL {
+        var outputDirectoryString: String! {
+            // Get Bundle for Framework, not main app
+            guard let path = Bundle(for: FileOps.self).path(forResource: "Info", ofType: "plist"),
+                // Read `OutputDirectory` from plist/xcconfig file
+                let debugDirectory = NSDictionary(contentsOfFile: path)?["OutputDirectory"] as? String
+            else { return FileManager.default.currentDirectoryPath }
+
+            return debugDirectory
+        }
+
+        return URL(fileURLWithPath: outputDirectoryString)
     }
 
     /// Takes a subpath and returns a full path going to the user's Library directory.
@@ -32,12 +49,12 @@ class FileOps: NSObject {
     func ensureDirectory(_ dirURL: URL) -> Bool {
         if !doesDirectoryExist(dirURL) {
             do {
-                print("The local directory does not exist. Attempting to create it...")
+                MessageTools.state("The local directory does not exist. Attempting to create it...", level: .verbose)
                 try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
-                print("Successfully created the directory. 🎉")
+                MessageTools.exclaim("Successfully created the directory.", level: .verbose)
                 return true
             } catch {
-                print("❗️ Error creating the directory. \(error)")
+                MessageTools.error("Error creating the directory. \(error)", level: .verbose)
                 return false
             }
         }
@@ -60,15 +77,15 @@ class FileOps: NSObject {
         var isDirectory: ObjCBool = ObjCBool(true)
 
         guard FileManager.default.fileExists(atPath: dirURL.path, isDirectory: &isDirectory) else {
-            print("The directory does not exist, so it cannot be removed. 🤔")
+            MessageTools.state("The directory does not exist, so it cannot be removed. 🤔", level: .verbose)
             return false
         }
         do {
             try FileManager.default.removeItem(atPath: dirURL.path)
-            print("Successfully removed the directory. 🎉")
+            MessageTools.exclaim("Successfully removed the directory.", level: .verbose)
             return true
         } catch {
-            print("❗️ Error removing the directory. \(error)")
+            MessageTools.error("Error removing the directory. \(error)", level: .verbose)
             return false
         }
     }
@@ -84,7 +101,7 @@ class FileOps: NSObject {
                                                                     create: true)
             return temporaryDirectoryURL
         } catch {
-            print("❗️ Failed to create temporary directory.")
+            MessageTools.error("Failed to create temporary directory.", level: .verbose)
         }
         return nil
     }
@@ -94,13 +111,13 @@ class FileOps: NSObject {
     /// - Parameters:
     ///   - name: The name of the subdirectory to create
     ///   - parent: The parent directory. Defaults to the current directory.
-    func createSubDirectory(_ name: String, parent: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)) {
+    func createSubDirectory(_ name: String, parent: URL = FileOps.defaultOps.outputURLDirectory()) {
         // create substructure for project
         do {
             try FileManager.default.createDirectory(at: parent.appendingPathComponent(name, isDirectory: true), withIntermediateDirectories: true)
-            print("Successfully created \(name) subdirectory. 🎉")
+            MessageTools.exclaim("Successfully created \(name) subdirectory.", level: .verbose)
         } catch {
-            print("❗️ Failed to create \(name) subdirectory.")
+            MessageTools.error("Failed to create \(name) subdirectory.", level: .verbose)
         }
     }
 }
