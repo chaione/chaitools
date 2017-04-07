@@ -64,41 +64,39 @@ public class TemplatesCommand: OptionCommand {
 
     private func installTemplates() {
         MessageTools.state("Attempting to install Xcode templates...")
-        var status = true
         for template in templates {
-            status = status && template.repo.execute(GitAction.clone).isSuccessful()
-        }
-        if status {
-            MessageTools.exclaim("Successfully installed Xcode templates.")
-        } else {
-            MessageTools.error("Xcode template installation failed.")
+            do {
+                try template.repo.execute(GitAction.clone)
+            } catch {
+                MessageTools.error("Xcode template installation failed.")
+                break
+            }
         }
     }
 
     private func updateTemplates() {
         MessageTools.state("Attempting to update Xcode templates...")
-        var status = true
         for template in templates {
-            status = status && template.repo.execute(GitAction.pull).isSuccessful()
-        }
-        if status {
-            MessageTools.exclaim("Successfully updated Xcode templates.")
-        } else {
-            MessageTools.error("Xcode template update failed.")
+            do {
+                try template.repo.execute(GitAction.pull)
+            } catch {
+                MessageTools.error("Xcode template update failed.")
+                break
+            }
         }
     }
 
     private func removeTemplates() {
 
-        var status = true
         MessageTools.state("Attempting to remove the templates directory...")
         for template in templates {
-            status = status && FileOps.defaultOps.removeDirectory(template.localDir)
-        }
-        if status {
-            MessageTools.exclaim("Successfully removed Xcode templates.")
-        } else {
-            MessageTools.error("Xcode template removal failed.")
+            do {
+                try FileOps.defaultOps.removeDirectory(template.localDir)
+                MessageTools.exclaim("Successfully removed Xcode templates.")
+            } catch {
+                MessageTools.error("Xcode template removal failed.")
+                break
+            }
         }
     }
 }

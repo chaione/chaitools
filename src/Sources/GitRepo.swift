@@ -8,6 +8,18 @@
 
 import Foundation
 
+enum GitRepoFailStatus: ChaiFailStatus {
+    case alreadyInitialized
+    case missingRemoteURL
+    case missingLocalRepo
+    case nonEmptyRepo
+    case unknown
+
+    func isSuccessful() -> Bool {
+        return false
+    }
+}
+
 enum GitAction: String {
     case clone
     case pull
@@ -58,7 +70,7 @@ class GitRepo {
     ///
     /// - Parameter action: The action to be executed, defined by the GitAction enum
     /// - Returns: True if action succeeded, false otherwise
-    func execute(_ action: GitAction) -> GitRepoStatus {
+    func execute(_ action: GitAction) throws {
 
         // Spawn a new process before executing as you can only execute them once
         let outputPipe = Pipe()
@@ -71,8 +83,11 @@ class GitRepo {
         // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`
         // if (action == .pull) { clean() }
 
-        let status = isSafeToProceed(forAction: action)
-        guard status.isSuccessful() else { return status }
+        do {
+            try isSafeToProceed(forAction: action)
+        } catch let error {
+            throw error
+        }
 
         process.arguments = action.arguments(withRemoteURL: remoteURL)
 
@@ -85,7 +100,6 @@ class GitRepo {
             MessageTools.state(output!, level: .debug)
             MessageTools.exclaim("`git \(action.rawValue)` was a success!", level: .verbose)
 
-            return .success
         } else {
             let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
             let output = String(data: outputData, encoding: String.Encoding.utf8)
@@ -96,11 +110,9 @@ class GitRepo {
             MessageTools.state(errorOut!, level: .debug)
 
             MessageTools.error("`git \(action.rawValue)` failed! Sad!", level: .verbose)
-            return .success
+            throw GitRepoFailStatus.unknown
         }
     }
-
-    // private func isClean() -> Bool { }
 
     private func clean() {
         let process = Process(withLaunchPath: launchPath, currentDirectoryPath: localURL.path)
@@ -108,28 +120,30 @@ class GitRepo {
         process.execute()
     }
 
-    private func isSafeToProceed(forAction action: GitAction) -> GitRepoStatus {
+    private func isSafeToProceed(forAction action: GitAction) throws {
 
         if (action == .ginit) && (localURL.isGitRepo()) {
             MessageTools.error("Can't initialize a git repo that's already initialized.", level: .verbose)
-            return .failure(.alreadyInitialized)
+            throw GitRepoFailStatus.alreadyInitialized
         }
 
         if remoteURL == nil && (action == .pull || action == .clone) {
             MessageTools.error("Can't perform \(action) when missing remote URL.", level: .verbose)
-            return .failure(.missingRemoteURL)
+            throw GitRepoFailStatus.missingRemoteURL
         }
 
         if (action == .pull) && (!localURL.isGitRepo()) {
             MessageTools.state("A git repo can't be updated if it doesn't exist. 🤔", level: .verbose)
-            return .failure(.missingLocalRepo)
+            throw GitRepoFailStatus.missingLocalRepo
         }
 
         if (action == .clone) && (!localURL.isEmpty()) {
             MessageTools.error("Can't clone a git repo into a non-empty directory.", level: .verbose)
-            return .failure(.nonEmptyRepo)
+            throw GitRepoFailStatus.nonEmptyRepo
         }
 
-        return GitRepoStatus.testBool(status: FileOps.defaultOps.ensureDirectory(localURL))
+        guard FileOps.defaultOps.ensureDirectory(localURL) else {
+            throw GitRepoFailStatus.unknown
+        }
     }
 }

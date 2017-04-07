@@ -199,20 +199,26 @@ public class BootstrapCommand: OptionCommand {
         // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
 
-        guard repo.execute(GitAction.ginit).isSuccessful() else {
+        do {
+            try repo.execute(GitAction.ginit)
+        } catch {
             MessageTools.error("Failed to initialize local git repo.")
             return false
         }
-
-        guard repo.execute(GitAction.add).isSuccessful() else {
+        do {
+            try repo.execute(GitAction.add)
+        } catch {
             MessageTools.error("Failed to add code to local git repo.")
             return false
         }
 
-        guard repo.execute(GitAction.commit).isSuccessful() else {
+        do {
+            try repo.execute(GitAction.commit)
+        } catch {
             MessageTools.error("Failed to commit initial code.")
             return false
         }
+
         MessageTools.exclaim("Successfully setup local git repo for project \(projectName).")
 
         // Prompt if remote exists.
@@ -220,15 +226,20 @@ public class BootstrapCommand: OptionCommand {
         if remoteRepo != "" {
             repo.remoteURL = URL(string: remoteRepo)
 
-            guard repo.execute(GitAction.remoteAdd).isSuccessful() else {
+            do {
+                try repo.execute(GitAction.remoteAdd)
+            } catch {
                 MessageTools.error("Failed to add remote git repo.")
                 return false
             }
 
-            guard repo.execute(GitAction.push).isSuccessful() else {
+            do {
+                try repo.execute(GitAction.push)
+            } catch {
                 MessageTools.error("Failed to push to remote git repo.")
                 return false
             }
+
             MessageTools.exclaim("Successfully pushed to git remote for project \(projectName).")
         }
 

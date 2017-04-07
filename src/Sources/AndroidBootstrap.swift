@@ -21,8 +21,10 @@ struct AndroidBootstrap: BootstrapConfig {
         let jumpstartRepoURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")
         let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: jumpstartRepoURL)
 
-        MessageTools.state("Androids wear 🚀  boots!")
-        guard repo.execute(GitAction.clone).isSuccessful() else {
+        do {
+            MessageTools.state("Androids wear 🚀 boots!")
+            try repo.execute(GitAction.clone)
+        } catch {
             MessageTools.error("Failed to download jumpstart project. Do you have permission to access it?")
             return false
         }

@@ -8,6 +8,17 @@
 
 import Foundation
 
+enum FileOpsFailStatus: ChaiFailStatus {
+    case directoryMissing
+    case directoryAlreadyExists
+    case unknown
+}
+
+enum FileOpsStatus {
+    case success
+    case failure(FileOpsFailStatus)
+}
+
 @available(OSX 10.12, *)
 class FileOps: NSObject {
 
@@ -49,11 +60,15 @@ class FileOps: NSObject {
     func ensureDirectory(_ dirURL: URL) -> Bool {
         if !doesDirectoryExist(dirURL) {
             do {
+                // directoryMissing
                 MessageTools.state("The local directory does not exist. Attempting to create it...", level: .verbose)
                 try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
+                // success
                 MessageTools.exclaim("Successfully created the directory.", level: .verbose)
                 return true
             } catch {
+
+                // unknown
                 MessageTools.error("Error creating the directory. \(error)", level: .verbose)
                 return false
             }
@@ -66,6 +81,7 @@ class FileOps: NSObject {
     /// - Returns: True if the directory exists, false otherwise.
     func doesDirectoryExist(_ url: URL) -> Bool {
         var isDirectory: ObjCBool = ObjCBool(true)
+        // directoryAlreadyExists || success
         return FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory)
     }
 
@@ -73,20 +89,19 @@ class FileOps: NSObject {
     ///
     /// - Parameter dirURL: URL to the directory to be deleted.
     /// - Returns: True if succeeded, false otherwise.
-    func removeDirectory(_ dirURL: URL) -> Bool {
+    func removeDirectory(_ dirURL: URL) throws {
         var isDirectory: ObjCBool = ObjCBool(true)
 
         guard FileManager.default.fileExists(atPath: dirURL.path, isDirectory: &isDirectory) else {
             MessageTools.state("The directory does not exist, so it cannot be removed. 🤔", level: .verbose)
-            return false
+            throw FileOpsFailStatus.directoryMissing
         }
         do {
             try FileManager.default.removeItem(atPath: dirURL.path)
             MessageTools.exclaim("Successfully removed the directory.", level: .verbose)
-            return true
         } catch {
             MessageTools.error("Error removing the directory. \(error)", level: .verbose)
-            return false
+            throw FileOpsFailStatus.unknown
         }
     }
 
