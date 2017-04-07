@@ -1,6 +1,6 @@
 import XCTest
-@testable import chaitoolsTests
+@testable import ChaiToolsTests
 
 XCTMain([
-    testCase(chaitoolsTests.allTests),
+    testCase(ChaiToolsTests.allTests),
 ])
