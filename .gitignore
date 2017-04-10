@@ -17,6 +17,8 @@ DerivedData/
 !default.perspectivev3
 xcuserdata/
 
+chaitools.xcodeproj/
+
 ## Other
 *.moved-aside
 *.xcuserstate
@@ -66,3 +68,4 @@ fastlane/screenshots
 fastlane/test_output
 
 src/output
+src/docs
