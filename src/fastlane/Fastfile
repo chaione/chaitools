@@ -1,0 +1,28 @@
+before_all do |lane, options|
+
+    update_fastlane
+    bundle_install
+
+end
+
+lane :test do
+    sh "swift test"
+end
+
+after_all do |lane|
+    if !['test', 'experiment'].include? lane.to_s
+        if !git_tag_exists(tag: "builds/#{lane.to_s}/#{get_version_number}-#{get_build_number}")
+          add_git_tag(build_number: "#{get_version_number}-#{get_build_number}")
+          push_git_tags
+        end
+    end
+end
+
+error do |lane, exception|
+#   if !suppress_slack
+#       slack(slack_url: ENV['slack_url'],
+#           message: exception.to_s,
+#           success: false,
+#           channel: settings[:slack_channel])
+#       end
+end

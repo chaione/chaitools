@@ -7,9 +7,10 @@
 //
 
 import XCTest
-@testable import ChaiTools
 import Foundation
+@testable import ChaiToolsKit
 
+@available(OSX 10.12, *)
 class GitActionTests: XCTestCase {
 
     let dummyURL = FileOps.defaultOps.outputURLDirectory()

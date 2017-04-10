@@ -20,9 +20,9 @@ enum FileOpsStatus {
 }
 
 @available(OSX 10.12, *)
-class FileOps: NSObject {
+public class FileOps: NSObject {
 
-    static let defaultOps = FileOps()
+    public static let defaultOps = FileOps()
 
     var outputDirectoryString: String!
 

@@ -7,8 +7,9 @@
 //
 
 import XCTest
-@testable import ChaiTools
+@testable import ChaiToolsKit
 
+@available(OSX 10.12, *)
 class GitRepoTests: XCTestCase {
 
     let celyGithubUrl = URL(string: "git@github.com:chaione/Cely.git")
@@ -45,8 +46,12 @@ class GitRepoTests: XCTestCase {
 
     override func tearDown() {
         // remove created directories
-        let removedDirectory = FileOps.defaultOps.removeDirectory(celyDirectory)
-        XCTAssert(removedDirectory)
+        do {
+            try FileOps.defaultOps.removeDirectory(celyDirectory)
+        } catch {
+            XCTAssert(false, "failed to remove cely Directory")
+        }
+        
         super.tearDown()
     }
 
