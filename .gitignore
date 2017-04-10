@@ -17,6 +17,8 @@ DerivedData/
 !default.perspectivev3
 xcuserdata/
 
+chaitools.xcodeproj/
+
 ## Other
 *.moved-aside
 *.xcuserstate
@@ -60,9 +62,10 @@ Carthage/Build
 # For more information about the recommended setup visit:
 # https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Gitignore.md
 
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots
-fastlane/test_output
+src/fastlane/report.xml
+src/fastlane/Preview.html
+src/fastlane/screenshots
+src/fastlane/test_output
 
 src/output
+src/docs
