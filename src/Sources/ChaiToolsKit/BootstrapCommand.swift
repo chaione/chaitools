@@ -32,12 +32,6 @@ enum TechStack: String, Iteratable {
     }
 }
 
-enum BootstrapCommandFailStatus: ChaiFailStatus {
-    case unrecognizedTechStack
-
-    case unknown
-}
-
 @available(OSX 10.12, *)
 public class BootstrapCommand: OptionCommand {
 
@@ -60,7 +54,7 @@ public class BootstrapCommand: OptionCommand {
     ///   * specific boot strapping actions for a given tech stack
     ///   * git configuration for the bootstrapped folders
     /// - Parameter arguments: The arguments passed to the command
-    public func execute(arguments: CommandArguments) throws {
+    public func execute(arguments: CommandArguments) {
 
         var bootstrapper: BootstrapConfig?
 
@@ -91,7 +85,7 @@ public class BootstrapCommand: OptionCommand {
             bootstrapper = nil
         }
 
-        guard let projectURL = try setupDirectoryStructure() else {
+        guard case .success(let projectURL) = setupDirectoryStructure() else {
             MessageTools.state("Bootstrapper completed with failures. 😭", level: .silent)
             return
         }
@@ -123,7 +117,7 @@ public class BootstrapCommand: OptionCommand {
     /// |-- src/
     /// |-- tests/
     /// Returns: File URL of the base directory for the project
-    func setupDirectoryStructure() throws -> URL? {
+    func setupDirectoryStructure() -> BootstrapStatus<URL> {
 
         projectName = Input.awaitInput(message: "❓  What is the name of the project?")
 
@@ -132,14 +126,14 @@ public class BootstrapCommand: OptionCommand {
         // Do not overwrite existing projects
         guard !FileOps.defaultOps.doesDirectoryExist(projectDirURL) else {
             MessageTools.error("Project \(projectName) already exists at this location.")
-            return nil
+            return .failure(.projectAlreadyExistAtLocation)
         }
 
         // create directory based on project name
         MessageTools.state("Creating new project directory for project \(projectName)...")
 
         guard FileOps.defaultOps.ensureDirectory(projectDirURL) else {
-            throw FileOpsFailStatus.unknown
+            return .failure(.unknown)
         }
 
         MessageTools.exclaim("Successfully created \(projectName) project directory.")
@@ -148,7 +142,7 @@ public class BootstrapCommand: OptionCommand {
         FileOps.defaultOps.createSubDirectory("tests", parent: projectDirURL)
         FileOps.defaultOps.createSubDirectory("docs", parent: projectDirURL)
 
-        return projectDirURL
+        return .success(projectDirURL)
     }
 
     func setupProjectReadMe(_ projectURL: URL) -> Bool {
@@ -199,22 +193,17 @@ public class BootstrapCommand: OptionCommand {
         // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
         MessageTools.state("local Repo is \(repo.localURL)")
-        do {
-            try repo.execute(GitAction.ginit)
-        } catch {
+        guard repo.execute(GitAction.ginit).isSuccessful() else {
             MessageTools.error("Failed to initialize local git repo.")
             return false
         }
-        do {
-            try repo.execute(GitAction.add)
-        } catch {
+
+        guard repo.execute(GitAction.add).isSuccessful() else {
             MessageTools.error("Failed to add code to local git repo.")
             return false
         }
 
-        do {
-            try repo.execute(GitAction.commit)
-        } catch {
+        guard repo.execute(GitAction.commit).isSuccessful() else {
             MessageTools.error("Failed to commit initial code.")
             return false
         }
@@ -226,16 +215,12 @@ public class BootstrapCommand: OptionCommand {
         if remoteRepo != "" {
             repo.remoteURL = URL(string: remoteRepo)
 
-            do {
-                try repo.execute(GitAction.remoteAdd)
-            } catch {
+            guard repo.execute(GitAction.remoteAdd).isSuccessful() else {
                 MessageTools.error("Failed to add remote git repo.")
                 return false
             }
 
-            do {
-                try repo.execute(GitAction.push)
-            } catch {
+            guard repo.execute(GitAction.push).isSuccessful() else {
                 MessageTools.error("Failed to push to remote git repo.")
                 return false
             }

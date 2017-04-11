@@ -45,69 +45,49 @@ class GitRepoTests: XCTestCase {
 
     override func tearDown() {
         // remove created directories
-        try? FileOps.defaultOps.removeDirectory(celyDirectory)
-        
+        FileOps.defaultOps.removeDirectory(celyDirectory)
         super.tearDown()
     }
 
     func testExecute_successfully() {
-        do {
-            try testRepo.execute(.clone)
-        } catch {
+
+        if testRepo.execute(.clone) != .success {
             XCTAssert(false, "Failed to clone test repo")
+            return
         }
     }
 
     func testExecute_failure_alreadyInitialized() {
 
-        do {
-            // try cloning after repo is not empty
-            try testRepo.execute(.clone)
-            try testRepo.execute(.ginit)
-        } catch let error {
-            guard let errorStatus = error as? GitRepoFailStatus, errorStatus == GitRepoFailStatus.alreadyInitialized else  {
-                XCTAssert(false, "Failed to return the error message GitRepoFailStatus.alreadyInitialized, instead returned\(error)")
-                return
-            }
+        if testRepo.execute(.clone) != .success {
+            XCTAssert(false, "Failed to clone test repo")
+            return
         }
+
+        let error = testRepo.execute(.ginit)
+        XCTAssertEqual(error, .failure(.alreadyInitialized), "Failed to return the error message GitRepoFailStatus.alreadyInitialized, instead returned\(error)")
     }
 
     func testExecute_failure_nonEmptyRepo() {
 
-        do {
-            // try cloning after repo is not empty
-            try testRepo.execute(.clone)
-            try testRepo.execute(.clone)
-        } catch let error {
-            guard let errorStatus = error as? GitRepoFailStatus, errorStatus == GitRepoFailStatus.nonEmptyRepo else  {
-                XCTAssert(false, "Failed to return the error message GitRepoFailStatus.nonEmptyRepo, instead returned\(error)")
-                return
-            }
+        if testRepo.execute(.clone) != .success {
+            XCTAssert(false, "Failed to clone test repo")
+            return
         }
+
+        let error = testRepo.execute(.clone)
+        XCTAssertEqual(error, .failure(.nonEmptyRepo), "Failed to return the error message GitRepoFailStatus.nonEmptyRepo, instead returned\(error)")
     }
 
     func testExecute_failure_missingLocalRepo() {
-        do {
-            // try pulling with no repo in directory
-            try testRepo.execute(.pull)
-        } catch let error {
-            guard let errorStatus = error as? GitRepoFailStatus, errorStatus == GitRepoFailStatus.missingLocalRepo else  {
-                XCTAssert(false, "Failed to return the error message GitRepoFailStatus.missingLocalRepo, instead returned\(error)")
-                return
-            }
-        }
+
+        let error = testRepo.execute(.pull)
+        XCTAssertEqual(error, .failure(.missingLocalRepo), "Failed to return the error message GitRepoFailStatus.missingLocalRepo, instead returned\(error)")
     }
 
     func testExecute_failure_missingRemoteURL() {
-        do {
-            // try pulling with no repo in directory
-            testRepo.remoteURL = nil
-            try testRepo.execute(.pull)
-        } catch let error {
-            guard let errorStatus = error as? GitRepoFailStatus, errorStatus == GitRepoFailStatus.missingRemoteURL else {
-                XCTAssert(false, "Failed to return the error message GitRepoFailStatus.missingRemoteURL, instead returned\(error)")
-                return
-            }
-        }
+        testRepo.remoteURL = nil
+        let error = testRepo.execute(.pull)
+        XCTAssertEqual(error, .failure(.missingRemoteURL), "Failed to return the error message GitRepoFailStatus.missingRemoteURL, instead returned\(error)")
     }
 }

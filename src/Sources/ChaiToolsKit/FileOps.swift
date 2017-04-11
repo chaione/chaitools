@@ -8,12 +8,6 @@
 
 import Foundation
 
-enum FileOpsFailStatus: ChaiFailStatus {
-    case directoryMissing
-    case directoryAlreadyExists
-    case unknown
-}
-
 @available(OSX 10.12, *)
 public class FileOps: NSObject {
 
@@ -82,19 +76,20 @@ public class FileOps: NSObject {
     ///
     /// - Parameter dirURL: URL to the directory to be deleted.
     /// - Returns: True if succeeded, false otherwise.
-    func removeDirectory(_ dirURL: URL) throws {
+    @discardableResult func removeDirectory(_ dirURL: URL) -> FileOpsStatus {
         var isDirectory: ObjCBool = ObjCBool(true)
 
         guard FileManager.default.fileExists(atPath: dirURL.path, isDirectory: &isDirectory) else {
             MessageTools.state("The directory does not exist, so it cannot be removed. 🤔", level: .verbose)
-            throw FileOpsFailStatus.directoryMissing
+            return .failure(.directoryMissing)
         }
         do {
             try FileManager.default.removeItem(atPath: dirURL.path)
             MessageTools.exclaim("Successfully removed the directory.", level: .verbose)
+            return .success
         } catch {
             MessageTools.error("Error removing the directory. \(error)", level: .verbose)
-            throw FileOpsFailStatus.unknown
+            return .failure(.unknown)
         }
     }
 

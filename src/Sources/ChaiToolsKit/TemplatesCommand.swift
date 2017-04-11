@@ -49,7 +49,7 @@ public class TemplatesCommand: OptionCommand {
                                       dir: FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/Templates/Project Templates/ChaiOne", isDirectory: true)))
     }
 
-    public func execute(arguments: CommandArguments) throws {
+    public func execute(arguments: CommandArguments) {
 
         guard let action = TemplateActions(rawValue: arguments.requiredArgument("action")) else {
             return MessageTools.error("\"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.", level: .silent)
@@ -65,9 +65,7 @@ public class TemplatesCommand: OptionCommand {
     private func installTemplates() {
         MessageTools.state("Attempting to install Xcode templates...")
         for template in templates {
-            do {
-                try template.repo.execute(GitAction.clone)
-            } catch {
+            guard template.repo.execute(GitAction.clone).isSuccessful() else {
                 MessageTools.error("Xcode template installation failed.")
                 break
             }
@@ -77,9 +75,7 @@ public class TemplatesCommand: OptionCommand {
     private func updateTemplates() {
         MessageTools.state("Attempting to update Xcode templates...")
         for template in templates {
-            do {
-                try template.repo.execute(GitAction.pull)
-            } catch {
+            guard template.repo.execute(GitAction.pull).isSuccessful() else {
                 MessageTools.error("Xcode template update failed.")
                 break
             }
@@ -90,13 +86,13 @@ public class TemplatesCommand: OptionCommand {
 
         MessageTools.state("Attempting to remove the templates directory...")
         for template in templates {
-            do {
-                try FileOps.defaultOps.removeDirectory(template.localDir)
-                MessageTools.exclaim("Successfully removed Xcode templates.")
-            } catch {
+
+            guard FileOps.defaultOps.removeDirectory(template.localDir).isSuccessful() else {
                 MessageTools.error("Xcode template removal failed.")
                 break
             }
+
+            MessageTools.exclaim("Successfully removed Xcode templates.")
         }
     }
 }
