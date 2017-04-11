@@ -53,6 +53,8 @@ protocol ChaiStatus: Equatable {
     func isSuccessful() -> Bool
 }
 
+// MARK: - Enum Statuses
+
 enum GitRepoStatus: ChaiStatus {
     case success
     case failure(GitRepoFailStatus)
@@ -85,6 +87,8 @@ enum FileOpsStatus: ChaiStatus {
     }
 }
 
+
+/// Generic equatable method to handle enums that conform to ChaiStatus
 func == <T: ChaiStatus>(lhs: T, rhs: T) -> Bool {
 
     if lhs is GitRepoStatus {
