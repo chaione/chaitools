@@ -58,7 +58,7 @@ class GitRepo {
     ///
     /// - Parameter action: The action to be executed, defined by the GitAction enum
     /// - Returns: True if action succeeded, false otherwise
-    func execute(_ action: GitAction) -> GitRepoStatus {
+    func execute(_ action: GitAction) -> ChaiStatus<GitRepoFailStatus> {
 
         // Spawn a new process before executing as you can only execute them once
         let outputPipe = Pipe()
@@ -108,7 +108,7 @@ class GitRepo {
         process.execute()
     }
 
-    private func isSafeToProceed(forAction action: GitAction) -> GitRepoStatus {
+    private func isSafeToProceed(forAction action: GitAction) -> ChaiStatus<GitRepoFailStatus> {
 
         if (action == .ginit) && (localURL.isGitRepo()) {
             MessageTools.error("Can't initialize a git repo that's already initialized.", level: .verbose)

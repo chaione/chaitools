@@ -49,38 +49,27 @@ func == (lhs: BootstrapConfig, rhs: BootstrapConfig) -> Bool {
 // MARK: - Enum Protocols
 
 protocol ChaiFailStatus: Error, Hashable {}
-protocol ChaiStatus: Equatable {
-    func isSuccessful() -> Bool
-}
 
 // MARK: - Enum Statuses
 
-enum GitRepoStatus: ChaiStatus {
-    case success
-    case failure(GitRepoFailStatus)
-
-    internal enum GitRepoFailStatus: ChaiFailStatus {
-        case alreadyInitialized
-        case missingRemoteURL
-        case missingLocalRepo
-        case nonEmptyRepo
-        case unknown
-    }
-
-    func isSuccessful() -> Bool {
-        return self == .success
-    }
+enum FileOpsFailStatus: ChaiFailStatus {
+    case directoryMissing
+    case directoryAlreadyExists
+    case unknown
 }
 
-enum FileOpsStatus: ChaiStatus {
-    case success
-    case failure(FileOpsFailStatus)
+enum GitRepoFailStatus: ChaiFailStatus {
+    case alreadyInitialized
+    case missingRemoteURL
+    case missingLocalRepo
+    case nonEmptyRepo
+    case unknown
+}
 
-    internal enum FileOpsFailStatus: ChaiFailStatus {
-        case directoryMissing
-        case directoryAlreadyExists
-        case unknown
-    }
+enum ChaiStatus<Failure: ChaiFailStatus>: Equatable {
+
+    case success
+    case failure(Failure)
 
     func isSuccessful() -> Bool {
         return self == .success
@@ -88,36 +77,27 @@ enum FileOpsStatus: ChaiStatus {
 }
 
 
-/// Generic equatable method to handle enums that conform to ChaiStatus
-func == <T: ChaiStatus>(lhs: T, rhs: T) -> Bool {
-
-    if lhs is GitRepoStatus {
-        switch (lhs as! GitRepoStatus, rhs as! GitRepoStatus) {
-        case (.success, .success):
-            return true
-        case (.failure(let lError), .failure(let rError)):
-            return lError == rError
-        default: return false
-        }
+/// Returns a Boolean value indicating whether two values are equal.
+///
+/// Equality is the inverse of inequality. For any values `a` and `b`,
+/// `a == b` implies that `a != b` is `false`.
+///
+/// - Parameters:
+///   - lhs: A value to compare.
+///   - rhs: Another value to compare.
+func ==<T: ChaiFailStatus>(lhs: ChaiStatus<T>, rhs: ChaiStatus<T>) -> Bool {
+    switch(lhs, rhs) {
+    case (.success, .success):
+        return true
+    case (.failure(let lError), .failure(let rError)):
+        return lError == rError
+    default: return false
     }
-
-    if lhs is FileOpsStatus {
-        switch (lhs as! GitRepoStatus, rhs as! GitRepoStatus) {
-        case (.success, .success):
-            return true
-        case (.failure(let lError), .failure(let rError)):
-            return lError == rError
-        default: return false
-        }
-    }
-
-    return false
 }
 
 enum BootstrapStatus<T: Equatable> {
 
-    typealias Value = T
-    case success(Value)
+    case success(T)
     case failure(BootstrapCommandFailStatus)
 
     internal enum BootstrapCommandFailStatus: ChaiFailStatus {

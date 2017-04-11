@@ -66,7 +66,7 @@ public class FileOps: NSObject {
     ///
     /// - Parameter dirURL: URL to the directory to be deleted.
     /// - Returns: True if succeeded, false otherwise.
-    @discardableResult func removeDirectory(_ dirURL: URL) -> FileOpsStatus {
+    @discardableResult func removeDirectory(_ dirURL: URL) -> ChaiStatus<FileOpsFailStatus> {
         var isDirectory: ObjCBool = ObjCBool(true)
 
         guard FileManager.default.fileExists(atPath: dirURL.path, isDirectory: &isDirectory) else {
