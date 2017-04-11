@@ -10,8 +10,15 @@ import Foundation
 
 @available(OSX 10.12, *)
 struct AndroidBootstrap: BootstrapConfig {
+
+    var projectURL: URL!
+
     var type: String! {
         return "android"
+    }
+
+    init(repoUrlString: String! = "git@github.com:moldedbits/android-jumpstart.git") {
+        projectURL = URL(string: repoUrlString)
     }
 
     func bootstrap(_ projectDirURL: URL) -> Bool {
@@ -21,8 +28,8 @@ struct AndroidBootstrap: BootstrapConfig {
             MessageTools.error("Failed to create temp directory.", level: .verbose)
             return false
         }
-        let jumpstartRepoURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")
-        let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: jumpstartRepoURL)
+
+        let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: projectURL)
 
         do {
             MessageTools.state("Androids wear 🚀 boots!")

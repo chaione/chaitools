@@ -35,3 +35,16 @@ extension Iteratable where Self: RawRepresentable, Self: Hashable {
         return hashValues().map({$0.rawValue})
     }
 }
+
+
+protocol BootstrapConfig {
+
+    func bootstrap(_ projectDirURL: URL) -> Bool
+    var type: String! {get}
+    var projectURL: URL! {get set}
+    init(repoUrlString: String!)
+}
+
+func == (lhs: BootstrapConfig, rhs: BootstrapConfig) -> Bool {
+    return lhs.type == rhs.type
+}

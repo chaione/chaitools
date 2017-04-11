@@ -14,11 +14,6 @@ enum FileOpsFailStatus: ChaiFailStatus {
     case unknown
 }
 
-enum FileOpsStatus {
-    case success
-    case failure(FileOpsFailStatus)
-}
-
 @available(OSX 10.12, *)
 public class FileOps: NSObject {
 

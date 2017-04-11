@@ -9,16 +9,6 @@
 import Foundation
 import SwiftCLI
 
-protocol BootstrapConfig {
-
-    func bootstrap(_ projectDirURL: URL) -> Bool
-    var type: String! {get}
-}
-
-func == (lhs: BootstrapConfig, rhs: BootstrapConfig) -> Bool {
-    return lhs.type == rhs.type
-}
-
 @available(OSX 10.12, *)
 enum TechStack: String, Iteratable {
     case android
@@ -40,6 +30,12 @@ enum TechStack: String, Iteratable {
 
         return supportedStacksStr
     }
+}
+
+enum BootstrapCommandFailStatus: ChaiFailStatus {
+    case unrecognizedTechStack
+
+    case unknown
 }
 
 @available(OSX 10.12, *)
