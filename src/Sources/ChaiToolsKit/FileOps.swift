@@ -13,25 +13,15 @@ public class FileOps: NSObject {
 
     public static let defaultOps = FileOps()
 
-    var outputDirectoryString: String!
-
     private override init() {
         super.init()
-
-        let infoPlist = Bundle(for: type(of: self)).infoDictionary
-        // read `OutputDirectory` from plist/xcconfig file
-        if let debugDirectory = infoPlist?["OutputDirectory"] as? String {
-            outputDirectoryString = debugDirectory
-        } else {
-            outputDirectoryString = FileManager.default.currentDirectoryPath
-        }
     }
 
     /// Depending if the environment is set to DEBUG, method will return the appropriate `URL` object
     ///
     /// - Returns: `URL` object.
     func outputURLDirectory() -> URL {
-        return URL(fileURLWithPath: outputDirectoryString)
+        return URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
     }
 
     /// Takes a subpath and returns a full path going to the user's Library directory.

@@ -72,7 +72,7 @@ class GitRepo {
         // if (action == .pull) { clean() }
 
         let safeStatus = isSafeToProceed(forAction: action)
-        guard safeStatus == .success else {
+        if safeStatus != .success {
             return safeStatus
         }
 
