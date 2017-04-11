@@ -60,7 +60,7 @@ public class FileOps: NSObject {
     func ensureDirectory(_ dirURL: URL) -> Bool {
 
         guard !doesDirectoryExist(dirURL) else {
-            return false
+            return true
         }
 
         do {

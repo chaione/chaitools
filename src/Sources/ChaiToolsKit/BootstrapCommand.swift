@@ -12,13 +12,16 @@ import SwiftCLI
 protocol BootstrapConfig {
 
     func bootstrap(_ projectDirURL: URL) -> Bool
+    var type: String! {get}
+}
+
+func == (lhs: BootstrapConfig, rhs: BootstrapConfig) -> Bool {
+    return lhs.type == rhs.type
 }
 
 @available(OSX 10.12, *)
-enum TechStack: String {
+enum TechStack: String, Iteratable {
     case android
-
-    static let allValues = [android]
 
     /// Returns the BootstrapConfig for the TechStack
     ///
@@ -29,12 +32,13 @@ enum TechStack: String {
         }
     }
 
-    /// Prints all supported TechStacks
-    static func supportedStacks() {
-        MessageTools.state("Current supported tech stacks are:")
-        for stack in allValues {
-            MessageTools.state("- \(stack)")
-        }
+    /// return all supported TechStacks
+    static func supportedStacksFormattedString() -> String {
+        var supportedStacksStr = "Current supported tech stacks are:\n"
+        let stacks = rawValues().map{ "- \($0)\n" }.joined()
+        supportedStacksStr.append(stacks)
+
+        return supportedStacksStr
     }
 }
 
@@ -71,7 +75,7 @@ public class BootstrapCommand: OptionCommand {
             guard let stack = TechStack(rawValue: stackName) else {
                 MessageTools.instruct("\(stackName) is an unrecognized tech stack.",
                                       level: .silent)
-                TechStack.supportedStacks()
+                MessageTools.state(TechStack.supportedStacksFormattedString())
                 MessageTools.state("Please try again with one of those tech stacks.")
                 MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
                 return
@@ -81,7 +85,7 @@ public class BootstrapCommand: OptionCommand {
 
         } else {
             MessageTools.instruct("chaitools bootstrap works best with a tech stack.", level: .silent)
-            TechStack.supportedStacks()
+            MessageTools.state(TechStack.supportedStacksFormattedString())
 
             guard Input.awaitYesNoInput(message: "❓  Should we setup a base project structure?") else {
                 MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
@@ -198,7 +202,7 @@ public class BootstrapCommand: OptionCommand {
 
         // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
-
+        MessageTools.state("local Repo is \(repo.localURL)")
         do {
             try repo.execute(GitAction.ginit)
         } catch {

@@ -10,6 +10,9 @@ import Foundation
 
 @available(OSX 10.12, *)
 struct AndroidBootstrap: BootstrapConfig {
+    var type: String! {
+        return "android"
+    }
 
     func bootstrap(_ projectDirURL: URL) -> Bool {
 
