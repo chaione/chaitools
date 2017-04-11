@@ -14,10 +14,6 @@ enum GitRepoFailStatus: ChaiFailStatus {
     case missingLocalRepo
     case nonEmptyRepo
     case unknown
-
-    func isSuccessful() -> Bool {
-        return false
-    }
 }
 
 enum GitAction: String {

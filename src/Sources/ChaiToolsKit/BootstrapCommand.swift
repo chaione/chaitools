@@ -91,7 +91,7 @@ public class BootstrapCommand: OptionCommand {
             bootstrapper = nil
         }
 
-        guard let projectURL = setupDirectoryStructure() else {
+        guard let projectURL = try setupDirectoryStructure() else {
             MessageTools.state("Bootstrapper completed with failures. 😭", level: .silent)
             return
         }
@@ -123,7 +123,7 @@ public class BootstrapCommand: OptionCommand {
     /// |-- src/
     /// |-- tests/
     /// Returns: File URL of the base directory for the project
-    func setupDirectoryStructure() -> URL? {
+    func setupDirectoryStructure() throws -> URL? {
 
         projectName = Input.awaitInput(message: "❓  What is the name of the project?")
 
@@ -137,9 +137,9 @@ public class BootstrapCommand: OptionCommand {
 
         // create directory based on project name
         MessageTools.state("Creating new project directory for project \(projectName)...")
+
         guard FileOps.defaultOps.ensureDirectory(projectDirURL) else {
-            MessageTools.error("Project directory creation failed.")
-            return nil
+            throw FileOpsFailStatus.unknown
         }
 
         MessageTools.exclaim("Successfully created \(projectName) project directory.")

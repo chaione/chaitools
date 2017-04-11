@@ -58,22 +58,21 @@ public class FileOps: NSObject {
     /// - Parameter dirURL: The local URL of the directory to be created
     /// - Returns: True if succeeds and false otherwise.
     func ensureDirectory(_ dirURL: URL) -> Bool {
-        if !doesDirectoryExist(dirURL) {
-            do {
-                // directoryMissing
-                MessageTools.state("The local directory does not exist. Attempting to create it...", level: .verbose)
-                try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
-                // success
-                MessageTools.exclaim("Successfully created the directory.", level: .verbose)
-                return true
-            } catch {
 
-                // unknown
-                MessageTools.error("Error creating the directory. \(error)", level: .verbose)
-                return false
-            }
+        guard !doesDirectoryExist(dirURL) else {
+            return false
         }
-        return true
+
+        do {
+            MessageTools.state("The local directory does not exist. Attempting to create it...", level: .verbose)
+            try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
+            MessageTools.exclaim("Successfully created the directory.", level: .verbose)
+            return true
+        } catch {
+
+            MessageTools.error("Error creating the directory. \(error)", level: .verbose)
+            return false
+        }
     }
 
     /// Convenience method to check if a directory exists
@@ -81,7 +80,6 @@ public class FileOps: NSObject {
     /// - Returns: True if the directory exists, false otherwise.
     func doesDirectoryExist(_ url: URL) -> Bool {
         var isDirectory: ObjCBool = ObjCBool(true)
-        // directoryAlreadyExists || success
         return FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory)
     }
 

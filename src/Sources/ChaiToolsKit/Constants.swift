@@ -8,4 +8,4 @@
 
 import Foundation
 
-protocol ChaiFailStatus: Error {}
+protocol ChaiFailStatus: Error, Hashable {}
