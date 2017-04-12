@@ -12,13 +12,14 @@ import SwiftCLI
 @available(OSX 10.12, *)
 enum TechStack: String, Iteratable {
     case android
-
+    case ios
     /// Returns the BootstrapConfig for the TechStack
     ///
     /// - Returns: BootstrapConfig for the TechStack
     func bootstrapper() -> BootstrapConfig {
         switch self {
         case .android: return AndroidBootstrap()
+        case .ios: return iOSBoostrap()
         }
     }
 
