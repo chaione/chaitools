@@ -36,7 +36,7 @@ extension Iteratable where Self: RawRepresentable, Self: Hashable {
 
 protocol BootstrapConfig {
 
-    func bootstrap(_ projectDirURL: URL) -> Bool
+    func bootstrap(_ projectDirURL: URL) throws
     var type: String! {get}
     var projectURL: URL! {get set}
     init(repoUrlString: String!)
@@ -46,73 +46,26 @@ func == (lhs: BootstrapConfig, rhs: BootstrapConfig) -> Bool {
     return lhs.type == rhs.type
 }
 
-// MARK: - Enum Protocols
+// MARK: - Error Enums
 
-protocol ChaiFailStatus: Error, Hashable {}
-
-// MARK: - Enum Statuses
-
-enum FileOpsFailStatus: ChaiFailStatus {
+enum FileOpsError: Error {
     case directoryMissing
     case directoryAlreadyExists
     case unknown
 }
 
-enum GitRepoFailStatus: ChaiFailStatus {
+enum GitRepoError: Error {
     case alreadyInitialized
     case missingRemoteURL
     case missingLocalRepo
     case nonEmptyRepo
+    case commandFaliure(message: String)
     case unknown
 }
 
-enum ChaiStatus<Failure: ChaiFailStatus>: Equatable {
-
-    case success
-    case failure(Failure)
-
-    func isSuccessful() -> Bool {
-        return self == .success
-    }
-}
-
-
-/// Returns a Boolean value indicating whether two values are equal.
-///
-/// Equality is the inverse of inequality. For any values `a` and `b`,
-/// `a == b` implies that `a != b` is `false`.
-///
-/// - Parameters:
-///   - lhs: A value to compare.
-///   - rhs: Another value to compare.
-func ==<T: ChaiFailStatus>(lhs: ChaiStatus<T>, rhs: ChaiStatus<T>) -> Bool {
-    switch(lhs, rhs) {
-    case (.success, .success):
-        return true
-    case (.failure(let lError), .failure(let rError)):
-        return lError == rError
-    default: return false
-    }
-}
-
-enum BootstrapStatus<T: Equatable> {
-
-    case success(T)
-    case failure(BootstrapCommandFailStatus)
-
-    internal enum BootstrapCommandFailStatus: ChaiFailStatus {
-        case unrecognizedTechStack
-        case projectAlreadyExistAtLocation
-        case unknown
-    }
-}
-
-func == <T>(lhs: BootstrapStatus<T>, rhs: BootstrapStatus<T>) -> Bool {
-    switch(lhs, rhs) {
-    case (.success, .success):
-        return true
-    case (.failure(let lError), .failure(let rError)):
-        return lError == rError
-    default: return false
-    }
+enum BootstrapCommandError: Error {
+    case unrecognizedTechStack
+    case projectAlreadyExistAtLocation
+    case generic(message: String)
+    case unknown
 }
