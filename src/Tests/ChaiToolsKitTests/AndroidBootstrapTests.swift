@@ -10,9 +10,25 @@ import XCTest
 @testable import ChaiToolsKit
 
 @available(OSX 10.12, *)
+class DummyAndroid: AndroidBootstrap {
+    override func downloadJumpStart(_ input: TaskResult? = nil) -> TaskResult {
+        return .success(nil)
+    }
+    override func cloneAndroidJumpStartRepo(_ input: TaskResult? = nil) -> TaskResult {
+        return .success(nil)
+    }
+    override func moveGitignoreToRoot(_ input: TaskResult? = nil) -> TaskResult {
+        return .success(nil)
+    }
+    override func moveEverythingElse(_ input: TaskResult? = nil) -> TaskResult {
+        return .success(nil)
+    }
+}
+
+@available(OSX 10.12, *)
 class AndroidBootstrapTests: XCTestCase {
 
-    let tasksToExecute = AndroidBootstrap().bootstrapTasks()
+    let tasksToExecute = DummyAndroid().bootstrapTasks()
 
     func testTasksToExecute_Names() {
 
@@ -28,4 +44,15 @@ class AndroidBootstrapTests: XCTestCase {
         }
     }
 
+    func testTasksToExecute_Value() {
+        let taskRunnerResult = TaskRunner.execute(tasksToExecute)
+
+        if case Result.success(let data) = taskRunnerResult {
+
+            XCTAssertNil(data, "DummyAndroid class was supposed to return `.success(nil)`.")
+            return
+        }
+
+        XCTAssert(false, "taskRunnerResult returned a failed result.")
+    }
 }
