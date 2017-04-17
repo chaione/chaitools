@@ -92,9 +92,10 @@ public struct Task {
                 return .success(z)
             }
             return nextParam
-        default:
+        case .failure(let e):
             failureBlock?()
-            return .failure(TaskError.unknown)
+            return .failure(e)
+
         }
     }
 

@@ -12,58 +12,90 @@ import Foundation
 struct AndroidBootstrap: BootstrapConfig {
 
     var projectURL: URL!
-
+    var fileOps: FileOps = FileOps.defaultOps
     var type: String! {
         return "android"
     }
 
-    init(repoUrlString: String! = "git@github.com:moldedbits/android-jumpstart.git") {
+    init(repoUrlString: String! = "git@github.com:chaione/Cely.git") {
         projectURL = URL(string: repoUrlString)
     }
+    func bootstrapTasks(_ projectDirURL: URL) -> [Task] {
+        let tempFileOps = fileOps
+        let tempProjectURL = projectURL
 
+        return [
+
+            Task(name: "Download jump start to temp folder")
+                .task({ (result) -> TaskResult in
+                    guard let tempDir = tempFileOps.createTempDirectory() else {
+                        return .failure(BootstrapCommandError.generic(message: "Failed to create temp directory."))
+                    }
+                    let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: tempProjectURL)
+                    return .success(repo)
+                }).success({
+                    MessageTools.state("Androids wear 🚀 boots!")
+                }),
+
+            Task(name: "Clone Android Jumpstart Repo")
+                .task({ (input) -> TaskResult in
+                    guard let repo = input.result as? GitRepo
+                        else { return .failure(GitRepoError.unknown) }
+
+                    do {
+                        try repo.execute(GitAction.clone)
+                        return .success(repo)
+                    } catch {
+                        return .failure(BootstrapCommandError.generic(message: "Failed to download jumpstart project. Do you have permission to access it?"))
+                    }
+                }).success({
+                    MessageTools.state("Setting up Android jumpstart...")
+                }),
+
+            Task(name: "move .gitignore to root of project")
+                .task({ (input) -> TaskResult in
+                    guard let repo = input.result as? GitRepo
+                        else { return .failure(GitRepoError.unknown) }
+
+                    do {
+                        try FileManager.default.copyItem(at: repo.localURL.appendingPathComponent(".gitignore"), to: projectDirURL.appendingPathComponent(".gitignore"))
+                        return .success(repo)
+                    } catch {
+                        return .failure(BootstrapCommandError.generic(message: "Failed to move .gitingore with error \(error)."))
+                    }
+                }).failure({
+                    MessageTools.error("Failed to move .gitingore.", level: .verbose)
+                }),
+
+            Task(name: "move everything else to src/ folder.")
+                .task({ (input) -> TaskResult in
+                    guard let repo = input.result as? GitRepo
+                        else { return .failure(GitRepoError.unknown) }
+                    do {
+
+                        let contents = try FileManager.default.contentsOfDirectory(at: repo.localURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+                        let srcDirURL = projectDirURL.appendingPathComponent("src", isDirectory: true)
+
+                        for fileURL in contents {
+                            try FileManager.default.copyItem(at: fileURL, to: srcDirURL.appendingPathComponent(fileURL.lastPathComponent))
+                        }
+
+                        return .success(nil)
+
+                    } catch {
+                        return .failure(BootstrapCommandError.generic(message: "Failed to move project files with error \(error)."))
+                    }
+                }).success({
+                    MessageTools.exclaim("Android jumpstart successfully created!")
+                }).failure({ () in
+                    MessageTools.error("Failed to move jumpstart files!")
+                })
+        ]
+    }
     func bootstrap(_ projectDirURL: URL) throws {
-
-        // Download jump start to temp folder
-        guard let tempDir = FileOps.defaultOps.createTempDirectory() else {
-            MessageTools.error("Failed to create temp directory.", level: .verbose)
-            throw BootstrapCommandError.generic(message: "Failed to create temp directory.")
+        let results = TaskRunner.execute(bootstrapTasks(projectDirURL))
+        if case Result.failure(let error) = results {
+            throw error
         }
-
-        let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: projectURL)
-
-        MessageTools.state("Androids wear 🚀 boots!")
-
-        do {
-            try repo.execute(GitAction.clone)
-        } catch {
-            throw BootstrapCommandError.generic(message: "Failed to download jumpstart project. Do you have permission to access it?")
-        }
-
-        MessageTools.state("Setting up Android jumpstart...")
-        // move .gitignore to root of project
-        do {
-            try FileManager.default.copyItem(at: tempDir.appendingPathComponent(".gitignore"), to: projectDirURL.appendingPathComponent(".gitignore"))
-        } catch {
-            MessageTools.error("Failed to move jumpstart files!")
-            MessageTools.error("Failed to move .gitingore with error \(error).", level: .verbose)
-            throw BootstrapCommandError.generic(message: "Failed to move .gitingore with error \(error).")
-        }
-
-        // move everything else to src/ folder.
-        do {
-
-            let contents = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-            let srcDirURL = projectDirURL.appendingPathComponent("src", isDirectory: true)
-
-            for fileURL in contents {
-                try FileManager.default.copyItem(at: fileURL, to: srcDirURL.appendingPathComponent(fileURL.lastPathComponent))
-            }
-
-        } catch {
-            MessageTools.error("Failed to move jumpstart files!")
-            MessageTools.error("Failed to move project files with error \(error).", level: .verbose)
-            throw BootstrapCommandError.generic(message: "Failed to move project files with error \(error).")
-        }
-        MessageTools.exclaim("Android jumpstart successfully created!")
     }
 }
