@@ -33,7 +33,11 @@ struct AndroidBootstrap: BootstrapConfig {
 
         MessageTools.state("Androids wear 🚀 boots!")
 
-        try repo.execute(GitAction.clone)
+        do {
+            try repo.execute(GitAction.clone)
+        } catch {
+            throw BootstrapCommandError.generic(message: "Failed to download jumpstart project. Do you have permission to access it?")
+        }
 
         MessageTools.state("Setting up Android jumpstart...")
         // move .gitignore to root of project

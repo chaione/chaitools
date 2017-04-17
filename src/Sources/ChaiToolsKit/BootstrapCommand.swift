@@ -56,45 +56,49 @@ public class BootstrapCommand: OptionCommand {
     /// - Parameter arguments: The arguments passed to the command
     public func execute(arguments: CommandArguments) throws {
 
-        var bootstrapper: BootstrapConfig?
+        do {
+            var bootstrapper: BootstrapConfig?
 
-        MessageTools.state("These boots are made for walking.", level: .silent)
+            MessageTools.state("These boots are made for walking.", level: .silent)
 
-        if let stackName = arguments.optionalArgument("stack") {
+            if let stackName = arguments.optionalArgument("stack") {
 
-            guard let stack = TechStack(rawValue: stackName) else {
-                MessageTools.instruct("\(stackName) is an unrecognized tech stack.",
-                                      level: .silent)
+                guard let stack = TechStack(rawValue: stackName) else {
+                    MessageTools.instruct("\(stackName) is an unrecognized tech stack.",
+                        level: .silent)
+                    MessageTools.state(TechStack.supportedStacksFormattedString())
+                    MessageTools.state("Please try again with one of those tech stacks.")
+                    MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
+                    return
+                }
+
+                bootstrapper = stack.bootstrapper()
+
+            } else {
+                MessageTools.instruct("chaitools bootstrap works best with a tech stack.", level: .silent)
                 MessageTools.state(TechStack.supportedStacksFormattedString())
-                MessageTools.state("Please try again with one of those tech stacks.")
-                MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
-                return
+
+                guard Input.awaitYesNoInput(message: "❓  Should we setup a base project structure?") else {
+                    MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
+                    return
+                }
+
+                bootstrapper = nil
             }
 
-            bootstrapper = stack.bootstrapper()
+            let projectURL = try setupDirectoryStructure()
 
-        } else {
-            MessageTools.instruct("chaitools bootstrap works best with a tech stack.", level: .silent)
-            MessageTools.state(TechStack.supportedStacksFormattedString())
-
-            guard Input.awaitYesNoInput(message: "❓  Should we setup a base project structure?") else {
-                MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
-                return
+            if let bootstrapper = bootstrapper {
+                try bootstrapper.bootstrap(projectURL)
             }
-
-            bootstrapper = nil
+            
+            try setupReadMeDefaults(projectURL)
+            try setupGitRepo(projectURL)
+            
+            MessageTools.state("Boot straps pulled. Time to start walking. 😎", level: .silent)
+        } catch let error {
+            MessageTools.error(error.description)
         }
-
-        let projectURL = try setupDirectoryStructure()
-
-        if let bootstrapper = bootstrapper {
-            try bootstrapper.bootstrap(projectURL)
-        }
-
-        try setupReadMeDefaults(projectURL)
-        try setupGitRepo(projectURL)
-
-        MessageTools.state("Boot straps pulled. Time to start walking. 😎", level: .silent)
     }
 
     /// Setups the expected project folder structure:
@@ -112,8 +116,7 @@ public class BootstrapCommand: OptionCommand {
 
         // Do not overwrite existing projects
         guard !FileOps.defaultOps.doesDirectoryExist(projectDirURL) else {
-            MessageTools.error("Project \(projectName) already exists at this location.")
-            throw BootstrapCommandError.projectAlreadyExistAtLocation
+            throw BootstrapCommandError.projectAlreadyExistAtLocation(projectName: projectName)
         }
 
         // create directory based on project name
