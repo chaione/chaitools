@@ -21,21 +21,22 @@ struct AndroidBootstrap: BootstrapConfig {
         projectURL = URL(string: repoUrlString)
     }
 
-    func bootstrap(_ projectDirURL: URL) -> Bool {
+    func bootstrap(_ projectDirURL: URL) throws {
 
         // Download jump start to temp folder
         guard let tempDir = FileOps.defaultOps.createTempDirectory() else {
             MessageTools.error("Failed to create temp directory.", level: .verbose)
-            return false
+            throw BootstrapCommandError.generic(message: "Failed to create temp directory.")
         }
 
         let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: projectURL)
 
         MessageTools.state("Androids wear 🚀 boots!")
 
-        guard repo.execute(GitAction.clone).isSuccessful() else {
-            MessageTools.error("Failed to download jumpstart project. Do you have permission to access it?")
-            return false
+        do {
+            try repo.execute(GitAction.clone)
+        } catch {
+            throw BootstrapCommandError.generic(message: "Failed to download jumpstart project. Do you have permission to access it?")
         }
 
         MessageTools.state("Setting up Android jumpstart...")
@@ -45,7 +46,7 @@ struct AndroidBootstrap: BootstrapConfig {
         } catch {
             MessageTools.error("Failed to move jumpstart files!")
             MessageTools.error("Failed to move .gitingore with error \(error).", level: .verbose)
-            return false
+            throw BootstrapCommandError.generic(message: "Failed to move .gitingore with error \(error).")
         }
 
         // move everything else to src/ folder.
@@ -61,10 +62,8 @@ struct AndroidBootstrap: BootstrapConfig {
         } catch {
             MessageTools.error("Failed to move jumpstart files!")
             MessageTools.error("Failed to move project files with error \(error).", level: .verbose)
-            return false
+            throw BootstrapCommandError.generic(message: "Failed to move project files with error \(error).")
         }
         MessageTools.exclaim("Android jumpstart successfully created!")
-
-        return true
     }
 }
