@@ -9,9 +9,9 @@
 import Foundation
 
 @available(OSX 10.12, *)
-class FileOps: NSObject {
+public class FileOps: NSObject {
 
-    static let defaultOps = FileOps()
+    public static let defaultOps = FileOps()
 
     private override init() {
         super.init()
@@ -21,17 +21,7 @@ class FileOps: NSObject {
     ///
     /// - Returns: `URL` object.
     func outputURLDirectory() -> URL {
-        var outputDirectoryString: String! {
-            // Get Bundle for Framework, not main app
-            guard let path = Bundle(for: FileOps.self).path(forResource: "Info", ofType: "plist"),
-                // Read `OutputDirectory` from plist/xcconfig file
-                let debugDirectory = NSDictionary(contentsOfFile: path)?["OutputDirectory"] as? String
-            else { return FileManager.default.currentDirectoryPath }
-
-            return debugDirectory
-        }
-
-        return URL(fileURLWithPath: outputDirectoryString)
+        return URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
     }
 
     /// Takes a subpath and returns a full path going to the user's Library directory.
@@ -47,18 +37,21 @@ class FileOps: NSObject {
     /// - Parameter dirURL: The local URL of the directory to be created
     /// - Returns: True if succeeds and false otherwise.
     func ensureDirectory(_ dirURL: URL) -> Bool {
-        if !doesDirectoryExist(dirURL) {
-            do {
-                MessageTools.state("The local directory does not exist. Attempting to create it...", level: .verbose)
-                try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
-                MessageTools.exclaim("Successfully created the directory.", level: .verbose)
-                return true
-            } catch {
-                MessageTools.error("Error creating the directory. \(error)", level: .verbose)
-                return false
-            }
+
+        guard !doesDirectoryExist(dirURL) else {
+            return true
         }
-        return true
+
+        do {
+            MessageTools.state("The local directory does not exist. Attempting to create it...", level: .verbose)
+            try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
+            MessageTools.exclaim("Successfully created the directory.", level: .verbose)
+            return true
+        } catch {
+
+            MessageTools.error("Error creating the directory. \(error)", level: .verbose)
+            return false
+        }
     }
 
     /// Convenience method to check if a directory exists
@@ -73,21 +66,14 @@ class FileOps: NSObject {
     ///
     /// - Parameter dirURL: URL to the directory to be deleted.
     /// - Returns: True if succeeded, false otherwise.
-    func removeDirectory(_ dirURL: URL) -> Bool {
+    func removeDirectory(_ dirURL: URL) throws {
         var isDirectory: ObjCBool = ObjCBool(true)
 
         guard FileManager.default.fileExists(atPath: dirURL.path, isDirectory: &isDirectory) else {
-            MessageTools.state("The directory does not exist, so it cannot be removed. 🤔", level: .verbose)
-            return false
+            throw FileOpsError.directoryMissing
         }
-        do {
-            try FileManager.default.removeItem(atPath: dirURL.path)
-            MessageTools.exclaim("Successfully removed the directory.", level: .verbose)
-            return true
-        } catch {
-            MessageTools.error("Error removing the directory. \(error)", level: .verbose)
-            return false
-        }
+        try FileManager.default.removeItem(atPath: dirURL.path)
+        MessageTools.exclaim("Successfully removed the directory.", level: .verbose)
     }
 
     /// Creates a new temporary directory

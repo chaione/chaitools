@@ -58,7 +58,7 @@ class GitRepo {
     ///
     /// - Parameter action: The action to be executed, defined by the GitAction enum
     /// - Returns: True if action succeeded, false otherwise
-    func execute(_ action: GitAction) -> Bool {
+    func execute(_ action: GitAction) throws {
 
         // Spawn a new process before executing as you can only execute them once
         let outputPipe = Pipe()
@@ -71,9 +71,7 @@ class GitRepo {
         // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`
         // if (action == .pull) { clean() }
 
-        if !isSafeToProceed(forAction: action) {
-            return false
-        }
+        try verifyGitEnvironment(for: action)
 
         process.arguments = action.arguments(withRemoteURL: remoteURL)
 
@@ -86,7 +84,6 @@ class GitRepo {
             MessageTools.state(output!, level: .debug)
             MessageTools.exclaim("`git \(action.rawValue)` was a success!", level: .verbose)
 
-            return true
         } else {
             let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
             let output = String(data: outputData, encoding: String.Encoding.utf8)
@@ -97,11 +94,9 @@ class GitRepo {
             MessageTools.state(errorOut!, level: .debug)
 
             MessageTools.error("`git \(action.rawValue)` failed! Sad!", level: .verbose)
-            return false
+            throw GitRepoError.commandFaliure(message: "`git \(action.rawValue)` failed!")
         }
     }
-
-    // private func isClean() -> Bool { }
 
     private func clean() {
         let process = Process(withLaunchPath: launchPath, currentDirectoryPath: localURL.path)
@@ -109,28 +104,30 @@ class GitRepo {
         process.execute()
     }
 
-    private func isSafeToProceed(forAction action: GitAction) -> Bool {
+    private func verifyGitEnvironment(for action: GitAction) throws {
 
         if (action == .ginit) && (localURL.isGitRepo()) {
             MessageTools.error("Can't initialize a git repo that's already initialized.", level: .verbose)
-            return false
+            throw GitRepoError.alreadyInitialized
         }
 
         if remoteURL == nil && (action == .pull || action == .clone) {
             MessageTools.error("Can't perform \(action) when missing remote URL.", level: .verbose)
-            return false
+            throw GitRepoError.missingRemoteURL
         }
 
         if (action == .pull) && (!localURL.isGitRepo()) {
             MessageTools.state("A git repo can't be updated if it doesn't exist. 🤔", level: .verbose)
-            return false
+            throw GitRepoError.missingLocalRepo
         }
 
         if (action == .clone) && (!localURL.isEmpty()) {
             MessageTools.error("Can't clone a git repo into a non-empty directory.", level: .verbose)
-            return false
+            throw GitRepoError.nonEmptyRepo
         }
 
-        return FileOps.defaultOps.ensureDirectory(localURL)
+        guard FileOps.defaultOps.ensureDirectory(localURL) else {
+            throw GitRepoError.unknown
+        }
     }
 }
