@@ -17,12 +17,13 @@ struct AndroidBootstrap: BootstrapConfig {
         return "android"
     }
 
-    init(repoUrlString: String! = "git@github.com:chaione/Cely.git") {
-        projectURL = URL(string: repoUrlString)
+    init() {
+        projectURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")
     }
-    func bootstrapTasks(_ projectDirURL: URL) -> [Task] {
+
+    func bootstrapTasks() -> [Task] {
         let tempFileOps = fileOps
-        let tempProjectURL = projectURL
+        let tempProjectURL: URL! = projectURL
 
         return [
 
@@ -58,7 +59,7 @@ struct AndroidBootstrap: BootstrapConfig {
                         else { return .failure(GitRepoError.unknown) }
 
                     do {
-                        try FileManager.default.copyItem(at: repo.localURL.appendingPathComponent(".gitignore"), to: projectDirURL.appendingPathComponent(".gitignore"))
+                        try FileManager.default.copyItem(at: repo.localURL.appendingPathComponent(".gitignore"), to: tempProjectURL.appendingPathComponent(".gitignore"))
                         return .success(repo)
                     } catch {
                         return .failure(BootstrapCommandError.generic(message: "Failed to move .gitingore with error \(error)."))
@@ -74,7 +75,7 @@ struct AndroidBootstrap: BootstrapConfig {
                     do {
 
                         let contents = try FileManager.default.contentsOfDirectory(at: repo.localURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-                        let srcDirURL = projectDirURL.appendingPathComponent("src", isDirectory: true)
+                        let srcDirURL = tempProjectURL.appendingPathComponent("src", isDirectory: true)
 
                         for fileURL in contents {
                             try FileManager.default.copyItem(at: fileURL, to: srcDirURL.appendingPathComponent(fileURL.lastPathComponent))
@@ -91,11 +92,5 @@ struct AndroidBootstrap: BootstrapConfig {
                     MessageTools.error("Failed to move jumpstart files!")
                 })
         ]
-    }
-    func bootstrap(_ projectDirURL: URL) throws {
-        let results = TaskRunner.execute(bootstrapTasks(projectDirURL))
-        if case Result.failure(let error) = results {
-            throw error
-        }
     }
 }

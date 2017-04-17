@@ -19,7 +19,7 @@ enum TechStack: String, Iteratable {
     func bootstrapper() -> BootstrapConfig {
         switch self {
         case .android: return AndroidBootstrap()
-        case .ios: return iOSBoostrap()
+        case .ios: return iOSBootstrap()
         }
     }
 

@@ -12,7 +12,7 @@ import XCTest
 @available(OSX 10.12, *)
 class BootstrapCommandTests: XCTestCase {
 
-    let supportedStackStrings = ["android"]
+    let supportedStackStrings = ["android", "ios"]
 
     override func setUp() {
         super.setUp()
@@ -34,7 +34,7 @@ class BootstrapCommandTests: XCTestCase {
 @available(OSX 10.12, *)
 extension BootstrapCommandTests {
     func testSupportedStacks() {
-        XCTAssert(TechStack.rawValues() == ["android"], "TechStack.rawValues() is supposed to equal \(supportedStackStrings)")
+        XCTAssert(TechStack.rawValues() == supportedStackStrings, "TechStack.rawValues() is supposed to equal \(supportedStackStrings)")
     }
 
     func testSupportedStacksFormmatedString() {
