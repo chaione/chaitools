@@ -2,129 +2,105 @@
 //  GitRepoTests.swift
 //  chaitools
 //
-//  Created by Fabian Buentello on 4/4/17.
+//  Created by Fabian Buentello on 4/6/17.
 //
 //
 
 import XCTest
 @testable import ChaiToolsKit
-import Foundation
 
 @available(OSX 10.12, *)
 class GitRepoTests: XCTestCase {
 
-    let dummyURL = FileOps.defaultOps.outputURLDirectory()
+    let celyGithubUrl = URL(string: "git@github.com:chaione/Cely.git")
+    lazy var celyDirectory: URL = {
+        self.localDirectory(childDirectory: "cely")
+    }()
+
+    var testRepo: GitRepo!
+    var tempDirectoryString: String {
+        let infoPlist = Bundle(for: type(of: self)).infoDictionary
+        if let debugDirectory = infoPlist?["OutputDirectory"] as? String {
+            return debugDirectory
+        } else {
+            return FileManager.default.currentDirectoryPath
+        }
+    }
+
+    func localDirectory(childDirectory: String? = nil) -> URL {
+
+        guard let child = childDirectory else {
+            return URL(string: "file://\(tempDirectoryString)")!
+        }
+
+        return URL(string: "file://\(tempDirectoryString)/\(child)")!
+    }
 
     override func setUp() {
         super.setUp()
+        testRepo = GitRepo(withLocalURL: celyDirectory, andRemoteURL: celyGithubUrl)
+        XCTAssertEqual(testRepo.localURL, celyDirectory)
+        XCTAssertEqual(testRepo.remoteURL, celyGithubUrl)
     }
 
     override func tearDown() {
+        // remove created directories
+        try? FileOps.defaultOps.removeDirectory(celyDirectory)
         super.tearDown()
     }
 
-    func testClone() {
-        if let action = GitAction(rawValue: "clone") {
-            XCTAssertEqual(action, .clone, "The rawValue value `clone` does not return GitAction.clone")
+    func testExecute_successfully() {
+        XCTAssertNoThrow(try testRepo.execute(.clone), "Failed to clone test repo")
+    }
 
-            let nilURLArguments = action.arguments(withRemoteURL: nil)
-            XCTAssertEqual(nilURLArguments, [], "nilURLArguments from GitAction.clone was supposed to return []")
+    func testExecute_failure_alreadyInitialized() {
 
-            let urlArguments = action.arguments(withRemoteURL: dummyURL)
-            let correctArguments = ["clone", dummyURL.path, "."]
-            XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.clone was supposed to return (correctArguments)")
-        } else {
-            XCTFail("The rawValue value `clone` does not return GitAction.clone")
+        XCTAssertNoThrow(try testRepo.execute(.clone), "Failed to clone test repo")
+
+        XCTAssertThrowsError(try testRepo.execute(.ginit), "Failed to throw an error") { error in
+            if let e = error as? GitRepoError {
+                guard case .alreadyInitialized = e else {
+                    XCTFail("Failed to return the error message GitRepoError.alreadyInitialized, instead returned\(error)")
+                    return
+                }
+            }
         }
     }
 
-    func testPull() {
-        if let action = GitAction(rawValue: "pull") {
-            XCTAssertEqual(action, .pull, "The rawValue value `pull` does not return GitAction.pull")
+    func testExecute_failure_nonEmptyRepo() {
 
-            let nilURLArguments = action.arguments(withRemoteURL: nil)
-            XCTAssertEqual(nilURLArguments, [], "nilURLArguments from GitAction.pull was supposed to return []")
+        XCTAssertNoThrow(try testRepo.execute(.clone), "Failed to clone test repo")
 
-            let urlArguments = action.arguments(withRemoteURL: dummyURL)
-            let correctArguments = ["pull", dummyURL.path]
-            XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.pull was supposed to return (correctArguments)")
-        } else {
-            XCTFail("The rawValue value `pull` does not return GitAction.pull")
+        XCTAssertThrowsError(try testRepo.execute(.clone), "Failed to throw an error") { error in
+            if let e = error as? GitRepoError {
+                guard case .nonEmptyRepo = e else {
+                    XCTFail("Failed to return the error message GitRepoError.nonEmptyRepo, instead returned\(error)")
+                    return
+                }
+            }
         }
     }
 
-    func testGinit() {
-        if let action = GitAction(rawValue: "init") {
-            XCTAssertEqual(action, .ginit, "The rawValue value `ginit` does not return GitAction.ginit")
-
-            let nilURLArguments = action.arguments(withRemoteURL: nil)
-            XCTAssertEqual(nilURLArguments, [GitAction.ginit.rawValue], "nilURLArguments from GitAction.ginit was supposed to return []")
-
-            let urlArguments = action.arguments(withRemoteURL: dummyURL)
-            let correctArguments: [String] = []
-            XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.ginit was supposed to return (correctArguments)")
-        } else {
-            XCTFail("The rawValue value `ginit` does not return GitAction.ginit")
+    func testExecute_failure_missingLocalRepo() {
+        XCTAssertThrowsError(try testRepo.execute(.pull), "Failed to throw an error") { error in
+            if let e = error as? GitRepoError {
+                guard case .missingLocalRepo = e else {
+                    XCTFail("Failed to return the error message GitRepoError.missingLocalRepo, instead returned\(error)")
+                    return
+                }
+            }
         }
     }
 
-    func testAdd() {
-        if let action = GitAction(rawValue: "add") {
-            XCTAssertEqual(action, .add, "The rawValue value `add` does not return GitAction.add")
-
-            let nilURLArguments = action.arguments(withRemoteURL: nil)
-            XCTAssertEqual(nilURLArguments, [GitAction.add.rawValue, "."], "nilURLArguments from GitAction.add was supposed to return \([GitAction.add, "."])")
-
-            let urlArguments = action.arguments(withRemoteURL: dummyURL)
-            let correctArguments: [String] = []
-            XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.add was supposed to return (correctArguments)")
-        } else {
-            XCTFail("The rawValue value `add` does not return GitAction.add")
-        }
-    }
-
-    func testCommit() {
-        if let action = GitAction(rawValue: "commit") {
-            XCTAssertEqual(action, .commit, "The rawValue value `commit` does not return GitAction.commit")
-
-            let nilURLArguments = action.arguments(withRemoteURL: nil)
-            XCTAssertEqual(nilURLArguments, [GitAction.commit.rawValue, "-m \"Initial commit by chaitools\""], "nilURLArguments from GitAction.commit was supposed to return \([GitAction.commit, "-m \"Initial commit by chaitools\""])")
-
-            let urlArguments = action.arguments(withRemoteURL: dummyURL)
-            let correctArguments: [String] = []
-            XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.commit was supposed to return (correctArguments)")
-        } else {
-            XCTFail("The rawValue value `commit` does not return GitAction.commit")
-        }
-    }
-
-    func testRemoteAdd() {
-        if let action = GitAction(rawValue: "remote") {
-            XCTAssertEqual(action, .remoteAdd, "The rawValue value `remoteAdd` does not return GitAction.remoteAdd")
-
-            let nilURLArguments = action.arguments(withRemoteURL: nil)
-            XCTAssertEqual(nilURLArguments, [], "nilURLArguments from GitAction.remoteAdd was supposed to return []")
-
-            let urlArguments = action.arguments(withRemoteURL: dummyURL)
-            let correctArguments: [String] = ["remote", "add", "origin", dummyURL.path]
-            XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.remoteAdd was supposed to return (correctArguments)")
-        } else {
-            XCTFail("The rawValue value `remoteAdd` does not return GitAction.remoteAdd")
-        }
-    }
-
-    func testPush() {
-        if let action = GitAction(rawValue: "push") {
-            XCTAssertEqual(action, .push, "The rawValue value `push` does not return GitAction.push")
-
-            let nilURLArguments = action.arguments(withRemoteURL: nil)
-            XCTAssertEqual(nilURLArguments, [], "nilURLArguments from GitAction.push was supposed to return []")
-
-            let urlArguments = action.arguments(withRemoteURL: dummyURL)
-            let correctArguments = ["push", "-u", "origin", "master"]
-            XCTAssertEqual(urlArguments, correctArguments, "urlArguments from GitAction.push was supposed to return (correctArguments)")
-        } else {
-            XCTFail("The rawValue value `push` does not return GitAction.push")
+    func testExecute_failure_missingRemoteURL() {
+        testRepo.remoteURL = nil
+        XCTAssertThrowsError(try testRepo.execute(.pull), "Failed to throw an error") { error in
+            if let e = error as? GitRepoError {
+                guard case .missingRemoteURL = e else {
+                    XCTFail("Failed to return the error message GitRepoError.missingRemoteURL, instead returned\(error)")
+                    return
+                }
+            }
         }
     }
 }

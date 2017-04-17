@@ -56,49 +56,34 @@ public class TemplatesCommand: OptionCommand {
         }
 
         switch action {
-        case .install: installTemplates()
-        case .update: updateTemplates()
-        case .remove: removeTemplates()
+        case .install: try installTemplates()
+        case .update: try updateTemplates()
+        case .remove: try removeTemplates()
         }
     }
 
-    private func installTemplates() {
+    private func installTemplates() throws {
         MessageTools.state("Attempting to install Xcode templates...")
-        var status = true
         for template in templates {
-            status = status && template.repo.execute(GitAction.clone)
+            try template.repo.execute(GitAction.clone)
         }
-        if status {
-            MessageTools.exclaim("Successfully installed Xcode templates.")
-        } else {
-            MessageTools.error("Xcode template installation failed.")
-        }
+        MessageTools.exclaim("Successfully installed Xcode templates.")
     }
 
-    private func updateTemplates() {
+    private func updateTemplates() throws {
         MessageTools.state("Attempting to update Xcode templates...")
-        var status = true
+        // Checks if all is true
         for template in templates {
-            status = status && template.repo.execute(GitAction.pull)
+            try template.repo.execute(GitAction.pull)
         }
-        if status {
-            MessageTools.exclaim("Successfully updated Xcode templates.")
-        } else {
-            MessageTools.error("Xcode template update failed.")
-        }
+        MessageTools.exclaim("Successfully updated Xcode templates.")
     }
 
-    private func removeTemplates() {
-
-        var status = true
+    private func removeTemplates() throws {
         MessageTools.state("Attempting to remove the templates directory...")
         for template in templates {
-            status = status && FileOps.defaultOps.removeDirectory(template.localDir)
+            try FileOps.defaultOps.removeDirectory(template.localDir)
         }
-        if status {
-            MessageTools.exclaim("Successfully removed Xcode templates.")
-        } else {
-            MessageTools.error("Xcode template removal failed.")
-        }
+        MessageTools.exclaim("Successfully removed Xcode templates.")
     }
 }
