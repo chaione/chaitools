@@ -15,6 +15,10 @@ extension URL {
         return contents.isEmpty
     }
 
+    func exists() -> Bool {
+        return !self.isEmpty()
+    }
+
     func isGitRepo() -> Bool {
         guard let contents = try? FileManager.default.contentsOfDirectory(atPath: self.path) else { return false }
 

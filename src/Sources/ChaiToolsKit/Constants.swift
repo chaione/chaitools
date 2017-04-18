@@ -65,6 +65,7 @@ extension Error {
 enum FileOpsError: Error {
     case directoryMissing
     case directoryAlreadyExists
+    case generic(message: String)
     case unknown
 
     var localizedDescription: String {
@@ -73,6 +74,8 @@ enum FileOpsError: Error {
             return "Destination directory is Missing."
         case .directoryAlreadyExists:
             return "Destination directory already exists."
+        case .generic(let message):
+            return message
         case .unknown:
             return "ChaiTools does not know what happened 😭"
         }
