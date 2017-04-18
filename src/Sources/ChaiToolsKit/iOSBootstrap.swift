@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftCLI
 
 @available(OSX 10.12, *)
 struct iOSBootstrap: BootstrapConfig {
@@ -56,6 +57,9 @@ struct iOSBootstrap: BootstrapConfig {
     }
 
     func xcodeFinishedSettingUp() throws {
+        guard Input.awaitYesNoInput(message: "❓  Has Xcode finished creating a project?") else {
+            throw BootstrapCommandError.generic(message: "User failed to create Xcode project.")
+        }
 
     }
 

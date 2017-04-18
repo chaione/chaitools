@@ -22,11 +22,10 @@ public class AndroidBootstrap: BootstrapConfig {
     }
 
     func bootstrap(_ projectDirURL: URL) throws {
-
         let repo = try downloadJumpStart()
         try cloneAndroidJumpStartRepo(repo)
-        try moveGitignoreToRoot(repo)
-        try moveEverythingElse(repo)
+        try moveGitignoreToRoot(repo, projectDirURL: projectDirURL)
+        try moveEverythingElse(repo, projectDirURL: projectDirURL)
     }
 
     func downloadJumpStart() throws -> GitRepo {
@@ -41,27 +40,27 @@ public class AndroidBootstrap: BootstrapConfig {
     func cloneAndroidJumpStartRepo(_ repo: GitRepo) throws {
 
         do {
-            try repo.execute(GitAction.clone)
             MessageTools.state("Setting up Android jumpstart...")
+            try repo.execute(GitAction.clone)
         } catch {
             throw BootstrapCommandError.generic(message: "Failed to download jumpstart project. Do you have permission to access it?")
         }
     }
 
-    func moveGitignoreToRoot(_ repo: GitRepo) throws {
+    func moveGitignoreToRoot(_ repo: GitRepo, projectDirURL: URL) throws {
         do {
-            try FileManager.default.copyItem(at: repo.localURL.appendingPathComponent(".gitignore"), to: projectURL.appendingPathComponent(".gitignore"))
+            try FileManager.default.copyItem(at: repo.localURL.appendingPathComponent(".gitignore"), to: projectDirURL.appendingPathComponent(".gitignore"))
         } catch {
             throw BootstrapCommandError.generic(message: "Failed to move .gitingore with error \(error).")
         }
     }
 
-    func moveEverythingElse(_ repo: GitRepo) throws {
+    func moveEverythingElse(_ repo: GitRepo, projectDirURL: URL) throws {
 
         do {
 
             let contents = try FileManager.default.contentsOfDirectory(at: repo.localURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-            let srcDirURL = projectURL.appendingPathComponent("src", isDirectory: true)
+            let srcDirURL = projectDirURL.appendingPathComponent("src", isDirectory: true)
 
             for fileURL in contents {
                 try FileManager.default.copyItem(at: fileURL, to: srcDirURL.appendingPathComponent(fileURL.lastPathComponent))
