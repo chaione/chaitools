@@ -39,16 +39,6 @@ protocol BootstrapConfig {
     func bootstrap(_ projectDirURL: URL) throws
     var type: String! {get}
     init()
-    func bootstrapTasks() -> [Task]
-}
-
-extension BootstrapConfig {
-    func bootstrap(_ projectDirURL: URL) throws {
-        let results = TaskRunner.execute(bootstrapTasks())
-        if case Result.failure(let error) = results {
-            throw error
-        }
-    }
 }
 
 func == (lhs: BootstrapConfig, rhs: BootstrapConfig) -> Bool {

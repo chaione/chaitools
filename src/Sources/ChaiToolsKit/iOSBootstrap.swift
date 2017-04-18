@@ -18,49 +18,14 @@ struct iOSBootstrap: BootstrapConfig {
 
     init() {}
 
-    func bootstrapTasks() -> [Task] {
+    func bootstrap(_ projectDirURL: URL) throws {
 
-        let copySelf = self
-
-
-        return [
-            Task(name: "Check if templates exist in library")
-                .task({ input -> TaskResult in
-                    return .success(nil)
-                    // if not, pull into directory
-                }),
-
-            Task(name: "Open xcode")
-                .task({ input -> TaskResult in
-                    MessageTools.state("Activating Xcode")
-                    let process = copySelf.runAppleScript(arguments: "-e", "tell application \"Xcode\" to activate",
-                                                          "-e", "tell application \"System Events\" to keystroke \"n\" using {command down, shift down}")
-                    if process.terminationStatus == 0 {
-                        return .success(nil)
-                    } else {
-                        // pass string to .unknown that gets the task name. i.e. Failed to "Open Xcode"
-                        return .failure(BootstrapCommandError.generic(message: "Failed to Open Xcode"))
-                    }
-                }).success({
-                    MessageTools.state("Successfully opened Xcode.", level: .verbose)
-                }),
-            Task(name: "Input when xcode finshes")
-                .task({ input -> TaskResult in
-                    return .success(nil)
-                }),
-            Task(name: "Download fastlane code")
-                .task({ input -> TaskResult in
-                    return .success(nil)
-                }),
-            Task(name: "Move fastlane to directory")
-                .task({ input -> TaskResult in
-                    return .success(nil)
-                }),
-            Task(name: "Run fastlane bootstrap")
-                .task({ input -> TaskResult in
-                    return .success(nil)
-                }),
-        ]
+        try checkIfTemplatesExist()
+        try openXcode()
+        try xcodeFinishedSettingUp()
+        try downloadFastlaneCode()
+        try copyFastlaneToDirectory()
+        try runFastlaneBootstrap()
     }
 
     func runAppleScript(arguments: String...) -> Process {
@@ -71,7 +36,38 @@ struct iOSBootstrap: BootstrapConfig {
         process.standardError = errorPipe
         process.arguments = arguments
         process.execute()
-        
+
         return process
+    }
+
+    func checkIfTemplatesExist() throws {
+        // if not, pull into directory
+    }
+
+    func openXcode() throws {
+        MessageTools.state("Activating Xcode")
+        let process = runAppleScript(arguments: "-e", "tell application \"Xcode\" to activate",
+                                     "-e", "tell application \"System Events\" to keystroke \"n\" using {command down, shift down}")
+        if process.terminationStatus != 0 {
+            throw BootstrapCommandError.generic(message: "Failed to Open Xcode")
+        }
+
+        MessageTools.state("Successfully opened Xcode.", level: .verbose)
+    }
+
+    func xcodeFinishedSettingUp() throws {
+
+    }
+
+    func downloadFastlaneCode() throws {
+
+    }
+
+    func copyFastlaneToDirectory() throws {
+        
+    }
+    
+    func runFastlaneBootstrap() throws {
+        
     }
 }
