@@ -16,7 +16,7 @@ struct iOSBootstrap: BootstrapConfig {
         return "ios"
     }
     var fileOps: FileOps = FileOps.defaultOps
-    var chaiBuildScriptsURL = URL(string: "git@bitbucket.org:chaione/build-scripts.git")
+    var chaiBuildScriptsURL = URL(string: "https://github.com/chaione/Cely.git")
 
     init() {}
 

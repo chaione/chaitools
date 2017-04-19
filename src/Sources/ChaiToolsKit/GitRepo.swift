@@ -18,7 +18,7 @@ enum GitAction: String {
     case push
 
     func arguments(withRemoteURL url: URL?) -> [String] {
-        if let urlPath = url?.path {
+        if let urlPath = url?.absoluteString {
             switch self {
             case .clone: return [self.rawValue, urlPath, "."]
             case .pull: return [self.rawValue, urlPath]
