@@ -38,8 +38,7 @@ protocol BootstrapConfig {
 
     func bootstrap(_ projectDirURL: URL) throws
     var type: String! {get}
-    var projectURL: URL! {get set}
-    init(repoUrlString: String!)
+    init()
 }
 
 func == (lhs: BootstrapConfig, rhs: BootstrapConfig) -> Bool {

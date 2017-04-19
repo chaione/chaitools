@@ -16,6 +16,11 @@ extension Process {
         self.currentDirectoryPath = currentDirectoryPath
     }
 
+    convenience init(withLaunchPath launchPath: String) {
+        self.init()
+        self.launchPath = launchPath
+    }
+
     func execute() {
         launch()
         waitUntilExit()
