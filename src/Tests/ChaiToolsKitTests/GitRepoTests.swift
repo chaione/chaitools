@@ -14,28 +14,10 @@ class GitRepoTests: XCTestCase {
 
     let celyGithubUrl = URL(string: "git@github.com:chaione/Cely.git")
     lazy var celyDirectory: URL = {
-        self.localDirectory(childDirectory: "cely")
+        return URL(fileURLWithPath: "\(FileManager.default.currentDirectoryPath)/cely")
     }()
 
     var testRepo: GitRepo!
-    var tempDirectoryString: String {
-        let infoPlist = Bundle(for: type(of: self)).infoDictionary
-        if let debugDirectory = infoPlist?["OutputDirectory"] as? String {
-            return debugDirectory
-        } else {
-            return FileManager.default.currentDirectoryPath
-        }
-    }
-
-    func localDirectory(childDirectory: String? = nil) -> URL {
-
-        guard let child = childDirectory else {
-            return URL(string: "file://\(tempDirectoryString)")!
-        }
-
-        return URL(string: "file://\(tempDirectoryString)/\(child)")!
-    }
-
     override func setUp() {
         super.setUp()
         testRepo = GitRepo(withLocalURL: celyDirectory, andRemoteURL: celyGithubUrl)
