@@ -18,7 +18,7 @@ enum GitAction: String {
     case push
 
     func arguments(withRemoteURL url: URL?) -> [String] {
-        if let urlPath = url?.path {
+        if let urlPath = url?.absoluteString {
             switch self {
             case .clone: return [self.rawValue, urlPath, "."]
             case .pull: return [self.rawValue, urlPath]
@@ -45,8 +45,6 @@ class GitRepo {
     var remoteURL: URL?
 
     private let launchPath = "/usr/bin/git"
-    private let outputPipe = Pipe()
-    private let outputText = String()
 
     init(withLocalURL localURL: URL, andRemoteURL remoteURL: URL? = nil) {
 
@@ -60,6 +58,12 @@ class GitRepo {
     /// - Returns: True if action succeeded, false otherwise
     func execute(_ action: GitAction) throws {
 
+        // It would be nice to check if a repo is clean, and then clean if necessary.
+        // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`
+        // if (action == .pull) { clean() }
+
+        try verifyGitEnvironment(for: action)
+
         // Spawn a new process before executing as you can only execute them once
         let outputPipe = Pipe()
         let errorPipe = Pipe()
@@ -67,14 +71,15 @@ class GitRepo {
         process.standardOutput = outputPipe
         process.standardError = errorPipe
 
-        // It would be nice to check if a repo is clean, and then clean if necessary.
-        // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`
-        // if (action == .pull) { clean() }
-
-        try verifyGitEnvironment(for: action)
-
         process.arguments = action.arguments(withRemoteURL: remoteURL)
 
+//        let executeCommand = Command(
+//            launchPath: launchPath,
+//            command: action.arguments(withRemoteURL: remoteURL),
+//            preMessage: "",
+//            successMessage: "",
+//            failureMessage: ""
+//        )
         MessageTools.state("Running `git \(action.rawValue)`...", level: .verbose)
         process.execute()
         if process.terminationStatus == 0 {
@@ -129,5 +134,13 @@ class GitRepo {
         guard FileOps.defaultOps.ensureDirectory(localURL) else {
             throw GitRepoError.unknown
         }
+    }
+}
+
+@available(OSX 10.12, *)
+extension GitRepo {
+    func clone() throws -> GitRepo {
+        try execute(.clone)
+        return self
     }
 }
