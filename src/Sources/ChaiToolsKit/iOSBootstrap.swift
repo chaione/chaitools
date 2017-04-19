@@ -12,38 +12,34 @@ import SwiftCLI
 @available(OSX 10.12, *)
 struct iOSBootstrap: BootstrapConfig {
 
-    var type: String! {
-        return "ios"
-    }
+    var type: String! { return "ios" }
+
     var fileOps: FileOps = FileOps.defaultOps
     var chaiBuildScriptsURL = URL(string: "https://github.com/chaione/Cely.git")
 
     init() {}
 
-    func bootstrap(_ projectDirURL: URL) throws {
+    func sourceDirectory(for projectDirURL: URL) throws -> URL {
+        guard let sourceDirectory = projectDirURL.subDirectories("src").firstItem() else {
+            throw BootstrapCommandError.generic(message: "Failed to locate 'src' directory inside of '\(projectDirURL.path)'")
+        }
 
-        try checkIfTemplatesExist()
-        try openXcode()
-        try xcodeFinishedSettingUp()
-        let repo = try downloadFastlaneCode()
-        try copyFastlaneToDirectory(repo, projectDirURL: projectDirURL)
-        try renameFastlaneVariables(projectDirURL)
-        try runFastlaneBootstrap(projectDirURL)
+        return sourceDirectory
     }
 
-    func runAppleScript(arguments: String...) -> Process {
-        let outputPipe = Pipe()
-        let errorPipe = Pipe()
-        let process = Process(withLaunchPath: "/usr/bin/osascript")
-        process.standardOutput = outputPipe
-        process.standardError = errorPipe
-        process.arguments = arguments
-        process.execute()
-
-        return process
+    func bootstrap(_ projectDirURL: URL) throws {
+        let srcDirectory = try sourceDirectory(for: projectDirURL)
+        try checkIfTemplatesExist()
+        try CommandLine.run(openXcodeCommand(), in: projectDirURL)
+        try xcodeFinishedSettingUp()
+        let fastlaneRepo = try createFastlaneRepo().clone()
+        try copyFastlaneToDirectory(fastlaneRepo, sourceDirectory: srcDirectory)
+        try CommandLine.run(fastlaneChaiToolsSetupCommand(), in: srcDirectory)
+        try CommandLine.run(fastlaneBootstrapCommand(), in: srcDirectory)
     }
 
     func checkIfTemplatesExist() throws {
+        // TODO: Still need to do this!!!!
         if projectTemplatePathWith().isEmpty() {
             try TemplatesCommand().installTemplates()
         }
@@ -59,47 +55,40 @@ struct iOSBootstrap: BootstrapConfig {
         }
     }
 
-    func openXcode() throws {
-        MessageTools.state("Activating Xcode")
-        let process = runAppleScript(arguments: "-e", "tell application \"Xcode\" to activate",
-                                     "-e", "tell application \"System Events\" to keystroke \"n\" using {command down, shift down}")
-        if process.terminationStatus != 0 {
-            throw BootstrapCommandError.generic(message: "Failed to Open Xcode")
-        }
-
-        MessageTools.state("Successfully opened Xcode.", level: .verbose)
+    func openXcodeCommand() -> Command {
+        return Command(
+            launchPath: "/usr/bin/osascript",
+            command: ["-e", "tell application \"Xcode\" to activate", "-e", "tell application \"System Events\" to keystroke \"n\" using {command down, shift down}"],
+            preMessage: "Activating Xcode",
+            successMessage: "Successfully opened Xcode.",
+            failureMessage: "Failed to Open Xcode"
+        )
     }
 
     func xcodeFinishedSettingUp() throws {
         guard Input.awaitYesNoInput(message: "❓  Has Xcode finished creating a project?") else {
             throw BootstrapCommandError.generic(message: "User failed to create Xcode project.")
         }
-
     }
 
-    func downloadFastlaneCode() throws -> GitRepo {
+    func createFastlaneRepo() throws -> GitRepo {
         guard let tempDir = fileOps.createTempDirectory() else {
-            throw BootstrapCommandError.generic(message: "Failed to create temp directory.")
+            throw BootstrapCommandError.generic(message: "Failed to create temp directory to hold 'ChaiOne's Build Script: Fastlane'.")
         }
         let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: chaiBuildScriptsURL)
-        MessageTools.state("Downloading Fastlane")
-
-        //==================
-        do {
-            MessageTools.state("Setting up Fastlane...")
-            try repo.execute(GitAction.clone)
-            return repo
-        } catch {
-            throw BootstrapCommandError.generic(message: "Failed to download Fastlane. Do you have permission to access it?")
-        }
+        return repo
     }
 
-    func copyFastlaneToDirectory(_ repo: GitRepo, projectDirURL: URL) throws {
+    func copyFastlaneToDirectory(_ repo: GitRepo, sourceDirectory: URL) throws {
         do {
-
-            let projectDirectory = try FileManager.default.contentsOfDirectory(at: projectDirURL.appendingPathComponent("src"), includingPropertiesForKeys: nil, options: .skipsHiddenFiles)[0]
-            try FileManager.default.copyItem(at: repo.localURL.appendingPathComponent("ios/fastlane", isDirectory: true), to: projectDirectory.appendingPathComponent("fastlane"))
-            try FileManager.default.copyItem(at: repo.localURL.appendingPathComponent("ios/Gemfile"), to: projectDirectory.appendingPathComponent("Gemfile"))
+            try FileManager.default.copyItem(
+                at: repo.localURL.subDirectories("ios/fastlane", isDirectory: true),
+                to: sourceDirectory.subDirectories("fastlane")
+            )
+            try FileManager.default.copyItem(
+                at: repo.localURL.subDirectories("ios/Gemfile"),
+                to: sourceDirectory.subDirectories("Gemfile")
+            )
             MessageTools.exclaim("Successfully downloaded latest ChaiTools Fastlane scripts")
 
         } catch {
@@ -107,44 +96,22 @@ struct iOSBootstrap: BootstrapConfig {
         }
     }
 
-    func renameFastlaneVariables(_ projectDirURL: URL) throws {
-        let projectDirectory = try FileManager.default.contentsOfDirectory(at: projectDirURL.appendingPathComponent("src"), includingPropertiesForKeys: nil, options: .skipsHiddenFiles)[0]
-        try runFastlane(command: "bootstrap_chai_tools_setup", in: projectDirectory)
+    func fastlaneChaiToolsSetupCommand() -> Command {
+        return Command(
+            launchPath: "/usr/local/bin/fastlane",
+            command: ["bootstrap_chai_tools_setup"],
+            successMessage: "Successfully ran 'fastlane bootstrap_chai_tools_setup'.",
+            failureMessage: "Failed to successfully run 'fastlane bootstrap_chai_tools_setup'."
+        )
     }
 
-    func runFastlaneBootstrap(_ projectDirURL: URL) throws {
-        let projectDirectory = try FileManager.default.contentsOfDirectory(at: projectDirURL.appendingPathComponent("src"), includingPropertiesForKeys: nil, options: .skipsHiddenFiles)[0]
-        try runFastlane(command: "bootstrap", in: projectDirectory)
-    }
-
-    private func runFastlane(command: String, in projectDirectory: URL) throws {
-        let outputPipe = Pipe()
-        let errorPipe = Pipe()
-
-        let process = Process(withLaunchPath: "/usr/local/bin/fastlane", currentDirectoryPath: projectDirectory.path)
-        process.standardOutput = outputPipe
-        process.standardError = errorPipe
-        process.arguments = [command]
-        process.execute()
-        
-        if process.terminationStatus == 0 {
-
-            let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
-            let output = String(data: data, encoding: String.Encoding.utf8)
-            MessageTools.state(output!)
-            MessageTools.exclaim("Successfully to rename Fastlane placeholder variables.", level: .verbose)
-
-        } else {
-            let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
-            let output = String(data: outputData, encoding: String.Encoding.utf8)
-            MessageTools.state(output!, level: .debug)
-
-            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-            let errorOut = String(data: errorData, encoding: String.Encoding.utf8)
-            MessageTools.state(errorOut!, level: .debug)
-
-            throw GitRepoError.commandFaliure(message: "Failed to rename Fastlane placeholder variables.")
-        }
+    func fastlaneBootstrapCommand() -> Command  {
+        return Command(
+            launchPath: "/usr/local/bin/fastlane",
+            command: ["bootstrap"],
+            successMessage: "Successfully ran 'fastlane bootstrap'.",
+            failureMessage: "Failed to successfully run 'fastlane bootstrap'."
+        )
     }
 }
 
@@ -156,7 +123,7 @@ extension iOSBootstrap {
 
     func projectTemplatePathWith(subDirectories: String...) -> URL {
         let childDirectories = subDirectories.joined(separator: "/")
-        let url = projectTemplatePath().appendingPathComponent(childDirectories, isDirectory: true)
+        let url = projectTemplatePath().subDirectories(childDirectories, isDirectory: true)
 
         return url
     }
