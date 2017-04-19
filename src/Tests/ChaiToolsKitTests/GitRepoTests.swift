@@ -12,7 +12,7 @@ import XCTest
 @available(OSX 10.12, *)
 class GitRepoTests: XCTestCase {
 
-    let celyGithubUrl = URL(string: "git@github.com:chaione/Cely.git")
+    let celyGithubUrl = URL(string: "https://github.com/chaione/Cely.git")
     lazy var celyDirectory: URL = {
         return URL(fileURLWithPath: "\(FileManager.default.currentDirectoryPath)/cely")
     }()
