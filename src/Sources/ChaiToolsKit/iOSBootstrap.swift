@@ -27,8 +27,8 @@ struct iOSBootstrap: BootstrapConfig {
         try xcodeFinishedSettingUp()
         let repo = try downloadFastlaneCode()
         try copyFastlaneToDirectory(repo, projectDirURL: projectDirURL)
-        // try renameFastlaneVariables()
-        try runFastlaneBootstrap()
+        try renameFastlaneVariables(projectDirURL)
+        try runFastlaneBootstrap(projectDirURL)
     }
 
     func runAppleScript(arguments: String...) -> Process {
@@ -100,26 +100,50 @@ struct iOSBootstrap: BootstrapConfig {
             let projectDirectory = try FileManager.default.contentsOfDirectory(at: projectDirURL.appendingPathComponent("src"), includingPropertiesForKeys: nil, options: .skipsHiddenFiles)[0]
             try FileManager.default.copyItem(at: repo.localURL.appendingPathComponent("ios/fastlane", isDirectory: true), to: projectDirectory.appendingPathComponent("fastlane"))
             try FileManager.default.copyItem(at: repo.localURL.appendingPathComponent("ios/Gemfile"), to: projectDirectory.appendingPathComponent("Gemfile"))
-            MessageTools.exclaim("Android jumpstart successfully created!")
+            MessageTools.exclaim("Successfully downloaded latest ChaiTools Fastlane scripts")
 
         } catch {
             throw BootstrapCommandError.generic(message: "Failed to move project files with error \(error).")
         }
     }
 
-    func runFastlaneBootstrap() throws {
+    func renameFastlaneVariables(_ projectDirURL: URL) throws {
+        let projectDirectory = try FileManager.default.contentsOfDirectory(at: projectDirURL.appendingPathComponent("src"), includingPropertiesForKeys: nil, options: .skipsHiddenFiles)[0]
+        try runFastlane(command: "bootstrap_chai_tools_setup", in: projectDirectory)
+    }
+
+    func runFastlaneBootstrap(_ projectDirURL: URL) throws {
+        let projectDirectory = try FileManager.default.contentsOfDirectory(at: projectDirURL.appendingPathComponent("src"), includingPropertiesForKeys: nil, options: .skipsHiddenFiles)[0]
+        try runFastlane(command: "bootstrap", in: projectDirectory)
+    }
+
+    private func runFastlane(command: String, in projectDirectory: URL) throws {
         let outputPipe = Pipe()
         let errorPipe = Pipe()
-        let process = Process(withLaunchPath: "/usr/local/bin/fastlane")
+
+        let process = Process(withLaunchPath: "/usr/local/bin/fastlane", currentDirectoryPath: projectDirectory.path)
         process.standardOutput = outputPipe
         process.standardError = errorPipe
-        process.arguments = ["experiment"]
+        process.arguments = [command]
         process.execute()
-
+        
         if process.terminationStatus == 0 {
-            print("asdf")
+
+            let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
+            let output = String(data: data, encoding: String.Encoding.utf8)
+            MessageTools.state(output!)
+            MessageTools.exclaim("Successfully to rename Fastlane placeholder variables.", level: .verbose)
+
         } else {
-            throw GitRepoError.unknown
+            let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
+            let output = String(data: outputData, encoding: String.Encoding.utf8)
+            MessageTools.state(output!, level: .debug)
+
+            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+            let errorOut = String(data: errorData, encoding: String.Encoding.utf8)
+            MessageTools.state(errorOut!, level: .debug)
+
+            throw GitRepoError.commandFaliure(message: "Failed to rename Fastlane placeholder variables.")
         }
     }
 }
