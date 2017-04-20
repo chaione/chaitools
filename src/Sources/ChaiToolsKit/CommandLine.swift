@@ -27,7 +27,8 @@ struct Command {
 
 @available(OSX 10.12, *)
 struct CommandLine {
-    static func run(_ command: Command, in projectDirectory: URL) throws {
+    
+    @discardableResult static func run(_ command: Command, in projectDirectory: URL) throws -> Process {
 
         if let preMessage = command.preMessage {
             MessageTools.state(preMessage)
@@ -61,5 +62,7 @@ struct CommandLine {
             MessageTools.state(errorOut!, level: .debug)
             throw GitRepoError.commandFaliure(message: command.failureMessage)
         }
+
+        return process
     }
 }

@@ -67,26 +67,7 @@ public class TemplatesCommand: OptionCommand {
         for template in templates {
             try template.repo.execute(GitAction.clone)
         }
-        try copyOverXcodeProjectTemplates()
         MessageTools.exclaim("Successfully installed Xcode templates.")
-    }
-
-    private func copyOverXcodeProjectTemplates() throws {
-        let xcodeTemplatePath = URL(fileURLWithPath: "Applications/Xcode.app/Contents/Developer/Library/Xcode/Templates/Project Templates/ChaiOne", isDirectory: true)
-        do {
-
-            let contents = try FileManager.default.contentsOfDirectory(at: xcodeTemplatePath, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-            let srcDirURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/Templates/Project Templates/ChaiOne", isDirectory: true)
-
-            for fileURL in contents {
-                try FileManager.default.copyItem(at: fileURL, to: srcDirURL.appendingPathComponent(fileURL.lastPathComponent))
-            }
-            MessageTools.exclaim("Successfully copied over Xcode DefaultProject Templates")
-
-        } catch {
-            throw FileOpsError.generic(message: "Failed to copy over Xcode default Project Templates. Error: \(error).")
-        }
-
     }
 
     private func updateTemplates() throws {
