@@ -10,8 +10,8 @@ import Foundation
 
 @available(OSX 10.12, *)
 class AndroidBootstrap: BootstrapConfig {
-    var logger: LoggerProtocol!
-    var loggerInput: LoggerInputProtocol!
+    var logger: LoggerProtocol
+    var loggerInput: LoggerInputProtocol
 
     required init(logger: LoggerProtocol = Logger(), loggerInput: LoggerInputProtocol = LoggerInput()) {
         projectURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")

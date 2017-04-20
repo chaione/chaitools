@@ -35,8 +35,8 @@ extension Iteratable where Self: RawRepresentable, Self: Hashable {
 }
 
 protocol BootstrapConfig {
-    var logger: LoggerProtocol! { get set }
-    var loggerInput: LoggerInputProtocol! { get set }
+    var logger: LoggerProtocol { get set }
+    var loggerInput: LoggerInputProtocol { get set }
     func bootstrap(_ projectDirURL: URL) throws
     init(logger: LoggerProtocol, loggerInput: LoggerInputProtocol)
 }
