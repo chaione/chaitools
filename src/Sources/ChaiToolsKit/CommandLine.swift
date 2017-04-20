@@ -10,15 +10,15 @@ import Foundation
 
 @available(OSX 10.12, *)
 struct Command {
-    let launchPath: String!
+    let launchPath: String
     let arguments: [String]
     let preMessage: String?
     let successMessage: String?
-    let failureMessage: String!
+    let failureMessage: String
 
-    init(launchPath: String!, command: [String], preMessage: String? = nil, successMessage: String? = nil, failureMessage: String!) {
+    init(launchPath: String, arguments: [String], preMessage: String? = nil, successMessage: String? = nil, failureMessage: String) {
         self.launchPath = launchPath
-        self.arguments = command
+        self.arguments = arguments
         self.successMessage = successMessage
         self.preMessage = preMessage
         self.failureMessage = failureMessage
@@ -59,10 +59,7 @@ struct CommandLine {
             let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
             let errorOut = String(data: errorData, encoding: String.Encoding.utf8)
             MessageTools.state(errorOut!, level: .debug)
-            if let failureMessage = command.failureMessage {
-                throw GitRepoError.commandFaliure(message: failureMessage)
-            }
-            throw GitRepoError.unknown
+            throw GitRepoError.commandFaliure(message: command.failureMessage)
         }
     }
 }

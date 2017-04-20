@@ -35,14 +35,10 @@ extension Iteratable where Self: RawRepresentable, Self: Hashable {
 }
 
 protocol BootstrapConfig {
-
+    var logger: LoggerProtocol! { get set }
+    var loggerInput: LoggerInputProtocol! { get set }
     func bootstrap(_ projectDirURL: URL) throws
-    var type: String! {get}
-    init()
-}
-
-func == (lhs: BootstrapConfig, rhs: BootstrapConfig) -> Bool {
-    return lhs.type == rhs.type
+    init(logger: LoggerProtocol, loggerInput: LoggerInputProtocol)
 }
 
 // MARK: - Error Enums

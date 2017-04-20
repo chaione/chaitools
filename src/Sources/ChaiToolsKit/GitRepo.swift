@@ -66,7 +66,7 @@ class GitRepo {
         try verifyGitEnvironment(for: action)
         let gitCommand = Command(
             launchPath: launchPath,
-            command: action.arguments(withRemoteURL: remoteURL),
+            arguments: action.arguments(withRemoteURL: remoteURL),
             preMessage: "Running `git \(action.rawValue)`...",
             successMessage: "`git \(action.rawValue)` was a success!",
             failureMessage: "`git \(action.rawValue)` failed!"

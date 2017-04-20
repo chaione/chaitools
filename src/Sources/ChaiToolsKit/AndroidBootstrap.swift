@@ -9,17 +9,19 @@
 import Foundation
 
 @available(OSX 10.12, *)
-public class AndroidBootstrap: BootstrapConfig {
+class AndroidBootstrap: BootstrapConfig {
+    var logger: LoggerProtocol!
+    var loggerInput: LoggerInputProtocol!
+
+    required init(logger: LoggerProtocol = Logger(), loggerInput: LoggerInputProtocol = LoggerInput()) {
+        projectURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")
+        self.logger = logger
+        self.loggerInput = loggerInput
+    }
 
     var projectURL: URL!
     var fileOps: FileOps = FileOps.defaultOps
-    var type: String! {
-        return "android"
-    }
 
-    required public init() {
-        projectURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")
-    }
 
     func bootstrap(_ projectDirURL: URL) throws {
         let repo = try downloadJumpStart()

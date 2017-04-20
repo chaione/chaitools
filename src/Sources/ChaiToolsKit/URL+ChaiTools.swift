@@ -25,8 +25,12 @@ extension URL {
         return contents.contains(".git")
     }
 
-    func subDirectories(_ childDirectories: String..., isDirectory: Bool = false) -> URL {
-        return childDirectories.reduce(self) { $0.appendingPathComponent($1, isDirectory: isDirectory) }
+    func subDirectories(_ childDirectories: String...) -> URL {
+        return childDirectories.reduce(self) { $0.appendingPathComponent($1, isDirectory: true) }
+    }
+
+    func file(_ filePath: String...) -> URL {
+        return filePath.reduce(self) { $0.appendingPathComponent($1, isDirectory: false) }
     }
 
     func contents(options: FileManager.DirectoryEnumerationOptions = .skipsHiddenFiles) throws -> [URL] {
