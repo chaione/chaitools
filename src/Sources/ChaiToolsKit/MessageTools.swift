@@ -17,25 +17,12 @@ enum Verbosity: Int {
 }
 
 protocol LoggerProtocol {
+    var verbosity: Verbosity { get set }
     func state(_ message: String, level: Verbosity)
     func instruct(_ message: String, level: Verbosity)
     func error(_ message: String, level: Verbosity)
     func exclaim(_ message: String, level: Verbosity)
-}
-
-extension LoggerProtocol {
-    func error(_ message: String, level: Verbosity = .normal) {
-        MessageTools.error(message, level: level)
-    }
-    func exclaim(_ message: String, level: Verbosity = .normal) {
-        MessageTools.exclaim(message, level: level)
-    }
-    func instruct(_ message: String, level: Verbosity = .normal) {
-        MessageTools.instruct(message, level: level)
-    }
-    func state(_ message: String, level: Verbosity = .normal) {
-        MessageTools.state(message, level: level)
-    }
+    func addVerbosityOptions(options: OptionRegistry)
 }
 
 protocol LoggerInputProtocol {
@@ -46,8 +33,38 @@ protocol LoggerInputProtocol {
     func awaitYesNoInput(message: String) -> Bool
 }
 
+extension LoggerProtocol {
+    func error(_ message: String, level: Verbosity = .normal) {
+        error(message, level: level)
+    }
+    func exclaim(_ message: String, level: Verbosity = .normal) {
+        exclaim(message, level: level)
+    }
+    func instruct(_ message: String, level: Verbosity = .normal) {
+        instruct(message, level: level)
+    }
+    func state(_ message: String, level: Verbosity = .normal) {
+        state(message, level: level)
+    }
+}
+
 // Default Input behavior
 extension LoggerInputProtocol {
+
+    mutating func addVerbosityOptions(options: OptionRegistry) {
+        options.add(flags: ["-v", "--verbose"], usage: "chaitools is more verbose while it executes") {
+//            self.verbosity = .verbose
+        }
+
+        options.add(flags: ["-d", "--debug"], usage: "chaitools displays debugging statements while executing") {
+//            self.verbosity = .debug
+        }
+
+        options.add(flags: ["-s", "--silent"], usage: "chaitools runs with minimum statements printed") {
+//            self.verbosity = .silent
+        }
+    }
+
     func awaitInput(message: String?, secure: Bool = false) -> String {
         return Input.awaitInput(message: message, secure: secure)
     }
@@ -72,34 +89,32 @@ extension LoggerInputProtocol {
 
 }
 
-struct Logger: LoggerProtocol {}
 struct LoggerInput: LoggerInputProtocol {}
 
-struct MessageTools {
-
-    static func addVerbosityOptions(options: OptionRegistry) {
+class Logger: LoggerProtocol {
+    func addVerbosityOptions(options: OptionRegistry) {
         options.add(flags: ["-v", "--verbose"], usage: "chaitools is more verbose while it executes") {
-            MessageTools.verbosity = .verbose
+            self.verbosity = .verbose
         }
 
         options.add(flags: ["-d", "--debug"], usage: "chaitools displays debugging statements while executing") {
-            MessageTools.verbosity = .debug
+            self.verbosity = .debug
         }
 
         options.add(flags: ["-s", "--silent"], usage: "chaitools runs with minimum statements printed") {
-            MessageTools.verbosity = .silent
+            self.verbosity = .silent
         }
     }
 
     /// The current verbosity level for the system. Defaults to normal.
-    static var verbosity = Verbosity.normal
+    var verbosity = Verbosity.normal
 
     /// Base message statement. Prints a message at a given verbosity.
     ///
     /// - Parameters:
     ///  - message: The message to be displayed to the user
     ///  - level: The verbosity level required to print the message. Defaults to normal.
-    static func state(_ message: String, level: Verbosity = .normal) {
+    func state(_ message: String, level: Verbosity = .normal) {
         if verbosity.rawValue >= level.rawValue {
             print(message)
         }
@@ -110,7 +125,7 @@ struct MessageTools {
     /// - Parameters:
     ///  - message: The message to be displayed to the user
     ///  - level: The verbosity level required to print the message. Defaults to normal.
-    static func instruct(_ message: String, level: Verbosity = .normal) {
+    func instruct(_ message: String, level: Verbosity = .normal) {
         state("💁  \(message)", level: level)
     }
 
@@ -119,7 +134,7 @@ struct MessageTools {
     /// - Parameters:
     ///  - message: The message to be displayed to the user
     ///  - level: The verbosity level required to print the message. Defaults to normal.
-    static func error(_ message: String, level: Verbosity = .normal) {
+    func error(_ message: String, level: Verbosity = .normal) {
         state("❗️ \(message)", level: level)
     }
 
@@ -129,7 +144,7 @@ struct MessageTools {
     /// - Parameters:
     ///  - message: The message to be displayed to the user
     ///  - level: The verbosity level required to print the message. Defaults to normal.
-    static func exclaim(_ message: String, level: Verbosity = .normal) {
+    func exclaim(_ message: String, level: Verbosity = .normal) {
         state("\(message) 🎉", level: level)
     }
 }

@@ -12,9 +12,9 @@ import Foundation
 public class FileOps: NSObject {
 
     public static let defaultOps = FileOps()
-
-    private override init() {
-        super.init()
+    var logger: LoggerProtocol!
+    private init(logger: LoggerProtocol = Logger()) {
+        self.logger = logger
     }
 
     /// Depending if the environment is set to DEBUG, method will return the appropriate `URL` object
@@ -43,13 +43,13 @@ public class FileOps: NSObject {
         }
 
         do {
-            MessageTools.state("The local directory does not exist. Attempting to create it...", level: .verbose)
+            logger.state("The local directory does not exist. Attempting to create it...", level: .verbose)
             try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
-            MessageTools.exclaim("Successfully created the directory.", level: .verbose)
+            logger.exclaim("Successfully created the directory.", level: .verbose)
             return true
         } catch {
 
-            MessageTools.error("Error creating the directory. \(error)", level: .verbose)
+            logger.error("Error creating the directory. \(error)", level: .verbose)
             return false
         }
     }
@@ -73,7 +73,7 @@ public class FileOps: NSObject {
             throw FileOpsError.directoryMissing
         }
         try FileManager.default.removeItem(atPath: dirURL.path)
-        MessageTools.exclaim("Successfully removed the directory.", level: .verbose)
+        logger.exclaim("Successfully removed the directory.", level: .verbose)
     }
 
     /// Creates a new temporary directory
@@ -87,7 +87,7 @@ public class FileOps: NSObject {
                                                                     create: true)
             return temporaryDirectoryURL
         } catch {
-            MessageTools.error("Failed to create temporary directory.", level: .verbose)
+            logger.error("Failed to create temporary directory.", level: .verbose)
         }
         return nil
     }
@@ -101,9 +101,9 @@ public class FileOps: NSObject {
         // create substructure for project
         do {
             try FileManager.default.createDirectory(at: parent.appendingPathComponent(name, isDirectory: true), withIntermediateDirectories: true)
-            MessageTools.exclaim("Successfully created \(name) subdirectory.", level: .verbose)
+            logger.exclaim("Successfully created \(name) subdirectory.", level: .verbose)
         } catch {
-            MessageTools.error("Failed to create \(name) subdirectory.", level: .verbose)
+            logger.error("Failed to create \(name) subdirectory.", level: .verbose)
         }
     }
 }

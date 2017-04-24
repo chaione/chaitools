@@ -34,9 +34,10 @@ public class TemplatesCommand: OptionCommand {
     public var name: String = "templates"
     public var signature: String = "<action>"
     public var shortDescription: String = "Install, update, or remove Xcode templates"
+    var logger: LoggerProtocol!
 
     public func setupOptions(options: OptionRegistry) {
-        MessageTools.addVerbosityOptions(options: options)
+        logger.addVerbosityOptions(options: options)
     }
 
     private var templates: [TemplatesSet] = []
@@ -52,7 +53,7 @@ public class TemplatesCommand: OptionCommand {
     public func execute(arguments: CommandArguments) throws {
 
         guard let action = TemplateActions(rawValue: arguments.requiredArgument("action")) else {
-            return MessageTools.error("\"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.", level: .silent)
+            return logger.error("\"\(arguments.requiredArgument("action"))\" is not a valid option. Aborting operation.", level: .silent)
         }
 
         switch action {
@@ -63,27 +64,27 @@ public class TemplatesCommand: OptionCommand {
     }
 
     func installTemplates() throws {
-        MessageTools.state("Attempting to install Xcode templates...")
+        logger.state("Attempting to install Xcode templates...")
         for template in templates {
             try template.repo.execute(GitAction.clone)
         }
-        MessageTools.exclaim("Successfully installed Xcode templates.")
+        logger.exclaim("Successfully installed Xcode templates.")
     }
 
     private func updateTemplates() throws {
-        MessageTools.state("Attempting to update Xcode templates...")
+        logger.state("Attempting to update Xcode templates...")
         // Checks if all is true
         for template in templates {
             try template.repo.execute(GitAction.pull)
         }
-        MessageTools.exclaim("Successfully updated Xcode templates.")
+        logger.exclaim("Successfully updated Xcode templates.")
     }
 
     private func removeTemplates() throws {
-        MessageTools.state("Attempting to remove the templates directory...")
+        logger.state("Attempting to remove the templates directory...")
         for template in templates {
             try FileOps.defaultOps.removeDirectory(template.localDir)
         }
-        MessageTools.exclaim("Successfully removed Xcode templates.")
+        logger.exclaim("Successfully removed Xcode templates.")
     }
 }

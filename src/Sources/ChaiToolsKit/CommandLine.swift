@@ -44,10 +44,12 @@ struct CommandLine {
     ///   - projectDirectory: Directory where Command will be executed
     /// - Returns: `Process` object
     /// - Throws: `CommandLineError`
-    @discardableResult static func run(_ command: ChaiCommand, in projectDirectory: URL) throws -> Process {
+    static var logger: LoggerProtocol!
+
+    @discardableResult static func run(_ command: ChaiCommand, in projectDirectory: URL, withLogger logger: LoggerProtocol = Logger()) throws -> Process {
 
         if let preMessage = command.preMessage {
-            MessageTools.state(preMessage)
+            logger.state(preMessage)
         }
 
         let outputPipe = Pipe()
@@ -63,19 +65,19 @@ struct CommandLine {
 
             let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
             let output = String(data: data, encoding: String.Encoding.utf8)
-            MessageTools.state(output!, level: .verbose)
+            logger.state(output!, level: .verbose)
             if let successMessage = command.successMessage {
-                MessageTools.exclaim(successMessage, level: .verbose)
+                logger.exclaim(successMessage, level: .verbose)
             }
 
         } else {
             let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
             let output = String(data: outputData, encoding: String.Encoding.utf8)
-            MessageTools.state(output!, level: .debug)
+            logger.state(output!, level: .debug)
 
             let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
             let errorOut = String(data: errorData, encoding: String.Encoding.utf8)
-            MessageTools.state(errorOut!, level: .debug)
+            logger.state(errorOut!, level: .debug)
             throw GitRepoError.commandFaliure(message: command.failureMessage)
         }
 

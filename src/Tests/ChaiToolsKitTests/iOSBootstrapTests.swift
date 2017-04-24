@@ -61,7 +61,7 @@ class iOSBootstrapTests: XCTestCase {
     }
 
     func testBootstrap() {
-        let bootstrapper = iOSBootstrap(loggerInput: DummyInput())
+        let bootstrapper = iOSBootstrap(logger: Logger(), loggerInput: DummyInput())
         try? bootstrapper.xcodeFinishedSettingUp()
         XCTAssertEqual(DummyInput.callCount, 1, "`iOSBootstrap.xcodeFinishedSettingUp(_:)` should've confirmed with the user if xcode finished creating project.")
     }

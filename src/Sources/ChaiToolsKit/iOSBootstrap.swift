@@ -14,10 +14,10 @@ class iOSBootstrap: BootstrapConfig {
 
     var fileOps: FileOps = FileOps.defaultOps
     var fastlaneRemoteURL = URL(string: "git@bitbucket.org:chaione/build-scripts.git")
-    var logger: LoggerProtocol
+    var logger: LoggerProtocol!
     var loggerInput: LoggerInputProtocol
 
-     required init(logger: LoggerProtocol = Logger(), loggerInput: LoggerInputProtocol = LoggerInput()) {
+     required init(logger: LoggerProtocol, loggerInput: LoggerInputProtocol) {
         self.logger = logger
         self.loggerInput = loggerInput
     }
