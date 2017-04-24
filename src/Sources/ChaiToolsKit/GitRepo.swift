@@ -64,7 +64,7 @@ class GitRepo {
         // if (action == .pull) { clean() }
 
         try verifyGitEnvironment(for: action)
-        let gitCommand = Command(
+        let gitCommand = ChaiCommand(
             launchPath: launchPath,
             arguments: action.arguments(withRemoteURL: remoteURL),
             preMessage: "Running `git \(action.rawValue)`...",

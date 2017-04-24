@@ -61,8 +61,8 @@ class iOSBootstrap: BootstrapConfig {
 //        }
 //    }
 
-    func openXcodeCommand() -> Command {
-        return Command(
+    func openXcodeCommand() -> ChaiCommand {
+        return ChaiCommand(
             launchPath: "/usr/bin/osascript",
             arguments: ["-e", "tell application \"Xcode\" to activate", "-e", "tell application \"System Events\" to keystroke \"n\" using {command down, shift down}"],
             preMessage: "Activating Xcode",
@@ -99,8 +99,8 @@ class iOSBootstrap: BootstrapConfig {
         }
     }
 
-    func fastlaneChaiToolsSetupCommand() -> Command {
-        return Command(
+    func fastlaneChaiToolsSetupCommand() -> ChaiCommand {
+        return ChaiCommand(
             launchPath: "/usr/local/bin/fastlane",
             arguments: ["bootstrap_chai_tools_setup"],
             successMessage: "Successfully ran 'fastlane bootstrap_chai_tools_setup'.",
@@ -108,8 +108,8 @@ class iOSBootstrap: BootstrapConfig {
         )
     }
 
-    func fastlaneBootstrapCommand() -> Command  {
-        return Command(
+    func fastlaneBootstrapCommand() -> ChaiCommand {
+        return ChaiCommand(
             launchPath: "/usr/local/bin/fastlane",
             arguments: ["bootstrap"],
             successMessage: "Successfully ran 'fastlane bootstrap'.",

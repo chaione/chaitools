@@ -50,10 +50,23 @@ extension Error {
             return e.localizedDescription
         case (let e as BootstrapCommandError):
             return e.localizedDescription
+        case (let e as CommandLineError):
+            return e.localizedDescription
         case (let e as FileOpsError):
             return e.localizedDescription
         default:
             return "unknown error to ChaiTools."
+        }
+    }
+}
+
+enum CommandLineError: Error {
+    case commandFaliure(message: String)
+
+    var localizedDescription: String {
+        switch self {
+        case .commandFaliure(let message):
+            return message
         }
     }
 }

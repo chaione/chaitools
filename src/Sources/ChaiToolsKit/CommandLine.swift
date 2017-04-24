@@ -9,13 +9,22 @@
 import Foundation
 
 @available(OSX 10.12, *)
-struct Command {
+struct ChaiCommand {
     let launchPath: String
     let arguments: [String]
     let preMessage: String?
     let successMessage: String?
     let failureMessage: String
 
+
+    /// instantiate a new ChiCommand
+    ///
+    /// - Parameters:
+    ///   - launchPath: Sets the receiver’s executable.
+    ///   - arguments: Sets the command arguments that should be used to launch the executable.
+    ///   - preMessage: Message to be displayed before command is executed.
+    ///   - successMessage: Message to be displayed if command is successfully executed.
+    ///   - failureMessage: Message to be displayed if command fails to execute successfully.
     init(launchPath: String, arguments: [String], preMessage: String? = nil, successMessage: String? = nil, failureMessage: String) {
         self.launchPath = launchPath
         self.arguments = arguments
@@ -27,8 +36,15 @@ struct Command {
 
 @available(OSX 10.12, *)
 struct CommandLine {
-    
-    @discardableResult static func run(_ command: Command, in projectDirectory: URL) throws -> Process {
+
+    /// static method used to run a `ChaiCommand`
+    ///
+    /// - Parameters:
+    ///   - command: `ChaiCommand` Object
+    ///   - projectDirectory: Directory where Command will be executed
+    /// - Returns: `Process` object
+    /// - Throws: `CommandLineError`
+    @discardableResult static func run(_ command: ChaiCommand, in projectDirectory: URL) throws -> Process {
 
         if let preMessage = command.preMessage {
             MessageTools.state(preMessage)
