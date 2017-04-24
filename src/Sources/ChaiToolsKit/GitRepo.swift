@@ -107,10 +107,7 @@ class GitRepo {
             throw GitRepoError.unknown
         }
     }
-}
 
-@available(OSX 10.12, *)
-extension GitRepo {
     func clone() throws -> GitRepo {
         try execute(.clone)
         return self

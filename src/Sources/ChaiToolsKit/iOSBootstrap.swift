@@ -22,18 +22,10 @@ class iOSBootstrap: BootstrapConfig {
         self.loggerInput = loggerInput
     }
 
-    func sourceDirectory(for projectDirURL: URL) throws -> URL {
-        guard let sourceDirectory = projectDirURL.subDirectories("src").firstItem() else {
-            throw BootstrapCommandError.generic(message: "Failed to locate 'src' directory inside of '\(projectDirURL.path)'")
-        }
-
-        return sourceDirectory
-    }
-
     func bootstrap(_ projectDirURL: URL) throws {
         let srcDirectory = try sourceDirectory(for: projectDirURL)
         // try checkIfTemplatesExist()
-        try CommandLine.run(openXcodeCommand(), in: projectDirURL)
+        try CommandLine.run(openXcodeCommand(), in: srcDirectory)
         try xcodeFinishedSettingUp()
         guard let tempDirectory = fileOps.createTempDirectory() else {
             throw BootstrapCommandError.generic(message: "Failed to create temp directory to hold 'ChaiOne's Build Script: Fastlane'.")
@@ -77,8 +69,8 @@ class iOSBootstrap: BootstrapConfig {
         }
     }
 
-    func createFastlaneRepo(in tempDirectory: URL) throws -> GitRepo {
-        let repo = GitRepo(withLocalURL: tempDirectory, andRemoteURL: fastlaneRemoteURL)
+    func createFastlaneRepo(in directory: URL) throws -> GitRepo {
+        let repo = GitRepo(withLocalURL: directory, andRemoteURL: fastlaneRemoteURL)
         return repo
     }
 
