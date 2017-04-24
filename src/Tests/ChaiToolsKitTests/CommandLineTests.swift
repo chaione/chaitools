@@ -16,7 +16,7 @@ class CommandLineTests: XCTestCase {
         let launchPath_test = "/bin/echo"
         let arguments_test = ["hello"]
 
-        let testCommand = Command(launchPath: launchPath_test, arguments: arguments_test, failureMessage: "hi")
+        let testCommand = ChaiCommand(launchPath: launchPath_test, arguments: arguments_test, failureMessage: "hi")
 
         let testProcess = try? CommandLine.run(testCommand, in: FileManager.default.homeDirectoryForCurrentUser)
 

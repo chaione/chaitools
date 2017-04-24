@@ -19,7 +19,7 @@ class CommandTests: XCTestCase {
         let successMessage_test = "successMessage_test"
         let preMessage_test = "preMessage_test"
 
-        let testCommand = Command(launchPath: launchPath_test, arguments: arguments_test, preMessage: preMessage_test, successMessage: successMessage_test, failureMessage: failureMessage_test)
+        let testCommand = ChaiCommand(launchPath: launchPath_test, arguments: arguments_test, preMessage: preMessage_test, successMessage: successMessage_test, failureMessage: failureMessage_test)
 
         XCTAssertEqual(testCommand.launchPath, launchPath_test)
         XCTAssertEqual(testCommand.arguments, arguments_test)
