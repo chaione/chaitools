@@ -14,13 +14,7 @@ class iOSBootstrap: BootstrapConfig {
 
     var fileOps: FileOps = FileOps.defaultOps
     var fastlaneRemoteURL = URL(string: "git@bitbucket.org:chaione/build-scripts.git")
-    var logger: LoggerProtocol!
-    var loggerInput: LoggerInputProtocol
-
-     required init(logger: LoggerProtocol, loggerInput: LoggerInputProtocol) {
-        self.logger = logger
-        self.loggerInput = loggerInput
-    }
+    required init() {}
 
     func bootstrap(_ projectDirURL: URL) throws {
         let srcDirectory = try sourceDirectory(for: projectDirURL)
@@ -36,23 +30,6 @@ class iOSBootstrap: BootstrapConfig {
         try CommandLine.run(fastlaneBootstrapCommand(), in: srcDirectory)
     }
 
-//    func checkIfTemplatesExist() throws {
-//        // TODO: Still need to do this!!!!
-//        if projectTemplatePath().isEmpty() {
-//            try TemplatesCommand().installTemplates()
-//        }
-//
-//        if projectTemplatePath().subDirectories("Base").exists(),
-//            projectTemplatePath().subDirectories("CrossPlatform").exists(),
-//            projectTemplatePath().subDirectories("Custom").exists(),
-//            projectTemplatePath().subDirectories("Mac").exists() {
-//            messageTool.state("Directory Exists")
-//        } else {
-//            messageTool.error("Missing Directory")
-//            // if not, pull into directory
-//        }
-//    }
-
     func openXcodeCommand() -> ChaiCommand {
         return ChaiCommand(
             launchPath: "/usr/bin/osascript",
@@ -64,7 +41,7 @@ class iOSBootstrap: BootstrapConfig {
     }
 
     func xcodeFinishedSettingUp() throws {
-        guard loggerInput.awaitYesNoInput(message: "❓  Has Xcode finished creating a project?") else {
+        guard Input.awaitYesNoInput(message: "❓  Has Xcode finished creating a project?") else {
             throw BootstrapCommandError.generic(message: "User failed to create Xcode project.")
         }
     }
@@ -84,7 +61,7 @@ class iOSBootstrap: BootstrapConfig {
                 at: repo.localURL.subDirectories("ios/Gemfile"),
                 to: sourceDirectory.file("Gemfile")
             )
-            logger.exclaim("Successfully downloaded latest ChaiTools Fastlane scripts")
+            MessageTools.exclaim("Successfully downloaded latest ChaiTools Fastlane scripts")
 
         } catch {
             throw BootstrapCommandError.generic(message: "Failed to move project files with error \(error).")

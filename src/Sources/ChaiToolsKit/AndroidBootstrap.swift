@@ -10,18 +10,13 @@ import Foundation
 
 @available(OSX 10.12, *)
 class AndroidBootstrap: BootstrapConfig {
-    var logger: LoggerProtocol!
-    var loggerInput: LoggerInputProtocol
 
-    required init(logger: LoggerProtocol, loggerInput: LoggerInputProtocol) {
+    required init() {
         projectURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")
-        self.logger = logger
-        self.loggerInput = loggerInput
     }
 
     var projectURL: URL!
     var fileOps: FileOps = FileOps.defaultOps
-
 
     func bootstrap(_ projectDirURL: URL) throws {
         let repo = try downloadJumpStart()
@@ -35,14 +30,14 @@ class AndroidBootstrap: BootstrapConfig {
             throw BootstrapCommandError.generic(message: "Failed to create temp directory.")
         }
         let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: projectURL)
-        logger.state("Androids wear 🚀 boots!")
+        MessageTools.state("Androids wear 🚀 boots!")
         return repo
     }
 
     func cloneAndroidJumpStartRepo(_ repo: GitRepo) throws {
 
         do {
-            logger.state("Setting up Android jumpstart...")
+            MessageTools.state("Setting up Android jumpstart...")
             try repo.execute(GitAction.clone)
         } catch {
             throw BootstrapCommandError.generic(message: "Failed to download jumpstart project. Do you have permission to access it?")
@@ -67,7 +62,7 @@ class AndroidBootstrap: BootstrapConfig {
             for fileURL in contents {
                 try FileManager.default.copyItem(at: fileURL, to: srcDirURL.appendingPathComponent(fileURL.lastPathComponent))
             }
-            logger.exclaim("Android jumpstart successfully created!")
+            MessageTools.exclaim("Android jumpstart successfully created!")
 
         } catch {
             throw BootstrapCommandError.generic(message: "Failed to move project files with error \(error).")

@@ -44,7 +44,6 @@ class GitRepo {
 
     var localURL: URL
     var remoteURL: URL?
-    var logger: LoggerProtocol
 
     private let launchPath = "/usr/bin/git"
 
@@ -85,22 +84,22 @@ class GitRepo {
     private func verifyGitEnvironment(for action: GitAction) throws {
 
         if (action == .ginit) && (localURL.isGitRepo()) {
-            logger.error("Can't initialize a git repo that's already initialized.", level: .verbose)
+            MessageTools.error("Can't initialize a git repo that's already initialized.", level: .verbose)
             throw GitRepoError.alreadyInitialized
         }
 
         if remoteURL == nil && (action == .pull || action == .clone) {
-            logger.error("Can't perform \(action) when missing remote URL.", level: .verbose)
+            MessageTools.error("Can't perform \(action) when missing remote URL.", level: .verbose)
             throw GitRepoError.missingRemoteURL
         }
 
         if (action == .pull) && (!localURL.isGitRepo()) {
-            logger.state("A git repo can't be updated if it doesn't exist. 🤔", level: .verbose)
+            MessageTools.state("A git repo can't be updated if it doesn't exist. 🤔", level: .verbose)
             throw GitRepoError.missingLocalRepo
         }
 
         if (action == .clone) && (!localURL.isEmpty()) {
-            logger.error("Can't clone a git repo into a non-empty directory.", level: .verbose)
+            MessageTools.error("Can't clone a git repo into a non-empty directory.", level: .verbose)
             throw GitRepoError.nonEmptyRepo
         }
 

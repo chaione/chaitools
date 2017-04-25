@@ -9,16 +9,6 @@
 import XCTest
 @testable import ChaiToolsKit
 
-class DummyInput: LoggerInputProtocol {
-    static var callCount = 0
-    static var inputMessage: String = ""
-    func awaitYesNoInput(message: String) -> Bool {
-        DummyInput.callCount += 1
-        DummyInput.inputMessage = message
-        return true
-    }
-}
-
 @available(OSX 10.12, *)
 class iOSBootstrapTests: XCTestCase {
 
@@ -44,7 +34,6 @@ class iOSBootstrapTests: XCTestCase {
             XCTAssert(false, e.localizedDescription)
         }
 
-        DummyInput.callCount = 0
         super.tearDown()
     }
 
@@ -58,11 +47,5 @@ class iOSBootstrapTests: XCTestCase {
         }
 
         return tempDirectory.appendingPathComponent("src", isDirectory: true)
-    }
-
-    func testBootstrap() {
-        let bootstrapper = iOSBootstrap(logger: Logger(), loggerInput: DummyInput())
-        try? bootstrapper.xcodeFinishedSettingUp()
-        XCTAssertEqual(DummyInput.callCount, 1, "`iOSBootstrap.xcodeFinishedSettingUp(_:)` should've confirmed with the user if xcode finished creating project.")
     }
 }
