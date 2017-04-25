@@ -40,15 +40,6 @@ protocol BootstrapConfig {
     init()
 }
 
-extension BootstrapConfig {
-    func sourceDirectory(for projectDirURL: URL) throws -> URL {
-        guard let sourceDirectory = projectDirURL.subDirectories("src").firstItem() else {
-            throw BootstrapCommandError.generic(message: "Failed to locate 'src' directory inside of '\(projectDirURL.path)'")
-        }
-
-        return sourceDirectory
-    }
-}
 // MARK: - Error Enums
 
 extension Error {

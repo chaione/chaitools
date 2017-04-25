@@ -17,17 +17,21 @@ class iOSBootstrap: BootstrapConfig {
     required init() {}
 
     func bootstrap(_ projectDirURL: URL) throws {
-        let srcDirectory = try sourceDirectory(for: projectDirURL)
+
         // try checkIfTemplatesExist()
-        try CommandLine.run(openXcodeCommand(), in: srcDirectory)
+        try CommandLine.run(openXcodeCommand(), in: projectDirURL)
         try xcodeFinishedSettingUp()
         guard let tempDirectory = fileOps.createTempDirectory() else {
             throw BootstrapCommandError.generic(message: "Failed to create temp directory to hold 'ChaiOne's Build Script: Fastlane'.")
         }
         let fastlaneRepo = try createFastlaneRepo(in: tempDirectory).clone()
-        try copyFastlaneToDirectory(fastlaneRepo, sourceDirectory: srcDirectory)
-        try CommandLine.run(fastlaneChaiToolsSetupCommand(), in: srcDirectory)
-        try CommandLine.run(fastlaneBootstrapCommand(), in: srcDirectory)
+        let srcDirectory = projectDirURL.subDirectories("src")
+        guard let projectInSrcDirectory = srcDirectory.firstItem() else {
+            throw BootstrapCommandError.generic(message: "Failed to find created Xcode project inside of `src` directory.")
+        }
+        try copyFastlaneToDirectory(fastlaneRepo, sourceDirectory: projectInSrcDirectory)
+        try CommandLine.run(fastlaneChaiToolsSetupCommand(), in: projectInSrcDirectory)
+        try CommandLine.run(fastlaneBootstrapCommand(), in: projectInSrcDirectory)
     }
 
     func openXcodeCommand() -> ChaiCommand {
