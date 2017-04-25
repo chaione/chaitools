@@ -15,9 +15,38 @@ extension URL {
         return contents.isEmpty
     }
 
+    func exists() -> Bool {
+        return !self.isEmpty()
+    }
+
     func isGitRepo() -> Bool {
         guard let contents = try? FileManager.default.contentsOfDirectory(atPath: self.path) else { return false }
 
         return contents.contains(".git")
+    }
+
+    func subDirectories(_ childDirectories: String...) -> URL {
+        return childDirectories.reduce(self) { $0.appendingPathComponent($1, isDirectory: true) }
+    }
+
+    func file(_ filePath: String...) -> URL {
+        return filePath.reduce(self) { $0.appendingPathComponent($1, isDirectory: false) }
+    }
+
+    func contents(options: FileManager.DirectoryEnumerationOptions = .skipsHiddenFiles) throws -> [URL] {
+        do {
+            let contents = try FileManager.default.contentsOfDirectory(at: self, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+            return contents
+        } catch let e {
+            throw e
+        }
+    }
+
+    func firstItem() -> URL? {
+        do {
+            return try self.contents().first
+        } catch {
+            return nil
+        }
     }
 }

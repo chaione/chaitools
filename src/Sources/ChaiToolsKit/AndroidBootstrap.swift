@@ -9,17 +9,14 @@
 import Foundation
 
 @available(OSX 10.12, *)
-public class AndroidBootstrap: BootstrapConfig {
+class AndroidBootstrap: BootstrapConfig {
+
+    required init() {
+        projectURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")
+    }
 
     var projectURL: URL!
     var fileOps: FileOps = FileOps.defaultOps
-    var type: String! {
-        return "android"
-    }
-
-    required public init() {
-        projectURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")
-    }
 
     func bootstrap(_ projectDirURL: URL) throws {
         let repo = try downloadJumpStart()

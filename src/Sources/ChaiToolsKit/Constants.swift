@@ -37,12 +37,7 @@ extension Iteratable where Self: RawRepresentable, Self: Hashable {
 protocol BootstrapConfig {
 
     func bootstrap(_ projectDirURL: URL) throws
-    var type: String! {get}
     init()
-}
-
-func == (lhs: BootstrapConfig, rhs: BootstrapConfig) -> Bool {
-    return lhs.type == rhs.type
 }
 
 // MARK: - Error Enums
@@ -54,6 +49,8 @@ extension Error {
             return e.localizedDescription
         case (let e as BootstrapCommandError):
             return e.localizedDescription
+        case (let e as CommandLineError):
+            return e.localizedDescription
         case (let e as FileOpsError):
             return e.localizedDescription
         default:
@@ -62,9 +59,21 @@ extension Error {
     }
 }
 
+enum CommandLineError: Error {
+    case commandFaliure(message: String)
+
+    var localizedDescription: String {
+        switch self {
+        case .commandFaliure(let message):
+            return message
+        }
+    }
+}
+
 enum FileOpsError: Error {
     case directoryMissing
     case directoryAlreadyExists
+    case generic(message: String)
     case unknown
 
     var localizedDescription: String {
@@ -73,6 +82,8 @@ enum FileOpsError: Error {
             return "Destination directory is Missing."
         case .directoryAlreadyExists:
             return "Destination directory already exists."
+        case .generic(let message):
+            return message
         case .unknown:
             return "ChaiTools does not know what happened 😭"
         }

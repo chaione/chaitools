@@ -10,68 +10,91 @@ import Foundation
 import SwiftCLI
 
 @available(OSX 10.12, *)
-struct iOSBootstrap: BootstrapConfig {
+class iOSBootstrap: BootstrapConfig {
 
-    var type: String! {
-        return "ios"
-    }
     var fileOps: FileOps = FileOps.defaultOps
-
-    init() {}
+    var fastlaneRemoteURL = URL(string: "git@bitbucket.org:chaione/build-scripts.git")
+    required init() {}
 
     func bootstrap(_ projectDirURL: URL) throws {
 
-        try checkIfTemplatesExist()
-        try openXcode()
+        // try checkIfTemplatesExist()
+        try CommandLine.run(openXcodeCommand(), in: projectDirURL)
         try xcodeFinishedSettingUp()
-        try downloadFastlaneCode()
-        try copyFastlaneToDirectory()
-        try runFastlaneBootstrap()
-    }
-
-    func runAppleScript(arguments: String...) -> Process {
-        let outputPipe = Pipe()
-        let errorPipe = Pipe()
-        let process = Process(withLaunchPath: "/usr/bin/osascript")
-        process.standardOutput = outputPipe
-        process.standardError = errorPipe
-        process.arguments = arguments
-        process.execute()
-
-        return process
-    }
-
-    func checkIfTemplatesExist() throws {
-        // if not, pull into directory
-    }
-
-    func openXcode() throws {
-        MessageTools.state("Activating Xcode")
-        let process = runAppleScript(arguments: "-e", "tell application \"Xcode\" to activate",
-                                     "-e", "tell application \"System Events\" to keystroke \"n\" using {command down, shift down}")
-        if process.terminationStatus != 0 {
-            throw BootstrapCommandError.generic(message: "Failed to Open Xcode")
+        guard let tempDirectory = fileOps.createTempDirectory() else {
+            throw BootstrapCommandError.generic(message: "Failed to create temp directory to hold 'ChaiOne's Build Script: Fastlane'.")
         }
+        let fastlaneRepo = try createFastlaneRepo(in: tempDirectory).clone()
+        let srcDirectory = projectDirURL.subDirectories("src")
+        guard let projectInSrcDirectory = srcDirectory.firstItem() else {
+            throw BootstrapCommandError.generic(message: "Failed to find created Xcode project inside of `src` directory.")
+        }
+        try copyFastlaneToDirectory(fastlaneRepo, sourceDirectory: projectInSrcDirectory)
+        try CommandLine.run(fastlaneChaiToolsSetupCommand(), in: projectInSrcDirectory)
+        try CommandLine.run(fastlaneBootstrapCommand(), in: projectInSrcDirectory)
+    }
 
-        MessageTools.state("Successfully opened Xcode.", level: .verbose)
+    func openXcodeCommand() -> ChaiCommand {
+        return ChaiCommand(
+            launchPath: "/usr/bin/osascript",
+            arguments: ["-e", "tell application \"Xcode\" to activate", "-e", "tell application \"System Events\" to keystroke \"n\" using {command down, shift down}"],
+            preMessage: "Activating Xcode",
+            successMessage: "Successfully opened Xcode.",
+            failureMessage: "Failed to Open Xcode"
+        )
     }
 
     func xcodeFinishedSettingUp() throws {
         guard Input.awaitYesNoInput(message: "❓  Has Xcode finished creating a project?") else {
             throw BootstrapCommandError.generic(message: "User failed to create Xcode project.")
         }
-
     }
 
-    func downloadFastlaneCode() throws {
-
+    func createFastlaneRepo(in directory: URL) throws -> GitRepo {
+        let repo = GitRepo(withLocalURL: directory, andRemoteURL: fastlaneRemoteURL)
+        return repo
     }
 
-    func copyFastlaneToDirectory() throws {
-        
+    func copyFastlaneToDirectory(_ repo: GitRepo, sourceDirectory: URL) throws {
+        do {
+            try FileManager.default.copyItem(
+                at: repo.localURL.subDirectories("ios/fastlane"),
+                to: sourceDirectory.subDirectories("fastlane")
+            )
+            try FileManager.default.copyItem(
+                at: repo.localURL.subDirectories("ios/Gemfile"),
+                to: sourceDirectory.file("Gemfile")
+            )
+            MessageTools.exclaim("Successfully downloaded latest ChaiTools Fastlane scripts")
+
+        } catch {
+            throw BootstrapCommandError.generic(message: "Failed to move project files with error \(error).")
+        }
     }
-    
-    func runFastlaneBootstrap() throws {
-        
+
+    func fastlaneChaiToolsSetupCommand() -> ChaiCommand {
+        return ChaiCommand(
+            launchPath: "/usr/local/bin/fastlane",
+            arguments: ["bootstrap_chai_tools_setup"],
+            successMessage: "Successfully ran 'fastlane bootstrap_chai_tools_setup'.",
+            failureMessage: "Failed to successfully run 'fastlane bootstrap_chai_tools_setup'."
+        )
+    }
+
+    func fastlaneBootstrapCommand() -> ChaiCommand {
+        return ChaiCommand(
+            launchPath: "/usr/local/bin/fastlane",
+            arguments: ["bootstrap"],
+            successMessage: "Successfully ran 'fastlane bootstrap'.",
+            failureMessage: "Failed to successfully run 'fastlane bootstrap'."
+        )
     }
 }
+
+@available(OSX 10.12, *)
+extension iOSBootstrap {
+    func projectTemplatePath() -> URL {
+        return fileOps.expandLocalLibraryPath("Developer/Xcode/Templates/Project Templates")
+    }
+}
+

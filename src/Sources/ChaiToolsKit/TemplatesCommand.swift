@@ -62,7 +62,7 @@ public class TemplatesCommand: OptionCommand {
         }
     }
 
-    private func installTemplates() throws {
+    func installTemplates() throws {
         MessageTools.state("Attempting to install Xcode templates...")
         for template in templates {
             try template.repo.execute(GitAction.clone)

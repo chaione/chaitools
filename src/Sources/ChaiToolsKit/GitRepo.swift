@@ -46,8 +46,6 @@ class GitRepo {
     var remoteURL: URL?
 
     private let launchPath = "/usr/bin/git"
-    private let outputPipe = Pipe()
-    private let outputText = String()
 
     init(withLocalURL localURL: URL, andRemoteURL remoteURL: URL? = nil) {
 
@@ -61,42 +59,20 @@ class GitRepo {
     /// - Returns: True if action succeeded, false otherwise
     func execute(_ action: GitAction) throws {
 
-        // Spawn a new process before executing as you can only execute them once
-        let outputPipe = Pipe()
-        let errorPipe = Pipe()
-        let process = Process(withLaunchPath: launchPath, currentDirectoryPath: localURL.path)
-        process.standardOutput = outputPipe
-        process.standardError = errorPipe
-
         // It would be nice to check if a repo is clean, and then clean if necessary.
         // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`
         // if (action == .pull) { clean() }
 
         try verifyGitEnvironment(for: action)
-
-        process.arguments = action.arguments(withRemoteURL: remoteURL)
-
-        MessageTools.state("Running `git \(action.rawValue)`...", level: .verbose)
-        process.execute()
-        if process.terminationStatus == 0 {
-
-            let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
-            let output = String(data: data, encoding: String.Encoding.utf8)
-            MessageTools.state(output!, level: .debug)
-            MessageTools.exclaim("`git \(action.rawValue)` was a success!", level: .verbose)
-
-        } else {
-            let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
-            let output = String(data: outputData, encoding: String.Encoding.utf8)
-            MessageTools.state(output!, level: .debug)
-
-            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-            let errorOut = String(data: errorData, encoding: String.Encoding.utf8)
-            MessageTools.state(errorOut!, level: .debug)
-
-            MessageTools.error("`git \(action.rawValue)` failed! Sad!", level: .verbose)
-            throw GitRepoError.commandFaliure(message: "`git \(action.rawValue)` failed!")
-        }
+        let gitCommand = ChaiCommand(
+            launchPath: launchPath,
+            arguments: action.arguments(withRemoteURL: remoteURL),
+            preMessage: "Running `git \(action.rawValue)`...",
+            successMessage: "`git \(action.rawValue)` was a success!",
+            failureMessage: "`git \(action.rawValue)` failed!"
+        )
+        
+        try CommandLine.run(gitCommand, in: localURL)
     }
 
     private func clean() {
@@ -130,5 +106,10 @@ class GitRepo {
         guard FileOps.defaultOps.ensureDirectory(localURL) else {
             throw GitRepoError.unknown
         }
+    }
+
+    func clone() throws -> GitRepo {
+        try execute(.clone)
+        return self
     }
 }

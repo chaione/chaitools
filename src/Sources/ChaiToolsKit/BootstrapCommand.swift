@@ -39,6 +39,7 @@ public class BootstrapCommand: OptionCommand {
     public var name: String = "bootstrap"
     public var signature: String = "[<stack>]"
     public var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
+    
 
     public func setupOptions(options: OptionRegistry) {
         MessageTools.addVerbosityOptions(options: options)

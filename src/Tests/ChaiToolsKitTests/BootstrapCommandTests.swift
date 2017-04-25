@@ -43,9 +43,4 @@ extension BootstrapCommandTests {
 
         XCTAssertEqual(formattedSupportedStacksStr, TechStack.supportedStacksFormattedString())
     }
-
-    func testTechStackBootstrapper() {
-        let androidBootstrap = TechStack.android.bootstrapper()
-        XCTAssert(androidBootstrap == AndroidBootstrap())
-    }
 }

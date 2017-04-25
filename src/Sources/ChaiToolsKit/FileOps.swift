@@ -12,10 +12,8 @@ import Foundation
 public class FileOps: NSObject {
 
     public static let defaultOps = FileOps()
-
-    private override init() {
-        super.init()
-    }
+    
+    private override init() {}
 
     /// Depending if the environment is set to DEBUG, method will return the appropriate `URL` object
     ///
