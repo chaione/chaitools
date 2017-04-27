@@ -18,7 +18,7 @@ class CommandLineTests: XCTestCase {
 
         let testCommand = ChaiCommand(launchPath: launchPath_test, arguments: arguments_test, failureMessage: "hi")
 
-        let testProcess = try? CommandLine.run(testCommand, in: FileManager.default.homeDirectoryForCurrentUser)
+        let testProcess = try? CommandLine.runCommand(testCommand, in: FileManager.default.homeDirectoryForCurrentUser)
 
         XCTAssertEqual(testProcess?.launchPath, launchPath_test)
         XCTAssertEqual(testProcess?.currentDirectoryPath, FileManager.default.homeDirectoryForCurrentUser.path)
