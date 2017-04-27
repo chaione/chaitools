@@ -44,7 +44,7 @@ struct CommandLine {
     ///   - projectDirectory: Directory where Command will be executed
     /// - Returns: `Process` object
     /// - Throws: `CommandLineError`
-    @discardableResult static func run(_ command: ChaiCommand, in projectDirectory: URL) throws -> Process {
+    @discardableResult static func runCommand(_ command: ChaiCommand, in projectDirectory: URL) throws -> Process {
 
         if let preMessage = command.preMessage {
             MessageTools.state(preMessage)
@@ -76,9 +76,21 @@ struct CommandLine {
             let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
             let errorOut = String(data: errorData, encoding: String.Encoding.utf8)
             MessageTools.state(errorOut!, level: .debug)
-            throw GitRepoError.commandFaliure(message: command.failureMessage)
+            throw CommandLineError.commandFaliure(message: command.failureMessage)
         }
 
         return process
+    }
+
+    /// static method used to run `ChaiCommands`
+    ///
+    /// - Parameters:
+    ///   - command: `ChaiCommand...`
+    ///   - projectDirectory: Directory where Command will be executed
+    /// - Throws: `CommandLineError`
+    static func run(_ commands: ChaiCommand..., in projectDirectory: URL) throws {
+        try commands.forEach { command in
+            try runCommand(command, in: projectDirectory)
+        }
     }
 }
