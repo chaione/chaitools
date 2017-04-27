@@ -13,6 +13,7 @@ import SwiftCLI
 enum TechStack: String, Iteratable {
     case android
     case ios
+    case reactNative
     /// Returns the BootstrapConfig for the TechStack
     ///
     /// - Returns: BootstrapConfig for the TechStack
@@ -20,6 +21,7 @@ enum TechStack: String, Iteratable {
         switch self {
         case .android: return AndroidBootstrap()
         case .ios: return iOSBootstrap()
+        case .reactNative: return ReactNativeBootstrap()
         }
     }
 
