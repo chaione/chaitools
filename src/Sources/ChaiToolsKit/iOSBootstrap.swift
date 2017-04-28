@@ -82,6 +82,10 @@ class iOSBootstrap: BootstrapConfig {
         try xcodeFinishedSettingUp()
         try AppleScript.quitXcode.run(in: projectDirURL)
         try restructureXcodeProject(in: projectDirURL)
+
+        // TODO: Need to redo SwiftFormat code
+//        try addSwiftFormatCommand(in: projectDirURL)
+
         let fastlaneRepo = try createFastlaneRepo().clone()
         try addFastlane(fastlaneRepo, toDirectory: projectDirURL)
 
@@ -169,7 +173,28 @@ class iOSBootstrap: BootstrapConfig {
             failureMessage: "Failed to open xcodeproj file."
         )
     }
-   }
+
+    // TODO: Need to redo this!
+    func addSwiftFormatCommand(in directory: URL) throws {
+        guard let tempDirectory = fileOps.createTempDirectory() else {
+            throw BootstrapCommandError.generic(message: "Failed to create temp directory to hold 'SwiftFormat'.")
+        }
+        let repo = try GitRepo(withLocalURL: tempDirectory, andRemoteURL: URL(string: "git@github.com:nicklockwood/SwiftFormat.git")).clone()
+
+        do {
+            MessageTools.exclaim(repo.localURL.path)
+            try FileManager.default.copyItem(
+                at: repo.localURL.file("CommandLineTool/swiftformat"),
+                to: directory.file("scripts/swiftformat")
+            )
+
+            MessageTools.exclaim("Successfully downloaded latest SwiftFormat CommandLineTool")
+
+        } catch {
+            throw BootstrapCommandError.generic(message: "Failed to copy SwiftFormat to project. With error \(error).")
+        }
+    }
+}
 
 @available(OSX 10.12, *)
 extension iOSBootstrap {
