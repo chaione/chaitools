@@ -55,7 +55,7 @@ enum TechStack: String, Iteratable {
 
 @available(OSX 10.12, *)
 public class BootstrapCommand: OptionCommand {
-
+    
     public var name: String = "bootstrap"
     public var signature: String = "[<stack>]"
     public var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"

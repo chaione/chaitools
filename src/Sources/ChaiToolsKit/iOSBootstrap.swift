@@ -10,6 +10,34 @@ import Foundation
 import SwiftCLI
 
 @available(OSX 10.12, *)
+
+enum Fastlane : CommandProtocol {
+
+    case bootstrap
+    case bootstrapChaiToolsSetup
+    case lane(String)
+    static var binary: String {
+        return "fastlane"
+    }
+
+    func arguments() -> ChaiCommandArguments {
+        var caseArguments : ChaiCommandArguments {
+            switch self {
+            case .bootstrap:
+                return ["bootstrap"]
+            case .bootstrapChaiToolsSetup:
+                return ["bootstrap_chai_tools_setup"]
+            case .lane(let lane):
+                return [lane]
+            }
+        }
+
+        return [type(of: self).binary] + caseArguments
+    }
+    
+}
+
+@available(OSX 10.12, *)
 class iOSBootstrap: BootstrapConfig {
 
     var fileOps: FileOps = FileOps.defaultOps
@@ -30,8 +58,10 @@ class iOSBootstrap: BootstrapConfig {
             throw BootstrapCommandError.generic(message: "Failed to find created Xcode project inside of `src` directory.")
         }
         try copyFastlaneToDirectory(fastlaneRepo, sourceDirectory: projectInSrcDirectory)
-        try CommandLine.run(fastlaneChaiToolsSetupCommand(), in: projectInSrcDirectory)
-        try CommandLine.run(fastlaneBootstrapCommand(), in: projectInSrcDirectory)
+//        try CommandLine.run(fastlaneChaiToolsSetupCommand(), in: projectInSrcDirectory)
+        try Fastlane.bootstrapChaiToolsSetup.run(in: projectInSrcDirectory)
+        try Fastlane.bootstrap.run(in: projectInSrcDirectory)
+//        try CommandLine.run(fastlaneBootstrapCommand(), in: projectInSrcDirectory)
     }
 
     func openXcodeCommand() -> ChaiCommand {
@@ -72,23 +102,23 @@ class iOSBootstrap: BootstrapConfig {
         }
     }
 
-    func fastlaneChaiToolsSetupCommand() -> ChaiCommand {
-        return ChaiCommand(
-            launchPath: "/usr/local/bin/fastlane",
-            arguments: ["bootstrap_chai_tools_setup"],
-            successMessage: "Successfully ran 'fastlane bootstrap_chai_tools_setup'.",
-            failureMessage: "Failed to successfully run 'fastlane bootstrap_chai_tools_setup'."
-        )
-    }
-
-    func fastlaneBootstrapCommand() -> ChaiCommand {
-        return ChaiCommand(
-            launchPath: "/usr/local/bin/fastlane",
-            arguments: ["bootstrap"],
-            successMessage: "Successfully ran 'fastlane bootstrap'.",
-            failureMessage: "Failed to successfully run 'fastlane bootstrap'."
-        )
-    }
+//    func fastlaneChaiToolsSetupCommand() -> ChaiCommand {
+//        return ChaiCommand(
+//            launchPath: "/usr/local/bin/fastlane",
+//            arguments: ["bootstrap_chai_tools_setup"],
+//            successMessage: "Successfully ran 'fastlane bootstrap_chai_tools_setup'.",
+//            failureMessage: "Failed to successfully run 'fastlane bootstrap_chai_tools_setup'."
+//        )
+//    }
+//
+//    func fastlaneBootstrapCommand() -> ChaiCommand {
+//        return ChaiCommand(
+//            launchPath: "/usr/local/bin/fastlane",
+//            arguments: ["bootstrap"],
+//            successMessage: "Successfully ran 'fastlane bootstrap'.",
+//            failureMessage: "Failed to successfully run 'fastlane bootstrap'."
+//        )
+//    }
 }
 
 @available(OSX 10.12, *)
