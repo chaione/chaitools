@@ -34,6 +34,17 @@ struct ChaiCommand {
     }
 }
 
+enum CommandLineError: Error {
+    case commandFaliure(message: String)
+
+    var localizedDescription: String {
+        switch self {
+        case .commandFaliure(let message):
+            return message
+        }
+    }
+}
+
 @available(OSX 10.12, *)
 struct CommandLine {
 
