@@ -49,7 +49,6 @@ extension Error {
             return e.localizedDescription
         case (let e as BootstrapCommandError):
             return e.localizedDescription
-        case (let e as CommandLineError):
             return e.localizedDescription
         case (let e as FileOpsError):
             return e.localizedDescription
