@@ -10,7 +10,10 @@ import Foundation
 import SwiftCLI
 
 @available(OSX 10.12, *)
-enum AppleScript: ChaiCommandProtocol{
+
+/// Applescript ChaiCommands
+enum AppleScript: ChaiCommandProtocol {
+
     case openXcode
     case quitXcode
 
@@ -34,7 +37,13 @@ enum AppleScript: ChaiCommandProtocol{
 }
 
 @available(OSX 10.12, *)
-enum Fastlane : ChaiCommandProtocol{
+
+/// Fastlane ChaiCommands
+///
+/// - bootstrap: run `fastlane bootstrap`
+/// - bootstrapChaiToolsSetup: run `fastlane bootstrap_chai_tools_setup`
+/// - lane: Generic case that will allow you to run any lane that is not specified as a case.
+enum Fastlane : ChaiCommandProtocol {
 
     case bootstrap
     case bootstrapChaiToolsSetup

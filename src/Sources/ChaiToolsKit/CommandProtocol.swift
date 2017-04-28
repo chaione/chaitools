@@ -23,14 +23,26 @@ enum CommandProtocolError: Error {
 
 
 @available(OSX 10.12, *)
-protocol ChaiCommandProtocol{
+protocol ChaiCommandProtocol {
+
+    /// Returns Array of String that will act as arguments for Process.
+    ///
+    /// - Returns: Array of Strings
     func arguments() -> ChaiCommandArguments
+
+    /// executable name that will be executed. Example: `which`, `echo`, `ls`
     static var binary: String { get }
 }
 
 @available(OSX 10.12, *)
-extension ChaiCommandProtocol{
+extension ChaiCommandProtocol {
 
+
+    /// Executes command.
+    ///
+    /// - Parameter directory: URL of directory you will to run command inside of.
+    /// - Returns: @discardableResult Process object that contains.
+    /// - Throws: `CommandProtocolError` with `.generic` case.
     @discardableResult func run(in directory :URL) throws -> Process {
 
         let outputPipe = Pipe()
@@ -60,6 +72,11 @@ extension ChaiCommandProtocol{
         return process
     }
 
+    /// Executes command.
+    ///
+    /// - Parameter directory: filePath of directory you will to run command inside of.
+    /// - Returns: @discardableResult Process object that contains.
+    /// - Throws: `CommandProtocolError` with `.generic` case.
     func run(in directoryPath : String) throws -> Process {
         return try run(in: URL(fileURLWithPath: directoryPath))
     }
@@ -89,6 +106,10 @@ extension Process {
 
 internal extension Pipe {
 
+
+    /// Helper method to return String of output from `Pipe` object.
+    ///
+    /// - Returns: String containing the output of a `Pipe`.
     func output() -> String {
         let data = fileHandleForReading.readDataToEndOfFile()
         guard let outputString = String(data: data, encoding: .utf8)
