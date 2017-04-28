@@ -10,7 +10,7 @@ import Foundation
 import SwiftCLI
 
 @available(OSX 10.12, *)
-enum AppleScript: CommandProtocol {
+enum AppleScript: ChaiCommandProtocol{
     case openXcode
     case quitXcode
 
@@ -34,7 +34,7 @@ enum AppleScript: CommandProtocol {
 }
 
 @available(OSX 10.12, *)
-enum Fastlane : CommandProtocol {
+enum Fastlane : ChaiCommandProtocol{
 
     case bootstrap
     case bootstrapChaiToolsSetup

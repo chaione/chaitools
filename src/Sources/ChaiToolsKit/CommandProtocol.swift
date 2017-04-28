@@ -23,13 +23,13 @@ enum CommandProtocolError: Error {
 
 
 @available(OSX 10.12, *)
-protocol CommandProtocol {
+protocol ChaiCommandProtocol{
     func arguments() -> ChaiCommandArguments
     static var binary: String { get }
 }
 
 @available(OSX 10.12, *)
-extension CommandProtocol {
+extension ChaiCommandProtocol{
 
     @discardableResult func run(in directory :URL) throws -> Process {
 
