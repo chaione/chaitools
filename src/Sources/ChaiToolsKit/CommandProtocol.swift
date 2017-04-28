@@ -46,6 +46,9 @@ extension CommandProtocol {
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = pipe
+
+        process.execute()
+
         defer {
             process.output = pipe.output()
         }
@@ -54,7 +57,7 @@ extension CommandProtocol {
             throw CommandProtocolError.generic(message: pipe.output())
         }
 
-        return process.execute()
+        return process
     }
 
     func run(in directoryPath : String) throws -> Process {
@@ -90,6 +93,6 @@ internal extension Pipe {
         let data = fileHandleForReading.readDataToEndOfFile()
         guard let outputString = String(data: data, encoding: .utf8)
             else { return "" }
-        return outputString.replacingOccurrences(of: "\n", with: "")
+        return outputString
     }
 }
