@@ -42,9 +42,12 @@ extension URL {
         }
     }
 
-    func firstItem() -> URL? {
+    func firstItem(withFileExtension fileExtension: String? = nil) -> URL? {
         do {
-            return try self.contents().first
+            guard let fileExtension = fileExtension else {
+                return try self.contents().first
+            }
+            return try contents().filter({$0.path.contains(fileExtension)}).first
         } catch {
             return nil
         }

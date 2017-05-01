@@ -20,9 +20,4 @@ extension Process {
         self.init()
         self.launchPath = launchPath
     }
-
-    func execute() {
-        launch()
-        waitUntilExit()
-    }
 }

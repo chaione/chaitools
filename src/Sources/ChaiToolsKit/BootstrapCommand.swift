@@ -9,6 +9,26 @@
 import Foundation
 import SwiftCLI
 
+enum BootstrapCommandError: Error {
+    case unrecognizedTechStack
+    case projectAlreadyExistAtLocation(projectName: String)
+    case generic(message: String)
+    case unknown
+
+    var localizedDescription: String {
+        switch self {
+        case .unrecognizedTechStack:
+            return "ChaiTools did not recognize Tech Stack"
+        case .projectAlreadyExistAtLocation(let projectName):
+            return "Project \(projectName) already exists at this location."
+        case .generic(let message):
+            return message
+        case .unknown:
+            return "ChaiTools does not know what happened 😭"
+        }
+    }
+}
+
 @available(OSX 10.12, *)
 enum TechStack: String, Iteratable {
     case android
@@ -35,7 +55,7 @@ enum TechStack: String, Iteratable {
 
 @available(OSX 10.12, *)
 public class BootstrapCommand: OptionCommand {
-
+    
     public var name: String = "bootstrap"
     public var signature: String = "[<stack>]"
     public var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
