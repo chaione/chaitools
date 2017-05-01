@@ -15,7 +15,7 @@ public enum AppleScript: ChaiCommandProtocol {
     case openXcode
     case quitXcode
 
-    public static var binary: String {
+    public static var binary: String? {
         return "osascript"
     }
 

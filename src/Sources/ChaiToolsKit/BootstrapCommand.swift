@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftCLI
+import ChaiCommandKit
 
 enum BootstrapCommandError: Error {
     case unrecognizedTechStack
@@ -202,9 +203,9 @@ public class BootstrapCommand: OptionCommand {
         // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
         MessageTools.state("local Repo is \(repo.localURL)")
-        try repo.execute(GitAction.ginit)
-        try repo.execute(GitAction.add)
-        try repo.execute(GitAction.commit)
+        try repo.execute(.ginit)
+        try repo.execute(.add)
+        try repo.execute(.commit)
 
         MessageTools.exclaim("Successfully setup local git repo for project \(projectName).")
 
@@ -213,8 +214,8 @@ public class BootstrapCommand: OptionCommand {
         if remoteRepo != "" {
             repo.remoteURL = URL(string: remoteRepo)
 
-            try repo.execute(GitAction.remoteAdd)
-            try repo.execute(GitAction.push)
+            try repo.pull()
+            try repo.execute(.push)
 
             MessageTools.exclaim("Successfully pushed to git remote for project \(projectName).")
         }

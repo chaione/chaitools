@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ChaiCommandKit
 
 @available(OSX 10.12, *)
 class AndroidBootstrap: BootstrapConfig {
@@ -38,7 +39,7 @@ class AndroidBootstrap: BootstrapConfig {
 
         do {
             MessageTools.state("Setting up Android jumpstart...")
-            try repo.execute(GitAction.clone)
+            try repo.clone()
         } catch {
             throw BootstrapCommandError.generic(message: "Failed to download jumpstart project. Do you have permission to access it?")
         }

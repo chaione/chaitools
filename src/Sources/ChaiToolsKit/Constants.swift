@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ChaiCommandKit
 
 protocol Iteratable {}
 extension RawRepresentable where Self: RawRepresentable {
@@ -47,8 +48,9 @@ extension Error {
         switch self {
         case (let e as GitRepoError):
             return e.localizedDescription
-        case (let e as BootstrapCommandError):
+        case (let e as CommandProtocolError):
             return e.localizedDescription
+        case (let e as BootstrapCommandError):
             return e.localizedDescription
         case (let e as FileOpsError):
             return e.localizedDescription

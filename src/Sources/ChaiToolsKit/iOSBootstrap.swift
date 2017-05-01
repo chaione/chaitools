@@ -32,11 +32,12 @@ class iOSBootstrap: BootstrapConfig {
 
         let srcDirectory = projectDirURL.subDirectories("src")
         
-        try Fastlane.bootstrapChaiToolsSetup.run(in: srcDirectory)
-        // Maybe log output?
-        try Fastlane.bootstrap.run(in: srcDirectory)
-        // Maybe log output?
-//        try CommandLine.run(openXcode(inDirectory: srcDirectory), in: srcDirectory)
+        let fastlaneProcess1 = try Fastlane.bootstrapChaiToolsSetup.run(in: srcDirectory)
+        MessageTools.exclaim(fastlaneProcess1.output, level: .verbose)
+        let fastlaneProcess2 = try Fastlane.bootstrap.run(in: srcDirectory)
+        MessageTools.exclaim(fastlaneProcess2.output, level: .verbose)
+
+        try openXcode(inDirectory: srcDirectory)
     }
 
     func restructureXcodeProject(in directory: URL) throws {
@@ -44,23 +45,21 @@ class iOSBootstrap: BootstrapConfig {
             throw BootstrapCommandError.generic(message: "Failed to find created Xcode project inside of `src` directory.")
         }
 
-//        try CommandLine.run(
-//            ChaiCommand(
-//                launchPath: "/bin/mv",
-//                arguments: ["\(projectInSrcDirectory.path)", "temp"],
-//                failureMessage: "Failed to move contents inside of project directory inside of `temp` folder inside of root directory."
-//            ),
-//            ChaiCommand(
-//                launchPath: "/bin/rm",
-//                arguments: ["-rf", "src"],
-//                failureMessage: "Failed to remove `src` directory."
-//            ),
-//            ChaiCommand(
-//                launchPath: "/bin/mv",
-//                arguments: ["temp", "src"],
-//                failureMessage: "Failed to rename `temp` directory to `src`."
-//            ),
-//            in: directory)
+        try ShellCommand
+            .move(
+                file: projectInSrcDirectory.path,
+                toPath: "temp")
+            .run(in: directory)
+
+        try ShellCommand
+            .remove(file: "src")
+            .run(in: directory)
+
+        try ShellCommand
+            .move(
+                file: "temp",
+                toPath: "src")
+            .run(in: directory)
     }
 
     func createFastlaneRepo() throws -> GitRepo {
@@ -80,19 +79,25 @@ class iOSBootstrap: BootstrapConfig {
     func addFastlane(_ repo: GitRepo, toDirectory directory: URL) throws {
         do {
             let srcDirectory = directory.subDirectories("src")
-            try FileManager.default.copyItem(
-                at: repo.localURL.subDirectories("ios/fastlane"),
-                to: srcDirectory.subDirectories("fastlane")
-            )
-            try FileManager.default.copyItem(
-                at: repo.localURL.subDirectories("ios/Gemfile"),
-                to: srcDirectory.file("Gemfile")
-            )
 
-            try FileManager.default.copyItem(
-                at: repo.localURL.subDirectories("ios/circle.yml"),
-                to: directory.file("circle.yml")
-            )
+            try ShellCommand
+                .copyDirectory(
+                    directory: repo.localURL.subDirectories("ios/fastlane").path,
+                    to: srcDirectory.subDirectories("fastlane").path)
+                .run(in: directory)
+
+            try ShellCommand
+                .copyFile(
+                    file: repo.localURL.subDirectories("ios/Gemfile").path,
+                    to: srcDirectory.file("Gemfile").path)
+                .run(in: directory)
+
+            try ShellCommand
+                .copyFile(
+                    file: repo.localURL.subDirectories("ios/circle.yml").path,
+                    to: directory.file("circle.yml").path)
+                .run(in: directory)
+
             MessageTools.exclaim("Successfully downloaded latest ChaiTools Fastlane scripts")
 
         } catch {
@@ -100,20 +105,13 @@ class iOSBootstrap: BootstrapConfig {
         }
     }
 
-//    func openXcode(inDirectory directory: URL) -> ChaiCommand {
-//        var arguments: String {
-//            guard let xcodeprojPath = directory.firstItem(withFileExtension: "xcodeproj")?.path else {
-//                return ""
-//            }
-//
-//            return xcodeprojPath
-//        }
-//        return ChaiCommand(
-//            launchPath: "/usr/bin/open",
-//            arguments: [arguments],
-//            failureMessage: "Failed to open xcodeproj file."
-//        )
-//    }
+    func openXcode(inDirectory directory: URL) throws {
+        guard let xcodeprojPath = directory.firstItem(withFileExtension: "xcodeproj")?.path else {
+            throw BootstrapCommandError.generic(message: "Failed to find file with extension `.xcodeproj`")
+        }
+
+        try ShellCommand.open(fileName: xcodeprojPath).run(in: directory)
+    }
 
     // TODO: Need to redo this!
     func addSwiftFormatCommand(in directory: URL) throws {

@@ -19,7 +19,7 @@ public enum Fastlane : ChaiCommandProtocol {
     case bootstrap
     case bootstrapChaiToolsSetup
     case lane(String)
-    static var binary: String {
+    static var binary: String? {
         return "fastlane"
     }
 

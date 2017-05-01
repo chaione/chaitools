@@ -10,7 +10,7 @@ import Foundation
 
 public typealias ChaiCommandArguments = [String]
 
-enum CommandProtocolError: Error {
+public enum CommandProtocolError: Error {
     case generic(message: String)
 
     var localizedDescription: String {
@@ -21,7 +21,6 @@ enum CommandProtocolError: Error {
     }
 }
 
-
 @available(OSX 10.12, *)
 protocol ChaiCommandProtocol {
 
@@ -31,18 +30,20 @@ protocol ChaiCommandProtocol {
     func arguments() -> ChaiCommandArguments
 
     /// executable name that will be executed. Example: `which`, `echo`, `ls`
-    static var binary: String { get }
+    static var binary: String? { get }
 }
 
 @available(OSX 10.12, *)
 extension ChaiCommandProtocol {
 
-
     /// Generates final array of commands with executable at the beginning.
     ///
     /// - Returns: `[ChaiCommandArguments]`
     private func binaryWithArguments() -> ChaiCommandArguments {
-        return [type(of: self).binary] + arguments()
+        guard let binary = type(of: self).binary else {
+            return arguments()
+        }
+        return [binary] + arguments()
     }
 
     /// Executes command.
@@ -112,7 +113,6 @@ public extension Process {
 }
 
 public extension Pipe {
-
 
     /// Helper method to return String of output from `Pipe` object.
     ///
