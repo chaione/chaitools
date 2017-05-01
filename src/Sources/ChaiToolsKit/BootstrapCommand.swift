@@ -10,10 +10,9 @@ import Foundation
 import SwiftCLI
 import ChaiCommandKit
 
-enum BootstrapCommandError: Error {
+enum BootstrapCommandError: ChaiErrorProtocol {
     case unrecognizedTechStack
     case projectAlreadyExistAtLocation(projectName: String)
-    case generic(message: String)
     case unknown
 
     var localizedDescription: String {
@@ -22,8 +21,6 @@ enum BootstrapCommandError: Error {
             return "ChaiTools did not recognize Tech Stack"
         case .projectAlreadyExistAtLocation(let projectName):
             return "Project \(projectName) already exists at this location."
-        case .generic(let message):
-            return message
         case .unknown:
             return "ChaiTools does not know what happened 😭"
         }
@@ -119,7 +116,7 @@ public class BootstrapCommand: OptionCommand {
             try setupGitRepo(projectURL)
             
             MessageTools.state("Boot straps pulled. Time to start walking. 😎", level: .silent)
-        } catch let error {
+        } catch let error as ChaiError {
             MessageTools.error(error.description)
         }
     }
@@ -190,7 +187,7 @@ public class BootstrapCommand: OptionCommand {
         } catch {
             MessageTools.error("Failed to setup ReadMe in \(sourceURL)", level: .verbose)
             MessageTools.error("Error creating ReadMe: \(error)", level: .debug)
-            throw BootstrapCommandError.generic(message: "Failed to setup ReadMe in \(sourceURL)")
+            throw ChaiError.generic(message: "Failed to setup ReadMe in \(sourceURL)")
         }
     }
 

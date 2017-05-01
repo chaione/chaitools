@@ -9,12 +9,11 @@
 import Foundation
 import ChaiCommandKit
 
-enum GitRepoError: Error {
+enum GitRepoError: ChaiErrorProtocol {
     case alreadyInitialized
     case missingRemoteURL
     case missingLocalRepo
     case nonEmptyRepo
-    case commandFaliure(message: String)
     case unknown
 
     var localizedDescription: String {
@@ -27,8 +26,6 @@ enum GitRepoError: Error {
             return "ChaiTools is missing a Local Repo."
         case .nonEmptyRepo:
             return "Destination directory needs to be empty"
-        case .commandFaliure(let message):
-            return message
         case .unknown:
             return "ChaiTools does not know what happened 😭"
         }

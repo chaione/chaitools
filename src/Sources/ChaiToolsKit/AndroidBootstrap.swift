@@ -28,7 +28,7 @@ class AndroidBootstrap: BootstrapConfig {
 
     func downloadJumpStart() throws -> GitRepo {
         guard let tempDir = fileOps.createTempDirectory() else {
-            throw BootstrapCommandError.generic(message: "Failed to create temp directory.")
+            throw ChaiError.generic(message: "Failed to create temp directory.")
         }
         let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: projectURL)
         MessageTools.state("Androids wear 🚀 boots!")
@@ -41,7 +41,7 @@ class AndroidBootstrap: BootstrapConfig {
             MessageTools.state("Setting up Android jumpstart...")
             try repo.clone()
         } catch {
-            throw BootstrapCommandError.generic(message: "Failed to download jumpstart project. Do you have permission to access it?")
+            throw ChaiError.generic(message: "Failed to download jumpstart project. Do you have permission to access it?")
         }
     }
 
@@ -49,7 +49,7 @@ class AndroidBootstrap: BootstrapConfig {
         do {
             try FileManager.default.copyItem(at: repo.localURL.appendingPathComponent(".gitignore"), to: projectDirURL.appendingPathComponent(".gitignore"))
         } catch {
-            throw BootstrapCommandError.generic(message: "Failed to move .gitingore with error \(error).")
+            throw ChaiError.generic(message: "Failed to move .gitingore with error \(error).")
         }
     }
 
@@ -66,7 +66,7 @@ class AndroidBootstrap: BootstrapConfig {
             MessageTools.exclaim("Android jumpstart successfully created!")
 
         } catch {
-            throw BootstrapCommandError.generic(message: "Failed to move project files with error \(error).")
+            throw ChaiError.generic(message: "Failed to move project files with error \(error).")
         }
     }
 }

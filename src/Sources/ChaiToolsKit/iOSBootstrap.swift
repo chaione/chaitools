@@ -21,7 +21,7 @@ class iOSBootstrap: BootstrapConfig {
         try AppleScriptCommand.openXcode.run(in: projectDirURL)
 
         guard Input.awaitYesNoInput(message: "❓  Has Xcode finished creating a project?") else {
-            throw BootstrapCommandError.generic(message: "User failed to create Xcode project.")
+            throw ChaiError.generic(message: "User failed to create Xcode project.")
         }
 
         try AppleScriptCommand.quitXcode.run(in: projectDirURL)
@@ -50,7 +50,7 @@ class iOSBootstrap: BootstrapConfig {
     /// - Throws: `BootstrapCommandError`
     func restructureXcodeProject(in directory: URL) throws {
         guard let projectInSrcDirectory = directory.subDirectories("src").firstItem() else {
-            throw BootstrapCommandError.generic(message: "Failed to find created Xcode project inside of `src` directory.")
+            throw ChaiError.generic(message: "Failed to find created Xcode project inside of `src` directory.")
         }
 
         try ShellCommand
@@ -77,7 +77,7 @@ class iOSBootstrap: BootstrapConfig {
     /// - Throws: `BootstrapCommandError`
     func createFastlaneRepo() throws -> GitRepo {
         guard let tempDirectory = fileOps.createTempDirectory() else {
-            throw BootstrapCommandError.generic(message: "Failed to create temp directory to hold 'ChaiOne's Build Script: Fastlane'.")
+            throw ChaiError.generic(message: "Failed to create temp directory to hold 'ChaiOne's Build Script: Fastlane'.")
         }
         let repo = GitRepo(withLocalURL: tempDirectory, andRemoteURL: fastlaneRemoteURL)
         return repo
@@ -114,7 +114,7 @@ class iOSBootstrap: BootstrapConfig {
             MessageTools.exclaim("Successfully downloaded latest ChaiTools Fastlane scripts")
 
         } catch {
-            throw BootstrapCommandError.generic(message: "Failed to move project files with error \(error).")
+            throw ChaiError.generic(message: "Failed to move project files with error \(error).")
         }
     }
 
@@ -126,7 +126,7 @@ class iOSBootstrap: BootstrapConfig {
     func openXcode(inDirectory directory: URL) throws {
         // TODO: will need further improvement if we are to handle `.xcworkspaces` as well
         guard let xcodeprojPath = directory.firstItem(withFileExtension: "xcodeproj")?.path else {
-            throw BootstrapCommandError.generic(message: "Failed to find file with extension `.xcodeproj`")
+            throw ChaiError.generic(message: "Failed to find file with extension `.xcodeproj`")
         }
 
         try ShellCommand.open(fileName: xcodeprojPath).run(in: directory)
@@ -135,7 +135,7 @@ class iOSBootstrap: BootstrapConfig {
     // TODO: Need to redo this!
     func addSwiftFormatCommand(in directory: URL) throws {
         guard let tempDirectory = fileOps.createTempDirectory() else {
-            throw BootstrapCommandError.generic(message: "Failed to create temp directory to hold 'SwiftFormat'.")
+            throw ChaiError.generic(message: "Failed to create temp directory to hold 'SwiftFormat'.")
         }
         let repo = try GitRepo(withLocalURL: tempDirectory, andRemoteURL: URL(string: "git@github.com:nicklockwood/SwiftFormat.git")).clone()
 
@@ -149,7 +149,7 @@ class iOSBootstrap: BootstrapConfig {
             MessageTools.exclaim("Successfully downloaded latest SwiftFormat CommandLineTool")
 
         } catch {
-            throw BootstrapCommandError.generic(message: "Failed to copy SwiftFormat to project. With error \(error).")
+            throw ChaiError.generic(message: "Failed to copy SwiftFormat to project. With error \(error).")
         }
     }
 }

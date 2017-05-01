@@ -10,15 +10,22 @@ import Foundation
 
 public typealias ChaiCommandArguments = [String]
 
-public enum CommandProtocolError: Error {
-    case generic(message: String)
+public protocol ChaiErrorProtocol: Error {
+    var localizedDescription: String { get }
+}
 
-    var localizedDescription: String {
-        switch self {
-        case .generic(let message):
-            return message
-        }
+extension ChaiErrorProtocol {
+    public var description: String {
+        return localizedDescription
     }
+
+    public static func generic(message: String) -> Error {
+        return ChaiError(message: message)
+    }
+}
+
+public struct ChaiError: ChaiErrorProtocol {
+    let message: String
 }
 
 @available(OSX 10.12, *)
@@ -76,7 +83,7 @@ extension ChaiCommand {
         }
 
         if process.terminationStatus != 0 {
-            throw CommandProtocolError.generic(message: pipe.output())
+            throw ChaiError.generic(message: pipe.output())
         }
 
         return process
