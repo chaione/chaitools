@@ -10,9 +10,12 @@ import Foundation
 
 @available(OSX 10.12, *)
 /// Applescript ChaiCommands
-public enum AppleScript: ChaiCommandProtocol {
+public enum AppleScriptCommand: ChaiCommand {
 
+    /// Open Xcode from applescript
     case openXcode
+
+    /// Quit Xcode from applescript
     case quitXcode
 
     public static var binary: String? {

@@ -99,7 +99,7 @@ class GitRepo {
         guard let url = remoteURL else {
             throw GitRepoError.missingRemoteURL
         }
-        try self.execute(GitCommand.clone(url.absoluteString))
+        try self.execute(GitCommand.clone(url: url.absoluteString))
         return self
     }
 

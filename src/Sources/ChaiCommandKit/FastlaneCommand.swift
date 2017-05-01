@@ -14,7 +14,7 @@ import Foundation
 /// - bootstrap: run `fastlane bootstrap`
 /// - bootstrapChaiToolsSetup: run `fastlane bootstrap_chai_tools_setup`
 /// - lane: Generic case that will allow you to run any lane that is not specified as a case.
-public enum Fastlane : ChaiCommandProtocol {
+public enum FastlaneCommand: ChaiCommand {
 
     case bootstrap
     case bootstrapChaiToolsSetup

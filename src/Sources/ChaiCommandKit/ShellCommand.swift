@@ -11,10 +11,13 @@ import Foundation
 
 /// Shell ChaiCommands
 ///
-/// - bootstrap: run `fastlane bootstrap`
-/// - bootstrapChaiToolsSetup: run `fastlane bootstrap_chai_tools_setup`
-/// - lane: Generic case that will allow you to run any lane that is not specified as a case.
-public enum ShellCommand : ChaiCommandProtocol {
+/// - move: Move file to a new path
+/// - remove: Remove file
+/// - open: Open file
+/// - copyFile: Copy files into destination
+/// - copyDirectory: Copy directory into destination
+public enum ShellCommand: ChaiCommand {
+
 
     case move(file: String, toPath: String)
     case remove(file: String)

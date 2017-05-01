@@ -10,13 +10,9 @@ import Foundation
 @available(OSX 10.12, *)
 
 /// Git commands that would typically be ran from the terminal
-public enum GitCommand : ChaiCommandProtocol, Equatable {
+public enum GitCommand: ChaiCommand, Equatable {
 
-    static var binary: String? {
-        return "git"
-    }
-
-    case clone(String)
+    case clone(url: String)
     case pull
     case ginit
     case add
@@ -24,6 +20,9 @@ public enum GitCommand : ChaiCommandProtocol, Equatable {
     case remote(remoteOption)
     case push
 
+    static var binary: String? {
+        return "git"
+    }
     public enum remoteOption {
         case add(String)
         case remove(String)
@@ -48,7 +47,6 @@ public enum GitCommand : ChaiCommandProtocol, Equatable {
             }
         }
     }
-
 
     func arguments() -> ChaiCommandArguments {
         switch self {

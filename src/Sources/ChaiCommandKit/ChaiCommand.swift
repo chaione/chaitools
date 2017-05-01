@@ -22,7 +22,9 @@ public enum CommandProtocolError: Error {
 }
 
 @available(OSX 10.12, *)
-protocol ChaiCommandProtocol {
+
+/// Protocol to handle any commands needed to be run in the terminal.
+protocol ChaiCommand {
 
     /// Returns Array of String that will act as arguments for Process.
     ///
@@ -34,7 +36,7 @@ protocol ChaiCommandProtocol {
 }
 
 @available(OSX 10.12, *)
-extension ChaiCommandProtocol {
+extension ChaiCommand {
 
     /// Generates final array of commands with executable at the beginning.
     ///

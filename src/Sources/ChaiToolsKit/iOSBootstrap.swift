@@ -18,10 +18,13 @@ class iOSBootstrap: BootstrapConfig {
     required init() {}
 
     func bootstrap(_ projectDirURL: URL) throws {
-        try AppleScript.openXcode.run(in: projectDirURL)
+        try AppleScriptCommand.openXcode.run(in: projectDirURL)
 
-        try xcodeFinishedSettingUp()
-        try AppleScript.quitXcode.run(in: projectDirURL)
+        guard Input.awaitYesNoInput(message: "❓  Has Xcode finished creating a project?") else {
+            throw BootstrapCommandError.generic(message: "User failed to create Xcode project.")
+        }
+
+        try AppleScriptCommand.quitXcode.run(in: projectDirURL)
         try restructureXcodeProject(in: projectDirURL)
 
         // TODO: Need to redo SwiftFormat code
@@ -32,14 +35,19 @@ class iOSBootstrap: BootstrapConfig {
 
         let srcDirectory = projectDirURL.subDirectories("src")
         
-        let fastlaneProcess1 = try Fastlane.bootstrapChaiToolsSetup.run(in: srcDirectory)
+        let fastlaneProcess1 = try FastlaneCommand.bootstrapChaiToolsSetup.run(in: srcDirectory)
         MessageTools.exclaim(fastlaneProcess1.output, level: .verbose)
-        let fastlaneProcess2 = try Fastlane.bootstrap.run(in: srcDirectory)
+        let fastlaneProcess2 = try FastlaneCommand.bootstrap.run(in: srcDirectory)
         MessageTools.exclaim(fastlaneProcess2.output, level: .verbose)
 
         try openXcode(inDirectory: srcDirectory)
     }
 
+
+    /// Method will move all the content inside of the generated folder from Xcode into `src` directory
+    ///
+    /// - Parameter directory: Projects root directory
+    /// - Throws: `BootstrapCommandError`
     func restructureXcodeProject(in directory: URL) throws {
         guard let projectInSrcDirectory = directory.subDirectories("src").firstItem() else {
             throw BootstrapCommandError.generic(message: "Failed to find created Xcode project inside of `src` directory.")
@@ -62,6 +70,11 @@ class iOSBootstrap: BootstrapConfig {
             .run(in: directory)
     }
 
+
+    /// Creates a local temporary repo to hold fastlane cloned from `build-script` repo.
+    ///
+    /// - Returns: GitRepo object containing items such as `localPath` to cloned Fastlane repo.
+    /// - Throws: `BootstrapCommandError`
     func createFastlaneRepo() throws -> GitRepo {
         guard let tempDirectory = fileOps.createTempDirectory() else {
             throw BootstrapCommandError.generic(message: "Failed to create temp directory to hold 'ChaiOne's Build Script: Fastlane'.")
@@ -70,12 +83,12 @@ class iOSBootstrap: BootstrapConfig {
         return repo
     }
 
-    func xcodeFinishedSettingUp() throws {
-        guard Input.awaitYesNoInput(message: "❓  Has Xcode finished creating a project?") else {
-            throw BootstrapCommandError.generic(message: "User failed to create Xcode project.")
-        }
-    }
-
+    /// Copy over fastlane to created Xcode project.
+    ///
+    /// - Parameters:
+    ///   - repo: Fastlane repo.
+    ///   - directory: Directory that Fastlane will be copied into.
+    /// - Throws: `BootstrapCommandError`
     func addFastlane(_ repo: GitRepo, toDirectory directory: URL) throws {
         do {
             let srcDirectory = directory.subDirectories("src")
@@ -105,7 +118,13 @@ class iOSBootstrap: BootstrapConfig {
         }
     }
 
+
+    /// Opens Xcode with first file item with extension `xcodeproj`
+    ///
+    /// - Parameter directory: Projects root directory
+    /// - Throws: `BootstrapCommandError`
     func openXcode(inDirectory directory: URL) throws {
+        // TODO: will need further improvement if we are to handle `.xcworkspaces` as well
         guard let xcodeprojPath = directory.firstItem(withFileExtension: "xcodeproj")?.path else {
             throw BootstrapCommandError.generic(message: "Failed to find file with extension `.xcodeproj`")
         }
@@ -134,11 +153,3 @@ class iOSBootstrap: BootstrapConfig {
         }
     }
 }
-
-@available(OSX 10.12, *)
-extension iOSBootstrap {
-    func projectTemplatePath() -> URL {
-        return fileOps.expandLocalLibraryPath("Developer/Xcode/Templates/Project Templates")
-    }
-}
-
