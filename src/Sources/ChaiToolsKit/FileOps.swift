@@ -8,6 +8,26 @@
 
 import Foundation
 
+enum FileOpsError: Error {
+    case directoryMissing
+    case directoryAlreadyExists
+    case generic(message: String)
+    case unknown
+
+    var localizedDescription: String {
+        switch self {
+        case .directoryMissing:
+            return "Destination directory is Missing."
+        case .directoryAlreadyExists:
+            return "Destination directory already exists."
+        case .generic(let message):
+            return message
+        case .unknown:
+            return "ChaiTools does not know what happened 😭"
+        }
+    }
+}
+
 @available(OSX 10.12, *)
 public class FileOps: NSObject {
 

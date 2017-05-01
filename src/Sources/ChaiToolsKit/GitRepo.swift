@@ -39,6 +39,32 @@ enum GitAction: String {
     }
 }
 
+enum GitRepoError: Error {
+    case alreadyInitialized
+    case missingRemoteURL
+    case missingLocalRepo
+    case nonEmptyRepo
+    case commandFaliure(message: String)
+    case unknown
+
+    var localizedDescription: String {
+        switch self {
+        case .alreadyInitialized:
+            return "Local git repo is already initialized."
+        case .missingRemoteURL:
+            return "ChaiTools is missing a remote URL to pull from."
+        case .missingLocalRepo:
+            return "ChaiTools is missing a Local Repo."
+        case .nonEmptyRepo:
+            return "Destination directory needs to be empty"
+        case .commandFaliure(let message):
+            return message
+        case .unknown:
+            return "ChaiTools does not know what happened 😭"
+        }
+    }
+}
+
 @available(OSX 10.12, *)
 class GitRepo {
 
