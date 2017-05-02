@@ -10,20 +10,28 @@ import Foundation
 
 public typealias ChaiCommandArguments = [String]
 
-enum CommandProtocolError: Error {
-    case generic(message: String)
+public protocol ChaiErrorProtocol: Error {
+    var localizedDescription: String { get }
+}
 
-    var localizedDescription: String {
-        switch self {
-        case .generic(let message):
-            return message
-        }
+extension ChaiErrorProtocol {
+    public var description: String {
+        return localizedDescription
+    }
+
+    public static func generic(message: String) -> Error {
+        return ChaiError(message: message)
     }
 }
 
+public struct ChaiError: ChaiErrorProtocol {
+    let message: String
+}
 
 @available(OSX 10.12, *)
-protocol ChaiCommandProtocol {
+
+/// Protocol to handle any commands needed to be run in the terminal.
+protocol ChaiCommand {
 
     /// Returns Array of String that will act as arguments for Process.
     ///
@@ -31,19 +39,28 @@ protocol ChaiCommandProtocol {
     func arguments() -> ChaiCommandArguments
 
     /// executable name that will be executed. Example: `which`, `echo`, `ls`
-    static var binary: String { get }
+    static var binary: String? { get }
 }
 
 @available(OSX 10.12, *)
-extension ChaiCommandProtocol {
+extension ChaiCommand {
 
+    /// Generates final array of commands with executable at the beginning.
+    ///
+    /// - Returns: `[ChaiCommandArguments]`
+    private func binaryWithArguments() -> ChaiCommandArguments {
+        guard let binary = type(of: self).binary else {
+            return arguments()
+        }
+        return [binary] + arguments()
+    }
 
     /// Executes command.
     ///
     /// - Parameter directory: URL of directory you will to run command inside of.
     /// - Returns: @discardableResult Process object that contains.
     /// - Throws: `CommandProtocolError` with `.generic` case.
-    @discardableResult func run(in directory :URL) throws -> Process {
+    @discardableResult public func run(in directory :URL) throws -> Process {
 
         let outputPipe = Pipe()
         let errorPipe = Pipe()
@@ -53,7 +70,7 @@ extension ChaiCommandProtocol {
         process.currentDirectoryPath = directory.path
         process.standardOutput = outputPipe
         process.standardError = errorPipe
-        process.arguments = arguments()
+        process.arguments = binaryWithArguments()
 
         let pipe = Pipe()
         process.standardOutput = pipe
@@ -66,7 +83,7 @@ extension ChaiCommandProtocol {
         }
 
         if process.terminationStatus != 0 {
-            throw CommandProtocolError.generic(message: pipe.output())
+            throw ChaiError.generic(message: pipe.output())
         }
 
         return process
@@ -83,7 +100,7 @@ extension ChaiCommandProtocol {
 }
 
 // MARK: - External class extensions
-extension Process {
+public extension Process {
 
     @discardableResult func execute() -> Process {
         launch()
@@ -104,8 +121,7 @@ extension Process {
     }
 }
 
-internal extension Pipe {
-
+public extension Pipe {
 
     /// Helper method to return String of output from `Pipe` object.
     ///

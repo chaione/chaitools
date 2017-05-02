@@ -39,22 +39,3 @@ protocol BootstrapConfig {
     func bootstrap(_ projectDirURL: URL) throws
     init()
 }
-
-// MARK: - Error Enums
-
-extension Error {
-    var description: String {
-        switch self {
-        case (let e as GitRepoError):
-            return e.localizedDescription
-        case (let e as BootstrapCommandError):
-            return e.localizedDescription
-        case (let e as CommandLineError):
-            return e.localizedDescription
-        case (let e as FileOpsError):
-            return e.localizedDescription
-        default:
-            return "unknown error to ChaiTools."
-        }
-    }
-}

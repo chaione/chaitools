@@ -8,11 +8,11 @@
 
 import Foundation
 import SwiftCLI
+import ChaiCommandKit
 
-enum BootstrapCommandError: Error {
+enum BootstrapCommandError: ChaiErrorProtocol {
     case unrecognizedTechStack
     case projectAlreadyExistAtLocation(projectName: String)
-    case generic(message: String)
     case unknown
 
     var localizedDescription: String {
@@ -21,8 +21,6 @@ enum BootstrapCommandError: Error {
             return "ChaiTools did not recognize Tech Stack"
         case .projectAlreadyExistAtLocation(let projectName):
             return "Project \(projectName) already exists at this location."
-        case .generic(let message):
-            return message
         case .unknown:
             return "ChaiTools does not know what happened 😭"
         }
@@ -118,7 +116,7 @@ public class BootstrapCommand: OptionCommand {
             try setupGitRepo(projectURL)
             
             MessageTools.state("Boot straps pulled. Time to start walking. 😎", level: .silent)
-        } catch let error {
+        } catch let error as ChaiError {
             MessageTools.error(error.description)
         }
     }
@@ -189,7 +187,7 @@ public class BootstrapCommand: OptionCommand {
         } catch {
             MessageTools.error("Failed to setup ReadMe in \(sourceURL)", level: .verbose)
             MessageTools.error("Error creating ReadMe: \(error)", level: .debug)
-            throw BootstrapCommandError.generic(message: "Failed to setup ReadMe in \(sourceURL)")
+            throw ChaiError.generic(message: "Failed to setup ReadMe in \(sourceURL)")
         }
     }
 
@@ -202,19 +200,18 @@ public class BootstrapCommand: OptionCommand {
         // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
         MessageTools.state("local Repo is \(repo.localURL)")
-        try repo.execute(GitAction.ginit)
-        try repo.execute(GitAction.add)
-        try repo.execute(GitAction.commit)
+        try repo.execute(.ginit)
+        try repo.execute(.add)
+        try repo.execute(.commit(message: "Initial commit by chaitools"))
 
         MessageTools.exclaim("Successfully setup local git repo for project \(projectName).")
 
         // Prompt if remote exists.
         let remoteRepo = Input.awaitInput(message: "❓  Enter the remote repo for \(projectName). Press <enter> to skip.")
         if remoteRepo != "" {
-            repo.remoteURL = URL(string: remoteRepo)
 
-            try repo.execute(GitAction.remoteAdd)
-            try repo.execute(GitAction.push)
+            try repo.addRemote(urlString: remoteRepo)
+            try repo.execute(.push)
 
             MessageTools.exclaim("Successfully pushed to git remote for project \(projectName).")
         }
