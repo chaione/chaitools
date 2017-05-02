@@ -20,15 +20,15 @@ public enum FastlaneCommand: ChaiCommand {
     case bootstrapChaiToolsSetup
     case lane(String)
     static var binary: String? {
-        return "fastlane"
+        return "bundle"
     }
 
     func arguments() -> ChaiCommandArguments {
         switch self {
         case .bootstrap:
-            return ["bootstrap"]
+            return ["exec", "fastlane", "bootstrap"]
         case .bootstrapChaiToolsSetup:
-            return ["bootstrap_chai_tools_setup"]
+            return ["exec", "fastlane", "bootstrap_chai_tools_setup"]
         case let .lane(lane):
             return [lane]
         }
