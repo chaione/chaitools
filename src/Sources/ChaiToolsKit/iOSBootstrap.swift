@@ -28,13 +28,13 @@ class iOSBootstrap: BootstrapConfig {
         try restructureXcodeProject(in: projectDirURL)
 
         // TODO: Need to redo SwiftFormat code
-//        try addSwiftFormatCommand(in: projectDirURL)
+        //        try addSwiftFormatCommand(in: projectDirURL)
 
         let fastlaneRepo = try createFastlaneRepo().clone()
         try addFastlane(fastlaneRepo, toDirectory: projectDirURL)
 
         let srcDirectory = projectDirURL.subDirectories("src")
-        
+
         let fastlaneProcess1 = try FastlaneCommand.bootstrapChaiToolsSetup.run(in: srcDirectory)
         MessageTools.exclaim(fastlaneProcess1.output, level: .verbose)
         let fastlaneProcess2 = try FastlaneCommand.bootstrap.run(in: srcDirectory)
@@ -42,7 +42,6 @@ class iOSBootstrap: BootstrapConfig {
 
         try openXcode(inDirectory: srcDirectory)
     }
-
 
     /// Method will move all the content inside of the generated folder from Xcode into `src` directory
     ///
@@ -69,7 +68,6 @@ class iOSBootstrap: BootstrapConfig {
                 toPath: "src")
             .run(in: directory)
     }
-
 
     /// Creates a local temporary repo to hold fastlane cloned from `build-script` repo.
     ///
@@ -117,7 +115,6 @@ class iOSBootstrap: BootstrapConfig {
             throw ChaiError.generic(message: "Failed to move project files with error \(error).")
         }
     }
-
 
     /// Opens Xcode with first file item with extension `xcodeproj`
     ///

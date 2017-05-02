@@ -23,23 +23,24 @@ public enum GitCommand: ChaiCommand, Equatable {
     static var binary: String? {
         return "git"
     }
+
     public enum remoteOption {
         case add(String)
         case remove(String)
 
         func arguments() -> [String] {
             switch self {
-            case .add(let urlPath):
+            case let .add(urlPath):
                 return ["remote", "add", urlPath, "."]
-            case .remove(let urlPath):
+            case let .remove(urlPath):
                 return ["remote", "remove", urlPath]
             }
         }
 
         public static func ==(lhs: remoteOption, rhs: remoteOption) -> Bool {
             switch (lhs, rhs) {
-            case (let .add(option1), let .add(option2)),
-                 (let .remove(option1), let .remove(option2)):
+            case let (.add(option1), .add(option2)),
+                 let (.remove(option1), .remove(option2)):
                 return option1 == option2
 
             default:
@@ -50,7 +51,7 @@ public enum GitCommand: ChaiCommand, Equatable {
 
     func arguments() -> ChaiCommandArguments {
         switch self {
-        case .clone(let urlPath):
+        case let .clone(urlPath):
             return ["clone", urlPath, "."]
         case .pull:
             return ["pull"]
@@ -58,9 +59,9 @@ public enum GitCommand: ChaiCommand, Equatable {
             return ["init"]
         case .add:
             return ["add", "."]
-        case .commit(let message):
+        case let .commit(message):
             return ["commit", "-m ", message]
-        case .remote(let option):
+        case let .remote(option):
             return option.arguments()
         case .push:
             return ["push", "-u", "origin", "master"]
@@ -71,9 +72,9 @@ public enum GitCommand: ChaiCommand, Equatable {
 @available(OSX 10.12, *)
 public func ==(lhs: GitCommand, rhs: GitCommand) -> Bool {
     switch (lhs, rhs) {
-    case (let .clone(url1), let .clone(url2)):
+    case let (.clone(url1), .clone(url2)):
         return url1 == url2
-    case ( .remote, .remote):
+    case (.remote, .remote):
         return lhs == rhs
     case (.ginit, .ginit),
          (.add, .add),

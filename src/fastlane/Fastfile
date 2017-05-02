@@ -2,6 +2,13 @@ before_all do |lane, options|
 
     update_fastlane
     bundle_install
+    if is_ci?
+        puts "Skipping SwiftFormat on server"
+    else
+        Dir.chdir("..") do
+            sh("../scripts/swiftformat Sources/")
+        end
+    end
 
 end
 

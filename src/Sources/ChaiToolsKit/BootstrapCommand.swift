@@ -19,7 +19,7 @@ enum BootstrapCommandError: ChaiErrorProtocol {
         switch self {
         case .unrecognizedTechStack:
             return "ChaiTools did not recognize Tech Stack"
-        case .projectAlreadyExistAtLocation(let projectName):
+        case let .projectAlreadyExistAtLocation(projectName):
             return "Project \(projectName) already exists at this location."
         case .unknown:
             return "ChaiTools does not know what happened 😭"
@@ -44,7 +44,7 @@ enum TechStack: String, Iteratable {
     /// return all supported TechStacks
     static func supportedStacksFormattedString() -> String {
         var supportedStacksStr = "Current supported tech stacks are:\n"
-        let stacks = rawValues().map{ "- \($0)\n" }.joined()
+        let stacks = rawValues().map { "- \($0)\n" }.joined()
         supportedStacksStr.append(stacks)
 
         return supportedStacksStr
@@ -53,11 +53,10 @@ enum TechStack: String, Iteratable {
 
 @available(OSX 10.12, *)
 public class BootstrapCommand: OptionCommand {
-    
+
     public var name: String = "bootstrap"
     public var signature: String = "[<stack>]"
     public var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
-    
 
     public func setupOptions(options: OptionRegistry) {
         MessageTools.addVerbosityOptions(options: options)
@@ -85,7 +84,7 @@ public class BootstrapCommand: OptionCommand {
 
                 guard let stack = TechStack(rawValue: stackName) else {
                     MessageTools.instruct("\(stackName) is an unrecognized tech stack.",
-                        level: .silent)
+                                          level: .silent)
                     MessageTools.state(TechStack.supportedStacksFormattedString())
                     MessageTools.state("Please try again with one of those tech stacks.")
                     MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
@@ -111,10 +110,10 @@ public class BootstrapCommand: OptionCommand {
             if let bootstrapper = bootstrapper {
                 try bootstrapper.bootstrap(projectURL)
             }
-            
+
             try setupReadMeDefaults(projectURL)
             try setupGitRepo(projectURL)
-            
+
             MessageTools.state("Boot straps pulled. Time to start walking. 😎", level: .silent)
         } catch let error as ChaiError {
             MessageTools.error(error.description)
@@ -179,8 +178,7 @@ public class BootstrapCommand: OptionCommand {
         do {
             if try FileManager.default.contentsOfDirectory(at: sourceURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles).isEmpty {
                 guard FileManager.default.createFile(atPath: sourceURL.appendingPathComponent("ReadMe.md").path,
-                                                     contents: "ReadMe added by chaitools bootstrap \(CLI.version) to maintain directory structure.".data(using: .utf8)) else
-                {
+                                                     contents: "ReadMe added by chaitools bootstrap \(CLI.version) to maintain directory structure.".data(using: .utf8)) else {
                     throw BootstrapCommandError.unknown
                 }
             }

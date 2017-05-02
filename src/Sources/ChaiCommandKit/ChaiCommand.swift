@@ -60,7 +60,7 @@ extension ChaiCommand {
     /// - Parameter directory: URL of directory you will to run command inside of.
     /// - Returns: @discardableResult Process object that contains.
     /// - Throws: `CommandProtocolError` with `.generic` case.
-    @discardableResult public func run(in directory :URL) throws -> Process {
+    @discardableResult public func run(in directory: URL) throws -> Process {
 
         let outputPipe = Pipe()
         let errorPipe = Pipe()
@@ -94,7 +94,7 @@ extension ChaiCommand {
     /// - Parameter directory: filePath of directory you will to run command inside of.
     /// - Returns: @discardableResult Process object that contains.
     /// - Throws: `CommandProtocolError` with `.generic` case.
-    func run(in directoryPath : String) throws -> Process {
+    func run(in directoryPath: String) throws -> Process {
         return try run(in: URL(fileURLWithPath: directoryPath))
     }
 }
@@ -112,7 +112,7 @@ public extension Process {
     var output: String {
         get {
             guard let outputStr = objc_getAssociatedObject(self, &Process.optionsAssociationKey) as? String
-                else { return "" }
+            else { return "" }
             return outputStr
         }
         set {
@@ -129,7 +129,7 @@ public extension Pipe {
     func output() -> String {
         let data = fileHandleForReading.readDataToEndOfFile()
         guard let outputString = String(data: data, encoding: .utf8)
-            else { return "" }
+        else { return "" }
         return outputString
     }
 }
