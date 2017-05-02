@@ -1,5 +1,5 @@
 //
-//  AppleScriptCommandTests.swift
+//  ChaiCommandTests.swift
 //  chaitools
 //
 //  Created by Fabian Buentello on 5/1/17.
@@ -8,7 +8,6 @@
 
 import XCTest
 @testable import ChaiCommandKit
-
 
 enum TestEnum: ChaiCommand {
     case test1

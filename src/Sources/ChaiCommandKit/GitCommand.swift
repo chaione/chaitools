@@ -16,7 +16,7 @@ public enum GitCommand: ChaiCommand, Equatable {
     case pull
     case ginit
     case add
-    case commit
+    case commit(message: String)
     case remote(remoteOption)
     case push
 
@@ -58,8 +58,8 @@ public enum GitCommand: ChaiCommand, Equatable {
             return ["init"]
         case .add:
             return ["add", "."]
-        case .commit:
-            return ["commit", "-m \"Initial commit by chaitools\""]
+        case .commit(let message):
+            return ["commit", "-m ", message]
         case .remote(let option):
             return option.arguments()
         case .push:

@@ -35,8 +35,8 @@ public enum ShellCommand: ChaiCommand {
             return ["mv", file, toPath]
         case .remove(let file):
             return ["rm", "-rf", file]
-        case .open(let lane):
-            return ["open", lane]
+        case .open(let file):
+            return ["open", file]
         case .copyFile(let file, let directory):
             return ["cp", file, directory]
         case .copyDirectory(let directory1, let directory2):

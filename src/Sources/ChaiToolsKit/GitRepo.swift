@@ -104,4 +104,10 @@ class GitRepo {
         try self.execute(GitCommand.pull)
         return self
     }
+
+    @discardableResult func addRemote(urlString: String) throws -> GitRepo {
+        remoteURL = URL(string: urlString)
+        try self.execute(.remote(.add(urlString)))
+        return self
+    }
 }

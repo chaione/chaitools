@@ -202,16 +202,15 @@ public class BootstrapCommand: OptionCommand {
         MessageTools.state("local Repo is \(repo.localURL)")
         try repo.execute(.ginit)
         try repo.execute(.add)
-        try repo.execute(.commit)
+        try repo.execute(.commit(message: "Initial commit by chaitools"))
 
         MessageTools.exclaim("Successfully setup local git repo for project \(projectName).")
 
         // Prompt if remote exists.
         let remoteRepo = Input.awaitInput(message: "❓  Enter the remote repo for \(projectName). Press <enter> to skip.")
         if remoteRepo != "" {
-            repo.remoteURL = URL(string: remoteRepo)
 
-            try repo.pull()
+            try repo.addRemote(urlString: remoteRepo)
             try repo.execute(.push)
 
             MessageTools.exclaim("Successfully pushed to git remote for project \(projectName).")

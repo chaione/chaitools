@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ChaiCommandKit
 
 protocol Iteratable {}
 extension RawRepresentable where Self: RawRepresentable {
