@@ -30,7 +30,7 @@ extension Iteratable where Self: RawRepresentable, Self: Hashable {
     }
 
     static func rawValues() -> [Self.RawValue] {
-        return hashValues().map({$0.rawValue})
+        return hashValues().map({ $0.rawValue })
     }
 }
 

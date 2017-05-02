@@ -29,7 +29,7 @@ public enum FastlaneCommand: ChaiCommand {
             return ["bootstrap"]
         case .bootstrapChaiToolsSetup:
             return ["bootstrap_chai_tools_setup"]
-        case .lane(let lane):
+        case let .lane(lane):
             return [lane]
         }
     }

@@ -18,13 +18,12 @@ import Foundation
 /// - copyDirectory: Copy directory into destination
 public enum ShellCommand: ChaiCommand {
 
-
     case move(file: String, toPath: String)
     case remove(file: String)
     case open(fileName: String)
     case copyFile(file: String, to: String)
     case copyDirectory(directory: String, to: String)
-    
+
     static var binary: String? {
         return nil
     }
@@ -33,13 +32,13 @@ public enum ShellCommand: ChaiCommand {
         switch self {
         case (let .move(file, toPath)):
             return ["mv", file, toPath]
-        case .remove(let file):
+        case let .remove(file):
             return ["rm", "-rf", file]
-        case .open(let file):
+        case let .open(file):
             return ["open", file]
-        case .copyFile(let file, let directory):
+        case let .copyFile(file, directory):
             return ["cp", file, directory]
-        case .copyDirectory(let directory1, let directory2):
+        case let .copyDirectory(directory1, directory2):
             let finalDirectory = directory2 != "." ? directory2 : "./\(directory1)"
             return ["cp", "-rf", directory1, finalDirectory]
         }

@@ -16,7 +16,7 @@ extension URL {
     }
 
     func exists() -> Bool {
-        return !self.isEmpty()
+        return !isEmpty()
     }
 
     func isGitRepo() -> Bool {
@@ -33,7 +33,7 @@ extension URL {
         return filePath.reduce(self) { $0.appendingPathComponent($1, isDirectory: false) }
     }
 
-    func contents(options: FileManager.DirectoryEnumerationOptions = .skipsHiddenFiles) throws -> [URL] {
+    func contents(options _: FileManager.DirectoryEnumerationOptions = .skipsHiddenFiles) throws -> [URL] {
         do {
             let contents = try FileManager.default.contentsOfDirectory(at: self, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
             return contents
@@ -45,9 +45,9 @@ extension URL {
     func firstItem(withFileExtension fileExtension: String? = nil) -> URL? {
         do {
             guard let fileExtension = fileExtension else {
-                return try self.contents().first
+                return try contents().first
             }
-            return try contents().filter({$0.path.contains(fileExtension)}).first
+            return try contents().filter({ $0.path.contains(fileExtension) }).first
         } catch {
             return nil
         }

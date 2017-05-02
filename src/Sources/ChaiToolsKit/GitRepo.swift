@@ -70,17 +70,17 @@ class GitRepo {
     private func verifyGitEnvironment(for action: GitCommand) throws {
 
         switch (action, self) {
-        case (.ginit, let selfCopy) where selfCopy.localURL.isGitRepo():
+        case let (.ginit, selfCopy) where selfCopy.localURL.isGitRepo():
             MessageTools.error("Can't initialize a git repo that's already initialized.", level: .verbose)
             throw GitRepoError.alreadyInitialized
-        case (.pull(_), let selfCopy) where selfCopy.remoteURL == nil,
-             (.clone(_), let selfCopy) where selfCopy.remoteURL == nil:
+        case let (.pull(_), selfCopy) where selfCopy.remoteURL == nil,
+             let (.clone(_), selfCopy) where selfCopy.remoteURL == nil:
             MessageTools.error("Can't perform \(action) when missing remote URL.", level: .verbose)
             throw GitRepoError.missingRemoteURL
-        case (.pull(_), let selfCopy) where !selfCopy.localURL.isGitRepo():
+        case let (.pull(_), selfCopy) where !selfCopy.localURL.isGitRepo():
             MessageTools.state("A git repo can't be updated if it doesn't exist. 🤔", level: .verbose)
             throw GitRepoError.missingLocalRepo
-        case (.clone(_), let selfCopy) where !selfCopy.localURL.isEmpty():
+        case let (.clone(_), selfCopy) where !selfCopy.localURL.isEmpty():
             MessageTools.error("Can't clone a git repo into a non-empty directory.", level: .verbose)
             throw GitRepoError.nonEmptyRepo
         default:
@@ -96,18 +96,18 @@ class GitRepo {
         guard let url = remoteURL else {
             throw GitRepoError.missingRemoteURL
         }
-        try self.execute(GitCommand.clone(url: url.absoluteString))
+        try execute(GitCommand.clone(url: url.absoluteString))
         return self
     }
 
     @discardableResult func pull() throws -> GitRepo {
-        try self.execute(GitCommand.pull)
+        try execute(GitCommand.pull)
         return self
     }
 
     @discardableResult func addRemote(urlString: String) throws -> GitRepo {
         remoteURL = URL(string: urlString)
-        try self.execute(.remote(.add(urlString)))
+        try execute(.remote(.add(urlString)))
         return self
     }
 }
