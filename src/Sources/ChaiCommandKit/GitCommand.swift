@@ -60,7 +60,7 @@ public enum GitCommand: ChaiCommand, Equatable {
         case .add:
             return ["add", "."]
         case let .commit(message):
-            return ["commit", "-m ", message]
+            return ["commit", "-m", message]
         case let .remote(option):
             return option.arguments()
         case .push:
