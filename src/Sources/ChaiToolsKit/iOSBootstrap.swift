@@ -27,8 +27,7 @@ class iOSBootstrap: BootstrapConfig {
         try AppleScriptCommand.quitXcode.run(in: projectDirURL)
         try restructureXcodeProject(in: projectDirURL)
 
-        // TODO: Need to redo SwiftFormat code
-        //        try addSwiftFormatCommand(in: projectDirURL)
+        try addSwiftFormatCommand(in: projectDirURL)
 
         let fastlaneRepo = try createFastlaneRepo().clone()
         try addFastlane(fastlaneRepo, toDirectory: projectDirURL)
@@ -129,19 +128,26 @@ class iOSBootstrap: BootstrapConfig {
         try ShellCommand.open(fileName: xcodeprojPath).run(in: directory)
     }
 
-    // TODO: Need to redo this!
     func addSwiftFormatCommand(in directory: URL) throws {
+
         guard let tempDirectory = fileOps.createTempDirectory() else {
             throw ChaiError.generic(message: "Failed to create temp directory to hold 'SwiftFormat'.")
         }
-        let repo = try GitRepo(withLocalURL: tempDirectory, andRemoteURL: URL(string: "git@github.com:nicklockwood/SwiftFormat.git")).clone()
 
         do {
-            MessageTools.exclaim(repo.localURL.path)
-            try FileManager.default.copyItem(
-                at: repo.localURL.file("CommandLineTool/swiftformat"),
-                to: directory.file("scripts/swiftformat")
-            )
+            // Download swiftformat via curl command into `tmp` directory
+            try CurlCommand.download(url: .swiftFormat).run(in: tempDirectory)
+
+            // Making sure directory exists inside of `tmp` directory "tmp/swiftformat-<verion>/CommandLineTool/swiftformat"
+            guard let tempSwiftFormatPath = tempDirectory.firstItem()?.firstItem()?.file("CommandLineTool", "swiftformat").path else {
+                throw ChaiError.generic(message: "Failed to find SwiftFormat inside of tmp directory.")
+            }
+
+            // Copy swiftformat executable into "scripts/swiftformat"
+            try ShellCommand.copyFile(
+                file: tempSwiftFormatPath,
+                to: directory.file("scripts/swiftformat").path)
+                .run(in: directory)
 
             MessageTools.exclaim("Successfully downloaded latest SwiftFormat CommandLineTool")
 
