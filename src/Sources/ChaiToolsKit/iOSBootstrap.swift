@@ -20,7 +20,7 @@ class iOSBootstrap: BootstrapConfig {
     func bootstrap(_ projectDirURL: URL) throws {
         try AppleScriptCommand.openXcode.run(in: projectDirURL)
 
-        guard Input.awaitYesNoInput(message: "❓  Has Xcode finished creating a project?") else {
+        guard MessageTools.awaitYesNoInput(question: "Has Xcode finished creating a project?") else {
             throw ChaiError.generic(message: "User failed to create Xcode project.")
         }
 
