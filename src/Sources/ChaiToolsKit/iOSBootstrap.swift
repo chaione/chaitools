@@ -111,6 +111,12 @@ class iOSBootstrap: BootstrapConfig {
                     to: directory.file("circle.yml").path)
                 .run(in: directory)
 
+            try ShellCommand
+                .copyDirectory(
+                    directory: repo.localURL.subDirectories("ios/features").path,
+                    to: srcDirectory.subDirectories("features").path)
+                .run(in: directory)
+
             MessageTools.exclaim("Successfully downloaded latest ChaiTools Fastlane scripts")
 
         } catch {
