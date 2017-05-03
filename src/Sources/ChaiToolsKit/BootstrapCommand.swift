@@ -78,7 +78,7 @@ public class BootstrapCommand: OptionCommand {
         do {
             var bootstrapper: BootstrapConfig?
 
-            MessageTools.state("These boots are made for walking.", level: .silent)
+            MessageTools.state("These boots are made for walking.", color: .green, level: .silent)
 
             if let stackName = arguments.optionalArgument("stack") {
 
@@ -97,7 +97,7 @@ public class BootstrapCommand: OptionCommand {
                 MessageTools.instruct("chaitools bootstrap works best with a tech stack.", level: .silent)
                 MessageTools.state(TechStack.supportedStacksFormattedString())
 
-                guard Input.awaitYesNoInput(message: "❓  Should we setup a base project structure?") else {
+                guard MessageTools.awaitYesNoInput(question: "Should we setup a base project structure?") else {
                     MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
                     return
                 }
@@ -106,7 +106,7 @@ public class BootstrapCommand: OptionCommand {
             }
 
             let projectURL = try setupDirectoryStructure()
-
+            MessageTools.state("Dir: \(projectURL.path)", level: .debug)
             if let bootstrapper = bootstrapper {
                 try bootstrapper.bootstrap(projectURL)
             }
@@ -114,9 +114,11 @@ public class BootstrapCommand: OptionCommand {
             try setupReadMeDefaults(projectURL)
             try setupGitRepo(projectURL)
 
-            MessageTools.state("Boot straps pulled. Time to start walking. 😎", level: .silent)
-        } catch let error as ChaiError {
-            MessageTools.error(error.description)
+            MessageTools.state("Boot straps pulled. Time to start walking. 😎", color: .green, level: .silent)
+        } catch let error as ChaiErrorProtocol {
+            MessageTools.error(error.localizedDescription)
+        } catch let error {
+            MessageTools.error(error.localizedDescription)
         }
     }
 
@@ -129,7 +131,7 @@ public class BootstrapCommand: OptionCommand {
     /// Returns: File URL of the base directory for the project
     func setupDirectoryStructure() throws -> URL {
 
-        projectName = Input.awaitInput(message: "❓  What is the name of the project?")
+        projectName = MessageTools.awaitInput(question: "What is the name of the project?")
 
         let projectDirURL = FileOps.defaultOps.outputURLDirectory().appendingPathComponent(projectName, isDirectory: true)
 
@@ -145,7 +147,7 @@ public class BootstrapCommand: OptionCommand {
             throw BootstrapCommandError.unknown
         }
 
-        MessageTools.exclaim("Successfully created \(projectName) project directory.")
+        MessageTools.exclaim("Successfully created \(projectName) project directory.", color: .blue)
         FileOps.defaultOps.createSubDirectory("src", parent: projectDirURL)
         FileOps.defaultOps.createSubDirectory("scripts", parent: projectDirURL)
         FileOps.defaultOps.createSubDirectory("tests", parent: projectDirURL)
@@ -197,7 +199,7 @@ public class BootstrapCommand: OptionCommand {
 
         // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
-        MessageTools.state("local Repo is \(repo.localURL)")
+        MessageTools.state("local Repo is \(repo.localURL)", color: .blue)
         try repo.execute(.ginit)
         try repo.execute(.add)
         try repo.execute(.commit(message: "Initial commit by chaitools"))
@@ -205,7 +207,7 @@ public class BootstrapCommand: OptionCommand {
         MessageTools.exclaim("Successfully setup local git repo for project \(projectName).")
 
         // Prompt if remote exists.
-        let remoteRepo = Input.awaitInput(message: "❓  Enter the remote repo for \(projectName). Press <enter> to skip.")
+        let remoteRepo = MessageTools.awaitInput(question: "Enter the remote repo for \(projectName). Press <enter> to skip.")
         if remoteRepo != "" {
 
             try repo.addRemote(urlString: remoteRepo)

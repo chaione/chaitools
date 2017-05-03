@@ -15,9 +15,6 @@ public protocol ChaiErrorProtocol: Error {
 }
 
 extension ChaiErrorProtocol {
-    public var description: String {
-        return localizedDescription
-    }
 
     public static func generic(message: String) -> Error {
         return ChaiError(message: message)
@@ -25,7 +22,10 @@ extension ChaiErrorProtocol {
 }
 
 public struct ChaiError: ChaiErrorProtocol {
-    let message: String
+    public let localizedDescription: String
+    init(message: String) {
+        localizedDescription = message
+    }
 }
 
 @available(OSX 10.12, *)
@@ -60,33 +60,64 @@ extension ChaiCommand {
     /// - Parameter directory: URL of directory you will to run command inside of.
     /// - Returns: @discardableResult Process object that contains.
     /// - Throws: `CommandProtocolError` with `.generic` case.
-    @discardableResult public func run(in directory: URL) throws -> Process {
-
-        let outputPipe = Pipe()
-        let errorPipe = Pipe()
+    @discardableResult public func run(in directory: URL, output:((String) -> Void)? = nil) throws -> Process {
 
         let process = Process()
         process.launchPath = "/usr/bin/env"
         process.currentDirectoryPath = directory.path
-        process.standardOutput = outputPipe
-        process.standardError = errorPipe
         process.arguments = binaryWithArguments()
 
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = pipe
 
-        process.execute()
-
         defer {
             process.output = pipe.output()
         }
+
+        if let outputBlock = output {
+            handle(pipe: pipe, in: process, output: outputBlock)
+        }
+
+        process.execute()
 
         if process.terminationStatus != 0 {
             throw ChaiError.generic(message: pipe.output())
         }
 
         return process
+    }
+
+    /// Helper method that allows `ChaiCommand` object to output a stream of data from console using `NotificationCenter`.
+    ///
+    /// - Parameters:
+    ///   - pipe: `Pipe`
+    ///   - process: `Process`
+    ///   - output: `((String) -> Void)` block that will run as new data is streamed in.
+    internal func handle(pipe: Pipe, in process: Process, output outputBlock: @escaping ((String) -> Void)) {
+        let outHandle = pipe.fileHandleForReading
+        outHandle.waitForDataInBackgroundAndNotify()
+
+        var progressObserver : NSObjectProtocol!
+        progressObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.NSFileHandleDataAvailable, object: outHandle, queue: nil) { notification in
+            let data = outHandle.availableData
+
+            if data.count > 0 {
+                if let str = String(data: data, encoding: String.Encoding.utf8) {
+                    outputBlock(str.trimmingCharacters(in: .whitespacesAndNewlines))
+                }
+                outHandle.waitForDataInBackgroundAndNotify()
+            } else {
+                // That means we've reached the end of the input.
+                NotificationCenter.default.removeObserver(progressObserver)
+            }
+        }
+
+        var terminationObserver : NSObjectProtocol!
+        terminationObserver = NotificationCenter.default.addObserver(forName: Process.didTerminateNotification, object: process, queue: nil) { notification in
+            // Process was terminated. Hence, progress should be 100%
+            NotificationCenter.default.removeObserver(terminationObserver)
+        }
     }
 
     /// Executes command.
