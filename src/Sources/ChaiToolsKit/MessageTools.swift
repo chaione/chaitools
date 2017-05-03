@@ -61,7 +61,7 @@ struct MessageTools {
     ///  - message: The message to be displayed to the user
     ///  - level: The verbosity level required to print the message. Defaults to normal.
     static func error(_ message: String, level: Verbosity = .normal) {
-        state("❗️ \(message)", level: level)
+        state("❗️ error: \(message)", level: level)
     }
 
     /// Exclaims something to the user. Use for success notifications.

@@ -15,9 +15,6 @@ public protocol ChaiErrorProtocol: Error {
 }
 
 extension ChaiErrorProtocol {
-    public var description: String {
-        return localizedDescription
-    }
 
     public static func generic(message: String) -> Error {
         return ChaiError(message: message)
@@ -25,7 +22,10 @@ extension ChaiErrorProtocol {
 }
 
 public struct ChaiError: ChaiErrorProtocol {
-    let message: String
+    public let localizedDescription: String
+    init(message: String) {
+        localizedDescription = message
+    }
 }
 
 @available(OSX 10.12, *)

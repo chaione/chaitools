@@ -115,8 +115,10 @@ public class BootstrapCommand: OptionCommand {
             try setupGitRepo(projectURL)
 
             MessageTools.state("Boot straps pulled. Time to start walking. 😎", level: .silent)
-        } catch let error as ChaiError {
-            MessageTools.error(error.description)
+        } catch let error as ChaiErrorProtocol {
+            MessageTools.error(error.localizedDescription)
+        } catch let error {
+            MessageTools.error(error.localizedDescription)
         }
     }
 
