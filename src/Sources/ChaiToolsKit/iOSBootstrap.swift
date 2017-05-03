@@ -30,19 +30,16 @@ class iOSBootstrap: BootstrapConfig {
         try addSwiftFormatCommand(in: projectDirURL)
 
         let fastlaneRepo = try createFastlaneRepo().clone()
-        try addFastlane(fastlaneRepo, toDirectory: projectDirURL)
+        try addiOSBootstrapper(fastlaneRepo, toDirectory: projectDirURL)
 
         let srcDirectory = projectDirURL.subDirectories("src")
 
-        MessageTools.state("Running `fastlane bootstrap_chai_tools_setup`")
-        try FastlaneCommand.bootstrapChaiToolsSetup.run(in: srcDirectory) { output in
-            MessageTools.state(output, level: .verbose)
-        }
+        try runBundle(command: .update, in: srcDirectory)
 
-        MessageTools.state("Running `fastlane bootstrap`")
-        try FastlaneCommand.bootstrap.run(in: srcDirectory) { output in
-            MessageTools.state(output, level: .verbose)
-        }
+        let frameworkDirectory = try srcDirectory.subDirectories("Frameworks").createIfMissing()
+        try runBundle(command: .exec(arguments: ["calabash-ios", "download"]), in: frameworkDirectory)
+        try runFastlaneBootstrapChaiToolsSetup(in: srcDirectory)
+        try runFastlaneBootstrap(in: srcDirectory)
 
         MessageTools.state("Opening project with Xcode")
         try openXcode(inDirectory: srcDirectory)
@@ -92,7 +89,7 @@ class iOSBootstrap: BootstrapConfig {
     ///   - repo: Fastlane repo.
     ///   - directory: Directory that Fastlane will be copied into.
     /// - Throws: `BootstrapCommandError`
-    func addFastlane(_ repo: GitRepo, toDirectory directory: URL) throws {
+    func addiOSBootstrapper(_ repo: GitRepo, toDirectory directory: URL) throws {
         do {
             let srcDirectory = directory.subDirectories("src")
 
@@ -118,6 +115,26 @@ class iOSBootstrap: BootstrapConfig {
 
         } catch {
             throw ChaiError.generic(message: "Failed to move project files with error \(error).")
+        }
+    }
+
+    func runBundle(command: BundleCommand, in directory: URL) throws {
+        try command.run(in: directory) { output in
+            MessageTools.state(output, level: .verbose)
+        }
+    }
+
+    func runFastlaneBootstrapChaiToolsSetup(in directory: URL) throws {
+        MessageTools.state("Running `fastlane bootstrap_chai_tools_setup`")
+        try FastlaneCommand.bootstrapChaiToolsSetup.run(in: directory) { output in
+            MessageTools.state(output, level: .verbose)
+        }
+    }
+
+    func runFastlaneBootstrap(in directory: URL) throws {
+        MessageTools.state("Running `fastlane bootstrap`")
+        try FastlaneCommand.bootstrap.run(in: directory) { output in
+            MessageTools.state(output, level: .verbose)
         }
     }
 
