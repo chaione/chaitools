@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftCLI
+import ChaiCommandKit
 
 @available(OSX 10.12, *)
 public class DevInitCommand: OptionCommand {
@@ -27,6 +28,10 @@ public class DevInitCommand: OptionCommand {
     public func execute(arguments: CommandArguments) throws {
         MessageTools.state("Welcome to ChaiOne! Let's setup your machine.", color: .green, level: .silent)
         // Install rbenv (using homebrew)
+        MessageTools.state("Installing rbenv...")
+        try HomebrewCommand.install("rbenv").run(in: FileManager.default.homeDirectoryForCurrentUser) { output in
+            MessageTools.state(output, level: .verbose)
+        }
         // Install fixed Ruby version (using rbenv, based on a configuration file)
         // Install node (using homebrew)
         // Install Ember-cli (using npm)
@@ -34,7 +39,7 @@ public class DevInitCommand: OptionCommand {
         // Install react-native (using npm)
         // Install tsrn (using npm locally)
         // Install quicklook provisioning (direct download)
-        MessageTools.exclaim("All done! Go forth and make awesome stuff.", level: .silent)
+        MessageTools.exclaim("All done! Go forth and make awesome stuff.", level: .silent) 
     }
 
 
