@@ -34,11 +34,17 @@ class iOSBootstrap: BootstrapConfig {
 
         let srcDirectory = projectDirURL.subDirectories("src")
 
-        let fastlaneProcess1 = try FastlaneCommand.bootstrapChaiToolsSetup.run(in: srcDirectory)
-        MessageTools.exclaim(fastlaneProcess1.output, level: .verbose)
-        let fastlaneProcess2 = try FastlaneCommand.bootstrap.run(in: srcDirectory)
-        MessageTools.exclaim(fastlaneProcess2.output, level: .verbose)
+        MessageTools.state("Running `fastlane bootstrap_chai_tools_setup`")
+        try FastlaneCommand.bootstrapChaiToolsSetup.run(in: srcDirectory) { output in
+            MessageTools.state(output, level: .verbose)
+        }
 
+        MessageTools.state("Running `fastlane bootstrap`")
+        try FastlaneCommand.bootstrap.run(in: srcDirectory) { output in
+            MessageTools.state(output, level: .verbose)
+        }
+
+        MessageTools.state("Opening project with Xcode")
         try openXcode(inDirectory: srcDirectory)
     }
 
