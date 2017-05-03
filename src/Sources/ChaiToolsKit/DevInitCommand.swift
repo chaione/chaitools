@@ -29,10 +29,16 @@ public class DevInitCommand: OptionCommand {
         MessageTools.state("Welcome to ChaiOne! Let's setup your machine.", color: .green, level: .silent)
         // Install rbenv (using homebrew)
         MessageTools.state("Installing rbenv...")
-        try HomebrewCommand.install("rbenv").run(in: FileManager.default.homeDirectoryForCurrentUser) { output in
-            MessageTools.state(output, level: .verbose)
+        try HomebrewCommand.install("rbenv").run() { output in
+            MessageTools.state(output, level: .debug)
         }
         // Install fixed Ruby version (using rbenv, based on a configuration file)
+        try RbenvCommand.install(rubyVersion).run { output in
+            MessageTools.state(output, level: .debug)
+        }
+        try RbenvCommand.global(rubyVersion).run { output in
+            MessageTools.state(output, level: .verbose)
+        }
         // Install node (using homebrew)
         // Install Ember-cli (using npm)
         // Install react (using npm)
