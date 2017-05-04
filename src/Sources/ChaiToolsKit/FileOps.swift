@@ -60,7 +60,7 @@ public class FileOps: NSObject {
 
         do {
             MessageTools.state("The local directory does not exist. Attempting to create it...", level: .verbose)
-            try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
+            try dirURL.createIfMissing()
             MessageTools.exclaim("Successfully created the directory.", level: .verbose)
             return true
         } catch {
