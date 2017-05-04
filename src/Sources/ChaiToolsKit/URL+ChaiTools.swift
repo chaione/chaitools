@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ChaiCommandKit
 
 extension URL {
     func isEmpty() -> Bool {
@@ -23,6 +24,21 @@ extension URL {
         guard let contents = try? FileManager.default.contentsOfDirectory(atPath: self.path) else { return false }
 
         return contents.contains(".git")
+    }
+
+    @discardableResult func createIfMissing() throws -> URL {
+        var isDirectory: ObjCBool = ObjCBool(true)
+
+        guard !FileManager.default.fileExists(atPath: self.path, isDirectory: &isDirectory) else {
+            return self
+        }
+
+        do {
+            try FileManager.default.createDirectory(at: self, withIntermediateDirectories: true)
+            return self
+        } catch {
+            throw ChaiError.generic(message: "Failed to create: \(self.path)")
+        }
     }
 
     func subDirectories(_ childDirectories: String...) -> URL {
