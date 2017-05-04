@@ -15,7 +15,7 @@ import Foundation
 /// - global: Sets given version of ruby as the global default
 /// - local: Sets given version of ruby as the local default
 public enum RbenvCommand: ChaiCommand {
-    
+
     case install(String)
     case global(String)
     case local(String)
@@ -28,16 +28,16 @@ public enum RbenvCommand: ChaiCommand {
 
     func arguments() -> ChaiCommandArguments {
         switch self {
-            case let .install(version):
-                return ["install", version]
-            case let .global(version):
-                return ["global", version]
-            case let .local(version):
-                return ["local", version]
+        case let .install(version):
+            return ["install", version]
+        case let .global(version):
+            return ["global", version]
+        case let .local(version):
+            return ["local", version]
         case .rbinit:
             return ["init"]
         case .version:
             return ["--version"]
         }
     }
-} 
+}
