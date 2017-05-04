@@ -23,28 +23,46 @@ public class DevInitCommand: OptionCommand {
 
     public init() {}
 
+    /// Test whether a binary executable is installed
+    ///
+    /// - Parameter binary: The name of the executable to test
+    /// - Returns: Returns true if the executable exists in the system and false otherwise
+    func isInstalled(_ binary: String) -> Bool {
+        var isInstalled: Bool = false
+        do {
+            try ShellCommand.which(binary).run { output in
+                isInstalled = output.contains(binary)
+            }
+            return isInstalled
+        } catch {
+            return false
+        }
+    }
+
     /// Executes the dev-init command
     /// - Parameter arguments: The arguments passed to the command
-    public func execute(arguments: CommandArguments) throws {
+    public func execute(arguments _: CommandArguments) throws {
         MessageTools.state("Welcome to ChaiOne! Let's setup your machine.", color: .green, level: .silent)
+
+        try HomebrewCommand.update.run { output in
+            MessageTools.state(output, level: .debug)
+        }
+
         // Install rbenv (using homebrew)
-        MessageTools.state("Installing rbenv...")
-        try HomebrewCommand.install("rbenv").run() { output in
-            MessageTools.state(output, level: .debug)
+        MessageTools.state("Setting up rbenv.")
+        if !isInstalled("rbenv") {
+            MessageTools.state("Installing rbenv...", level: .verbose)
+            try HomebrewCommand.install("rbenv").run { output in
+                MessageTools.state(output, level: .debug)
+            }
+
+            try RbenvCommand.rbinit.run { output in
+                MessageTools.state(output, level: .debug)
+            }
+        } else {
+            MessageTools.state("rbenv already installed.", level: .verbose)
         }
-        // Install fixed Ruby version (using rbenv, based on a configuration file)
-        try RbenvCommand.install(rubyVersion).run { output in
-            MessageTools.state(output, level: .debug)
-        }
-        try RbenvCommand.global(rubyVersion).run { output in
-            MessageTools.state(output, level: .verbose)
-        }
-        // Install node (using homebrew)
-        // Install Ember-cli (using npm)
-        // Install react (using npm)
-        // Install react-native (using npm)
-        // Install tsrn (using npm locally)
-        // Install quicklook provisioning (direct download)
+        MessageTools.exclaim("rbenv setup complete!")
         MessageTools.exclaim("All done! Go forth and make awesome stuff.", level: .silent) 
     }
 
