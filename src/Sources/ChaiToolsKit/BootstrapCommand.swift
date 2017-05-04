@@ -113,8 +113,11 @@ public class BootstrapCommand: OptionCommand {
 
             try setupReadMeDefaults(projectURL)
             try setupGitRepo(projectURL)
-
+            try CurlCommand.post(url: ChaiURL.followCircleCi(project: projectName)).run { output in
+                MessageTools.state(output, color: .cyan)
+            }
             MessageTools.state("Boot straps pulled. Time to start walking. 😎", color: .green, level: .silent)
+
         } catch let error as ChaiErrorProtocol {
             MessageTools.error(error.localizedDescription)
         } catch let error {

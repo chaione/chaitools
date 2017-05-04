@@ -165,7 +165,7 @@ class iOSBootstrap: BootstrapConfig {
 
         do {
             // Download swiftformat via curl command into `tmp` directory
-            try CurlCommand.download(url: .swiftFormat).run(in: tempDirectory)
+            try Downloader.download(url: ChaiURL.swiftFormat).run(in: tempDirectory)
 
             // Making sure directory exists inside of `tmp` directory "tmp/swiftformat-<verion>/CommandLineTool/swiftformat"
             guard let tempSwiftFormatPath = tempDirectory.firstItem()?.firstItem()?.file("CommandLineTool", "swiftformat").path else {

@@ -28,6 +28,10 @@ public struct ChaiError: ChaiErrorProtocol {
     }
 }
 
+public protocol ChaiURLProtocol {
+    var url: String! { get set }
+}
+
 @available(OSX 10.12, *)
 
 /// Protocol to handle any commands needed to be run in the terminal.
@@ -60,7 +64,7 @@ extension ChaiCommand {
     /// - Parameter directory: URL of directory you will to run command inside of.
     /// - Returns: @discardableResult Process object that contains.
     /// - Throws: `CommandProtocolError` with `.generic` case.
-    @discardableResult public func run(in directory: URL, output:((String) -> Void)? = nil) throws -> Process {
+    @discardableResult public func run(in directory: URL = FileManager.default.homeDirectoryForCurrentUser, output: ((String) -> Void)? = nil) throws -> Process {
 
         let process = Process()
         process.launchPath = "/usr/bin/env"
