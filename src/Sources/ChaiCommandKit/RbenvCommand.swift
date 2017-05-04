@@ -19,6 +19,8 @@ public enum RbenvCommand: ChaiCommand {
     case install(String)
     case global(String)
     case local(String)
+    case version
+    case rbinit
 
     static var binary: String? {
         return "rbenv"
@@ -32,6 +34,10 @@ public enum RbenvCommand: ChaiCommand {
                 return ["global", version]
             case let .local(version):
                 return ["local", version]
+        case .rbinit:
+            return ["init"]
+        case .version:
+            return ["--version"]
         }
     }
 } 
