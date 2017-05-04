@@ -69,13 +69,12 @@ struct MessageTools {
         return Input.awaitInput(message: color.coloredMessage(question))
     }
 
-
     /// Use when providing instructions to the user. Prints a message at a given verbosity.
     ///
     /// - Parameters:
     ///  - message: The message to be displayed to the user
     ///  - level: The verbosity level required to print the message. Defaults to normal.
-    static func instruct(_ message: String, color: LoggerColor = .none, level: Verbosity = .normal) {
+    static func instruct(_ message: String, color _: LoggerColor = .none, level: Verbosity = .normal) {
         state("💁  \(message)", level: level)
     }
 
