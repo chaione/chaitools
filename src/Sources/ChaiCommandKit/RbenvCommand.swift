@@ -21,6 +21,7 @@ public enum RbenvCommand: ChaiCommand {
     case local(String)
     case version
     case rbinit
+    case versions
 
     static var binary: String? {
         return "rbenv"
@@ -37,7 +38,26 @@ public enum RbenvCommand: ChaiCommand {
         case .rbinit:
             return ["init"]
         case .version:
-            return ["--version"]
+            return ["version"]
+        case .versions:
+            return ["versions"]
+        }
+    }
+
+    /// Checks if a particular version of ruby is installed
+    ///
+    /// - Parameter version: The version of ruby to look for
+    /// - Returns: True if that version is installed
+    /// - Throws: ChaiError if command fails to run
+    public static func isInstalled(version: String) -> Bool {
+        var installed = false
+        do {
+            try versions.run { output in
+                installed = output.contains(version)
+            }
+            return installed
+        } catch {
+            return false
         }
     }
 }

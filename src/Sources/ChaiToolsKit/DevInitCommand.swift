@@ -83,6 +83,18 @@ public class DevInitCommand: OptionCommand {
         try HomebrewCommand.upgrade(nil).run { output in
             MessageTools.state(output, level: .debug)
         }
+
+        // Install fixed Ruby version (using rbenv, based on a configuration file)
+        MessageTools.state("Installing ruby version \(rubyVersion)")
+        if !RbenvCommand.isInstalled(version: rubyVersion) {
+            try RbenvCommand.install(rubyVersion).run { output in
+                MessageTools.state(output, level: .debug)
+            }
+            try RbenvCommand.global(rubyVersion).run { output in
+                MessageTools.state(output, level: .debug)
+            }
+        }
+        MessageTools.exclaim("Ruby installed!")
     }
 
 
