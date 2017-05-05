@@ -64,6 +64,25 @@ public class DevInitCommand: OptionCommand {
         }
         MessageTools.exclaim("rbenv setup complete!")
         MessageTools.exclaim("All done! Go forth and make awesome stuff.", level: .silent) 
+
+        // Install node (using homebrew)
+        MessageTools.state("Setting up Nodejs.")
+        if !isInstalled("node") {
+            MessageTools.state("Installing Node...", level: .verbose)
+
+            try HomebrewCommand.install("node").run { output in
+                MessageTools.state(output, level: .debug)
+            }
+        } else {
+            MessageTools.state("Node already installed.", level: .verbose)
+        }
+
+        MessageTools.exclaim("Node setup complete!")
+
+        MessageTools.state("Updating installed packages")
+        try HomebrewCommand.upgrade(nil).run { output in
+            MessageTools.state(output, level: .debug)
+        }
     }
 
 
