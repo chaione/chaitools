@@ -150,22 +150,62 @@ public class DevInitCommand: OptionCommand {
             MessageTools.state(output, level: .debug)
         }
         MessageTools.exclaim("Fastlane installed!")
-        
+
         // install rails
         MessageTools.state("Installing rails...")
         try GemCommand.install("rails").run { output in
             MessageTools.state(output, level: .debug)
         }
         MessageTools.exclaim("Rails installed!")
-        
-        //install bundler
+
+        // install bundler
         MessageTools.state("Installing bundler...")
         try GemCommand.install("bundler").run { output in
             MessageTools.state(output, level: .debug)
         }
         MessageTools.exclaim("Bundler installed!")
+
+        // // Install quicklook provisioning (direct download)
+        try installQuicklook()
         MessageTools.exclaim("All done! Go forth and make awesome stuff.", level: .silent)
     }
 
+    /// Installs Craig Hockenberry's QuickLook plugin
+    ///
+    /// - Throws: <#throws value description#>
+    func installQuicklook() throws {
 
+        let qlInstallPath = FileOps.defaultOps.expandLocalLibraryPath("QuickLook")
+
+        if !FileManager.default.fileExists(atPath: qlInstallPath.appendingPathComponent("Provisioning.qlgenerator").path) {
+            MessageTools.state("Installing Provisioning Quick Look...")
+            guard let tempDirectory = FileOps.defaultOps.createTempDirectory() else {
+                throw ChaiError.generic(message: "Failed to create temp directory to hold 'QuickLook Plugin'.")
+            }
+
+            do {
+                // download latest version of provisioning quicklook to temp directory
+                try CurlCommand.download(url: .provisioningQuickLook).run(in: tempDirectory)
+                // Making sure directory exists inside of `tmp` directory "tmp/swiftformat-<verion>/Provisioning.qlgenerator"
+                guard let tempQuickLookPath = tempDirectory.firstItem()?.firstItem()?.file("Provisioning.qlgenerator").path else {
+                    throw ChaiError.generic(message: "Failed to find Provisioning Plugin inside of tmp directory.")
+                }
+
+                // Copy plugin into "~/Library/QuickLook"
+                try ShellCommand.copyDirectory(directory: tempQuickLookPath, to: qlInstallPath.path).run { output in
+                    MessageTools.state(output, level: .debug)
+                }
+
+                // restart qlmanager
+                try ShellCommand.command(arguments: ["qlmanage", "-r"]).run { output in
+                    MessageTools.state(output, level: .debug)
+                }
+
+                MessageTools.exclaim("QuickLook provisioning plugin installed!")
+
+            } catch {
+                throw ChaiError.generic(message: "Failed to copy Provisioning Plugin to project. With error \(error).")
+            }
+        }
+    }
 }
