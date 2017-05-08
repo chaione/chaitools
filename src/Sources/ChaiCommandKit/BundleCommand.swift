@@ -12,7 +12,7 @@ import Foundation
 /// Applescript ChaiCommands
 public enum BundleCommand: ChaiCommand {
 
-    /// run this instead of `install` to make 
+    /// run this instead of `install` to make
     // sure computers packages are up-to-date
     case update
 
@@ -27,7 +27,7 @@ public enum BundleCommand: ChaiCommand {
         switch self {
         case .update:
             return ["update"]
-        case .exec(let arguments):
+        case let .exec(arguments):
             return ["exec"] + arguments
         }
     }

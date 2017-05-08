@@ -24,11 +24,11 @@ public enum ShellCommand: ChaiCommand {
     case copyFile(file: String, to: String)
     case copyDirectory(directory: String, to: String)
 
-    static var binary: String? {
+    public static var binary: String? {
         return nil
     }
 
-    func arguments() -> ChaiCommandArguments {
+    public func arguments() -> ChaiCommandArguments {
         switch self {
         case (let .move(file, toPath)):
             return ["mv", file, toPath]
