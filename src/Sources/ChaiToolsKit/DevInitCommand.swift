@@ -63,7 +63,6 @@ public class DevInitCommand: OptionCommand {
             MessageTools.state("rbenv already installed.", level: .verbose)
         }
         MessageTools.exclaim("rbenv setup complete!")
-        MessageTools.exclaim("All done! Go forth and make awesome stuff.", level: .silent) 
 
         // Install node (using homebrew)
         MessageTools.state("Setting up Nodejs.")
@@ -144,6 +143,28 @@ public class DevInitCommand: OptionCommand {
         try YarnCommand.upgrade(nil).run { output in
             MessageTools.state(output, level: .debug)
         }
+
+        // install fastlane
+        MessageTools.state("Installing fastlane...")
+        try GemCommand.install("fastlane").run { output in
+            MessageTools.state(output, level: .debug)
+        }
+        MessageTools.exclaim("Fastlane installed!")
+        
+        // install rails
+        MessageTools.state("Installing rails...")
+        try GemCommand.install("rails").run { output in
+            MessageTools.state(output, level: .debug)
+        }
+        MessageTools.exclaim("Rails installed!")
+        
+        //install bundler
+        MessageTools.state("Installing bundler...")
+        try GemCommand.install("bundler").run { output in
+            MessageTools.state(output, level: .debug)
+        }
+        MessageTools.exclaim("Bundler installed!")
+        MessageTools.exclaim("All done! Go forth and make awesome stuff.", level: .silent)
     }
 
 
