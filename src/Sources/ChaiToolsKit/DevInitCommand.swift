@@ -79,6 +79,18 @@ public class DevInitCommand: OptionCommand {
 
         MessageTools.exclaim("Node setup complete!")
 
+        MessageTools.state("Setting up yarn.")
+        if !isInstalled("yarn") {
+            MessageTools.state("Installing yarn...", level: .verbose)
+            try HomebrewCommand.install("yarn").run { output in
+                MessageTools.state(output, level: .debug)
+            }
+            MessageTools.state("Please add the following to your shell profile:", color: .yellow, level: .normal)
+            MessageTools.state("export PATH=\"$PATH:`yarn global bin`\"", color: .yellow, level: .normal)
+        } else {
+            MessageTools.state("Yarn already installed.", level: .verbose)
+        }
+
         MessageTools.state("Updating installed packages")
         try HomebrewCommand.upgrade(nil).run { output in
             MessageTools.state(output, level: .debug)
@@ -95,6 +107,43 @@ public class DevInitCommand: OptionCommand {
             }
         }
         MessageTools.exclaim("Ruby installed!")
+
+        // Install Ember-cli (using yarn)
+        MessageTools.state("Installing Ember...")
+        if !isInstalled("ember") {
+            try YarnCommand.add("ember-cli").run { output in
+                MessageTools.state(output, level: .debug)
+            }
+        }
+        MessageTools.exclaim("Ember installed!")
+
+        // Install react (using yarn)
+        MessageTools.state("Installing react...")
+        if !isInstalled("react") {
+            try YarnCommand.add("react").run { output in
+                MessageTools.state(output, level: .debug)
+            }
+        }
+        MessageTools.exclaim("React installed!")
+
+        // Install react-native (using yarn)
+        MessageTools.state("Installing React Native...")
+        if !isInstalled("watchman") {
+            try HomebrewCommand.install("watchman").run { output in
+                MessageTools.state(output, level: .debug)
+            }
+        }
+        if !isInstalled("react-native") {
+            try YarnCommand.add("react-native-cli").run { output in
+                MessageTools.state(output, level: .debug)
+            }
+        }
+        MessageTools.state("React Native installed!")
+
+        MessageTools.state("Updating installed packages")
+        try YarnCommand.upgrade(nil).run { output in
+            MessageTools.state(output, level: .debug)
+        }
     }
 
 
