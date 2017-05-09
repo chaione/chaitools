@@ -157,22 +157,14 @@ class iOSBootstrap: BootstrapConfig {
 
     func addSwiftFormatCommand(in directory: URL) throws {
 
-        let tempDirectory = try fileOps.createTempDirectory() 
-
         do {
             // Download swiftformat via curl command into `tmp` directory
+            let tempDirectory = try fileOps.createTempDirectory()
             try Downloader.download(url: ChaiURL.swiftFormat).run(in: tempDirectory)
-
-            // Making sure directory exists inside of `tmp` directory "tmp/swiftformat-<verion>/CommandLineTool/swiftformat"
-            guard let tempSwiftFormatPath = tempDirectory.firstItem()?.firstItem()?.file("CommandLineTool", "swiftformat").path else {
-                throw ChaiError.generic(message: "Failed to find SwiftFormat inside of tmp directory.")
-            }
-
-            // Copy swiftformat executable into "scripts/swiftformat"
-            try ShellCommand.copyFile(
-                file: tempSwiftFormatPath,
-                to: directory.file("scripts/swiftformat").path)
-                .run(in: directory)
+                .move(
+                    file: tempDirectory.firstItem()?.firstItem()?.file("CommandLineTool", "swiftformat"),
+                    to: directory.file("scripts/swiftformat")
+                )
 
             MessageTools.exclaim("Successfully downloaded latest SwiftFormat CommandLineTool")
 
