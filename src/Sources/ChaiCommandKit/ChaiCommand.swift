@@ -57,10 +57,11 @@ extension ChaiCommand {
 
     /// Executes command.
     ///
-    /// - Parameter directory: URL of directory you will to run command inside of.
+    /// - Parameter directory: URL of directory you will to run command inside of. Defaults to user's home directory.
+    /// - Parameter output: Closure that takes in the output from the command's run
     /// - Returns: @discardableResult Process object that contains.
     /// - Throws: `CommandProtocolError` with `.generic` case.
-    @discardableResult public func run(in directory: URL, output: ((String) -> Void)? = nil) throws -> Process {
+    @discardableResult public func run(in directory: URL = FileManager.default.homeDirectoryForCurrentUser, output: ((String) -> Void)? = nil) throws -> Process {
 
         let process = Process()
         process.launchPath = "/usr/bin/env"

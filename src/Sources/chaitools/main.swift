@@ -16,6 +16,7 @@ if #available(OSX 10.12, *) {
 
     CLI.register(command: TemplatesCommand())
     CLI.register(command: BootstrapCommand())
+    CLI.register(command: DevInitCommand())
 } else {
     print("macOS 10.12 is required to manage Xcode templates or use bootstrapper.")
 }

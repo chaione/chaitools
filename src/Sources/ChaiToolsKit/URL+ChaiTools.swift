@@ -29,7 +29,7 @@ extension URL {
     @discardableResult func createIfMissing() throws -> URL {
         var isDirectory: ObjCBool = ObjCBool(true)
 
-        guard !FileManager.default.fileExists(atPath: self.path, isDirectory: &isDirectory) else {
+        guard !FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) else {
             return self
         }
 
