@@ -43,55 +43,17 @@ public class DevInitCommand: OptionCommand {
     /// - Parameter arguments: The arguments passed to the command
     public func execute(arguments _: CommandArguments) throws {
         MessageTools.state("Welcome to ChaiOne! Let's setup your machine.", color: .green, level: .silent)
+        try installHomebrewTools()
+        try installRubyVersion()
+        try installYarnPackages()
+        try installGems()
+        try installQuicklook()
+        MessageTools.exclaim("All done! Go forth and make awesome stuff.", level: .silent)
+    }
 
-        try HomebrewCommand.update.run { output in
-            MessageTools.state(output, level: .debug)
-        }
+    func installRubyVersion() throws {
 
-        // Install rbenv (using homebrew)
-        MessageTools.state("Setting up rbenv.")
-        if !isInstalled("rbenv") {
-            MessageTools.state("Installing rbenv...", level: .verbose)
-            try HomebrewCommand.install("rbenv").run { output in
-                MessageTools.state(output, level: .debug)
-            }
-
-            try RbenvCommand.rbinit.run { output in
-                MessageTools.state(output, level: .debug)
-            }
-        } else {
-            MessageTools.state("rbenv already installed.", level: .verbose)
-        }
-        MessageTools.exclaim("rbenv setup complete!")
-
-        // Install node (using homebrew)
-        MessageTools.state("Setting up Nodejs.")
-        if !isInstalled("node") {
-            MessageTools.state("Installing Node...", level: .verbose)
-
-            try HomebrewCommand.install("node").run { output in
-                MessageTools.state(output, level: .debug)
-            }
-        } else {
-            MessageTools.state("Node already installed.", level: .verbose)
-        }
-
-        MessageTools.exclaim("Node setup complete!")
-
-        MessageTools.state("Setting up yarn.")
-        if !isInstalled("yarn") {
-            MessageTools.state("Installing yarn...", level: .verbose)
-            try HomebrewCommand.install("yarn").run { output in
-                MessageTools.state(output, level: .debug)
-            }
-            MessageTools.state("Please add the following to your shell profile:", color: .yellow, level: .normal)
-            MessageTools.state("export PATH=\"$PATH:`yarn global bin`\"", color: .yellow, level: .normal)
-        } else {
-            MessageTools.state("Yarn already installed.", level: .verbose)
-        }
-
-        MessageTools.state("Updating installed packages")
-        try HomebrewCommand.upgrade(nil).run { output in
+        try RbenvCommand.rbinit.run { output in
             MessageTools.state(output, level: .debug)
         }
 
@@ -106,73 +68,107 @@ public class DevInitCommand: OptionCommand {
             }
         }
         MessageTools.exclaim("Ruby installed!")
+    }
 
-        // Install Ember-cli (using yarn)
-        MessageTools.state("Installing Ember...")
-        if !isInstalled("ember") {
-            try YarnCommand.add("ember-cli").run { output in
-                MessageTools.state(output, level: .debug)
-            }
-        }
-        MessageTools.exclaim("Ember installed!")
+    /// Install required Yarn packages
+    ///
+    /// - Throws: ChaiErrors
+    func installYarnPackages() throws {
 
-        // Install react (using yarn)
-        MessageTools.state("Installing react...")
-        if !isInstalled("react") {
-            try YarnCommand.add("react").run { output in
-                MessageTools.state(output, level: .debug)
-            }
-        }
-        MessageTools.exclaim("React installed!")
-
-        // Install react-native (using yarn)
-        MessageTools.state("Installing React Native...")
-        if !isInstalled("watchman") {
-            try HomebrewCommand.install("watchman").run { output in
-                MessageTools.state(output, level: .debug)
-            }
-        }
-        if !isInstalled("react-native") {
-            try YarnCommand.add("react-native-cli").run { output in
-                MessageTools.state(output, level: .debug)
-            }
-        }
-        MessageTools.state("React Native installed!")
+        try installYarnPackage(package: "ember-cli")
+        try installYarnPackage(package: "react")
+        try installYarnPackage(package: "react-native-cli")
 
         MessageTools.state("Updating installed packages")
         try YarnCommand.upgrade(nil).run { output in
             MessageTools.state(output, level: .debug)
         }
+    }
 
-        // install fastlane
-        MessageTools.state("Installing fastlane...")
-        try GemCommand.install("fastlane").run { output in
+    /// Installs the provided Yarn package
+    ///
+    /// - Parameter package: The Yarn/NPM package to install
+    /// - Throws: ChaiError
+    func installYarnPackage(package: String) throws {
+        MessageTools.state("Installing \(package)...")
+        if !isInstalled(package) {
+            try YarnCommand.add(package).run { output in
+                MessageTools.state(output, level: .debug)
+            }
+        }
+        MessageTools.state("\(package) installed!")
+    }
+
+    /// Install required ruby gems
+    ///
+    /// - Throws: ChaiErrors if any
+    func installGems() throws {
+
+        try installGem("fastlane")
+        try installGem("rails")
+        try installGem("bundler")
+    }
+
+    /// Install a ruby gem
+    ///
+    /// - Parameter gem: Name of gem to install
+    /// - Throws: ChaiError
+    func installGem(_ gem: String) throws {
+        MessageTools.state("Installing \(gem)...")
+        try GemCommand.install(gem).run { output in
             MessageTools.state(output, level: .debug)
         }
-        MessageTools.exclaim("Fastlane installed!")
+        MessageTools.exclaim("\(gem) installed!")
+    }
 
-        // install rails
-        MessageTools.state("Installing rails...")
-        try GemCommand.install("rails").run { output in
+    /// Updates homebrew, installs various packages, then upgrades any pre-existing packages
+    ///
+    /// - Throws: ChaiErrors if things fail
+    func installHomebrewTools() throws {
+        try HomebrewCommand.update.run { output in
             MessageTools.state(output, level: .debug)
         }
-        MessageTools.exclaim("Rails installed!")
 
-        // install bundler
-        MessageTools.state("Installing bundler...")
-        try GemCommand.install("bundler").run { output in
+        try installHomebrewFormula(formula: "rbenv")
+        try installHomebrewFormula(formula: "node")
+        try installHomebrewFormula(formula: "yarn") {
+            MessageTools.state("Please add the following to your shell profile:", color: .yellow, level: .normal)
+            MessageTools.state("export PATH=\"$PATH:`yarn global bin`\"", color: .yellow, level: .normal)
+        }
+        try installHomebrewFormula(formula: "watchman")
+
+        MessageTools.state("Updating installed packages")
+        try HomebrewCommand.upgrade(nil).run { output in
             MessageTools.state(output, level: .debug)
         }
-        MessageTools.exclaim("Bundler installed!")
+    }
 
-        // // Install quicklook provisioning (direct download)
-        try installQuicklook()
-        MessageTools.exclaim("All done! Go forth and make awesome stuff.", level: .silent)
+    /// Installs the given Homebrew formula
+    ///
+    /// - Parameters:
+    ///   - formula: The Homebrew formula to be installed
+    ///   - postInstallHook: Optional void block to execute after  installation completes
+    /// - Throws: ChaiError
+    func installHomebrewFormula(formula: String, postInstallHook: (() -> Void)? = nil) throws {
+        MessageTools.state("Setting up \(formula).")
+        if !isInstalled(formula) {
+            try HomebrewCommand.install(formula).run { output in
+                MessageTools.state(output, level: .debug)
+            }
+
+            if let hook = postInstallHook {
+                hook()
+            }
+
+        } else {
+            MessageTools.state("\(formula) already installed.", level: .verbose)
+        }
+        MessageTools.exclaim("\(formula) setup complete!")
     }
 
     /// Installs Craig Hockenberry's QuickLook plugin
     ///
-    /// - Throws: <#throws value description#>
+    /// - Throws: ChaiError if operations fail
     func installQuicklook() throws {
 
         let qlInstallPath = FileOps.defaultOps.expandLocalLibraryPath("QuickLook")
