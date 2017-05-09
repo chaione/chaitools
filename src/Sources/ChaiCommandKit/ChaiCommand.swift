@@ -31,7 +31,7 @@ public struct ChaiError: ChaiErrorProtocol {
 @available(OSX 10.12, *)
 
 /// Protocol to handle any commands needed to be run in the terminal.
-protocol ChaiCommand {
+public protocol ChaiCommand {
 
     /// Returns Array of String that will act as arguments for Process.
     ///

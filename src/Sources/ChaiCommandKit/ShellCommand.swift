@@ -26,11 +26,11 @@ public enum ShellCommand: ChaiCommand {
     case which(String)
     case command(arguments: [String])
 
-    static var binary: String? {
+    public static var binary: String? {
         return nil
     }
 
-    func arguments() -> ChaiCommandArguments {
+    public func arguments() -> ChaiCommandArguments {
         switch self {
         case (let .move(file, toPath)):
             return ["mv", file, toPath]
