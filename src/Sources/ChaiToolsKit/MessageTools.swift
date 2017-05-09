@@ -74,8 +74,8 @@ struct MessageTools {
     /// - Parameters:
     ///  - message: The message to be displayed to the user
     ///  - level: The verbosity level required to print the message. Defaults to normal.
-    static func instruct(_ message: String, color _: LoggerColor = .none, level: Verbosity = .normal) {
-        state("💁  \(message)", level: level)
+    static func instruct(_ message: String, color: LoggerColor = .none, level: Verbosity = .normal) {
+        state(color.coloredMessage("💁  \(message)"), level: level)
     }
 
     /// Displays an error to the user. Prints a message at a given verbosity.

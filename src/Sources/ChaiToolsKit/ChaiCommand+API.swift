@@ -21,6 +21,10 @@ public struct ChaiURL: ChaiURLProtocol {
         return ChaiURL(url: "https://github.com/nicklockwood/SwiftFormat/archive/0.28.4.zip")
     }
 
+    public static var provisioningQuickLook: ChaiURL {
+        return ChaiURL(url: "https://github.com/chockenberry/Provisioning/releases/download/1.0.4/Provisioning-1.0.4.zip")
+    }
+
     public static func followCircleCi(project: String) -> ChaiURL {
         let url = "https://circleci.com/api/v1.1/project/bitbucket/chaione/\(project)/follow?circle-token=\(ChaiOneCreds.circleCiToken.rawValue)"
         return ChaiURL(url: url)

@@ -39,3 +39,5 @@ protocol BootstrapConfig {
     func bootstrap(_ projectDirURL: URL) throws
     init()
 }
+
+let rubyVersion = "2.4.1"

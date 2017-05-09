@@ -14,11 +14,11 @@ public enum CurlCommand: ChaiCommand {
     case get(url: ChaiURLProtocol)
     case post(url: ChaiURLProtocol)
 
-    static var binary: String? {
+    public static var binary: String? {
         return "curl"
     }
 
-    func arguments() -> ChaiCommandArguments {
+    public func arguments() -> ChaiCommandArguments {
         switch self {
         case let .downloadZip(chaiURL):
             return ["-o", "tmp.zip", "-L", chaiURL.url]

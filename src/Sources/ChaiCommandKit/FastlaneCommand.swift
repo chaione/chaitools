@@ -19,11 +19,11 @@ public enum FastlaneCommand: ChaiCommand {
     case bootstrap
     case bootstrapChaiToolsSetup
     case lane(String)
-    static var binary: String? {
+    public static var binary: String? {
         return "bundle"
     }
 
-    func arguments() -> ChaiCommandArguments {
+    public func arguments() -> ChaiCommandArguments {
         switch self {
         case .bootstrap:
             return ["exec", "fastlane", "bootstrap"]

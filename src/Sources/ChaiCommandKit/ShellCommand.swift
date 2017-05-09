@@ -23,12 +23,14 @@ public enum ShellCommand: ChaiCommand {
     case open(fileName: String)
     case copyFile(file: String, to: String)
     case copyDirectory(directory: String, to: String)
+    case which(String)
+    case command(arguments: [String])
 
-    static var binary: String? {
+    public static var binary: String? {
         return nil
     }
 
-    func arguments() -> ChaiCommandArguments {
+    public func arguments() -> ChaiCommandArguments {
         switch self {
         case (let .move(file, toPath)):
             return ["mv", file, toPath]
@@ -41,6 +43,10 @@ public enum ShellCommand: ChaiCommand {
         case let .copyDirectory(directory1, directory2):
             let finalDirectory = directory2 != "." ? directory2 : "./\(directory1)"
             return ["cp", "-rf", directory1, finalDirectory]
+        case let .which(binary):
+            return ["which", binary]
+        case let .command(arguments):
+            return arguments
         }
     }
 }

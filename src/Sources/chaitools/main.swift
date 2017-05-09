@@ -10,12 +10,13 @@ import Foundation
 import ChaiToolsKit
 import SwiftCLI
 
-CLI.setup(name: "chaitools", version: "0.3.1", description: "Brew some awesome apps with ChaiTools")
+CLI.setup(name: "chaitools", version: "0.4.1", description: "Brew some awesome apps with ChaiTools")
 
 if #available(OSX 10.12, *) {
 
     CLI.register(command: TemplatesCommand())
     CLI.register(command: BootstrapCommand())
+    CLI.register(command: DevInitCommand())
 } else {
     print("macOS 10.12 is required to manage Xcode templates or use bootstrapper.")
 }
