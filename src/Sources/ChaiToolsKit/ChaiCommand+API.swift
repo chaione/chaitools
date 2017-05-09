@@ -10,8 +10,7 @@ import Foundation
 import ChaiCommandKit
 
 enum ChaiOneCreds: String {
-    // TODO: Kyle needs to provide a ChaiBot token
-    case circleCiToken = "84312488cf41b03d6b14d30e7e87f2c62c2b8c25"
+    case circleCiToken = "bd7561673da35b62765442032e504d7aec74662b"
 }
 
 public struct ChaiURL: ChaiURLProtocol {
