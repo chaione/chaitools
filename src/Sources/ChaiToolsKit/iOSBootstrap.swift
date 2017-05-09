@@ -76,9 +76,7 @@ class iOSBootstrap: BootstrapConfig {
     /// - Returns: GitRepo object containing items such as `localPath` to cloned Fastlane repo.
     /// - Throws: `BootstrapCommandError`
     func createFastlaneRepo() throws -> GitRepo {
-        guard let tempDirectory = fileOps.createTempDirectory() else {
-            throw ChaiError.generic(message: "Failed to create temp directory to hold 'ChaiOne's Build Script: Fastlane'.")
-        }
+        let tempDirectory = try fileOps.createTempDirectory()
         let repo = GitRepo(withLocalURL: tempDirectory, andRemoteURL: fastlaneRemoteURL)
         return repo
     }
@@ -159,9 +157,7 @@ class iOSBootstrap: BootstrapConfig {
 
     func addSwiftFormatCommand(in directory: URL) throws {
 
-        guard let tempDirectory = fileOps.createTempDirectory() else {
-            throw ChaiError.generic(message: "Failed to create temp directory to hold 'SwiftFormat'.")
-        }
+        let tempDirectory = try fileOps.createTempDirectory() 
 
         do {
             // Download swiftformat via curl command into `tmp` directory

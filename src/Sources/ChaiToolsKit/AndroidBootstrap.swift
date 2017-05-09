@@ -27,9 +27,8 @@ class AndroidBootstrap: BootstrapConfig {
     }
 
     func downloadJumpStart() throws -> GitRepo {
-        guard let tempDir = fileOps.createTempDirectory() else {
-            throw ChaiError.generic(message: "Failed to create temp directory.")
-        }
+        let tempDir = try fileOps.createTempDirectory()
+
         let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: projectURL)
         MessageTools.state("Androids wear 🚀 boots!")
         return repo

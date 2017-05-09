@@ -175,9 +175,7 @@ public class DevInitCommand: OptionCommand {
 
         if !FileManager.default.fileExists(atPath: qlInstallPath.appendingPathComponent("Provisioning.qlgenerator").path) {
             MessageTools.state("Installing Provisioning Quick Look...")
-            guard let tempDirectory = FileOps.defaultOps.createTempDirectory() else {
-                throw ChaiError.generic(message: "Failed to create temp directory to hold 'QuickLook Plugin'.")
-            }
+            let tempDirectory = try FileOps.defaultOps.createTempDirectory()
 
             do {
                 // download latest version of provisioning quicklook to temp directory
