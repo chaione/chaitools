@@ -20,11 +20,11 @@ public enum HomebrewCommand: ChaiCommand {
     case update
     case upgrade(String?)
 
-    static var binary: String? {
+    public static var binary: String? {
         return "brew"
     }
 
-    func arguments() -> ChaiCommandArguments {
+    public func arguments() -> ChaiCommandArguments {
         switch self {
         case let .install(formula):
             return ["install", formula]

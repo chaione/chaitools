@@ -19,11 +19,11 @@ public enum YarnCommand: ChaiCommand {
     case remove(String)
     case upgrade(String?)
 
-    static var binary: String? {
+    public static var binary: String? {
         return "yarn"
     }
 
-    func arguments() -> ChaiCommandArguments {
+    public func arguments() -> ChaiCommandArguments {
         switch self {
         case let .add(package):
             return ["global", "add", package]

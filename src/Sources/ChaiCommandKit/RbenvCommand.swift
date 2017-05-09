@@ -23,11 +23,11 @@ public enum RbenvCommand: ChaiCommand {
     case rbinit
     case versions
 
-    static var binary: String? {
+    public static var binary: String? {
         return "rbenv"
     }
 
-    func arguments() -> ChaiCommandArguments {
+    public func arguments() -> ChaiCommandArguments {
         switch self {
         case let .install(version):
             return ["install", version]

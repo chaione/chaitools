@@ -19,11 +19,11 @@ public enum NPMCommand: ChaiCommand {
     case uninstall(String)
     case update(String?)
 
-    static var binary: String? {
+    public static var binary: String? {
         return "npm"
     }
 
-    func arguments() -> ChaiCommandArguments {
+    public func arguments() -> ChaiCommandArguments {
         switch self {
         case let .install(package):
             return ["install", "-g", package]
