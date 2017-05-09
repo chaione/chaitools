@@ -23,7 +23,7 @@ struct UnZip: ChaiCommand {
     ///
     /// - Returns: `ChaiCommandArguments`
     func arguments() -> ChaiCommandArguments {
-        return ["-d","tmp", file]
+        return ["-d", "tmp", file]
     }
 }
 
@@ -53,7 +53,7 @@ public struct CurlCommand {
     /// - Returns: `Process`
     /// - Throws: `ChaiError`
     @discardableResult public func run(in directory: URL) throws -> Process {
-        try Curl(url: self.url).run(in: directory)
+        try Curl(url: url).run(in: directory)
         try UnZip.unzipTemp.run(in: directory)
         return try ShellCommand.remove(file: "tmp.zip").run(in: directory)
     }

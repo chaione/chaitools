@@ -20,7 +20,7 @@ public enum GitCommand: ChaiCommand, Equatable {
     case remote(remoteOption)
     case push
 
-    static var binary: String? {
+    public static var binary: String? {
         return "git"
     }
 
@@ -49,7 +49,7 @@ public enum GitCommand: ChaiCommand, Equatable {
         }
     }
 
-    func arguments() -> ChaiCommandArguments {
+    public func arguments() -> ChaiCommandArguments {
         switch self {
         case let .clone(urlPath):
             return ["clone", urlPath, "."]

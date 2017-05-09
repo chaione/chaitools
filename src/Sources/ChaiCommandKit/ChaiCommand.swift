@@ -31,7 +31,7 @@ public struct ChaiError: ChaiErrorProtocol {
 @available(OSX 10.12, *)
 
 /// Protocol to handle any commands needed to be run in the terminal.
-protocol ChaiCommand {
+public protocol ChaiCommand {
 
     /// Returns Array of String that will act as arguments for Process.
     ///
@@ -60,7 +60,7 @@ extension ChaiCommand {
     /// - Parameter directory: URL of directory you will to run command inside of.
     /// - Returns: @discardableResult Process object that contains.
     /// - Throws: `CommandProtocolError` with `.generic` case.
-    @discardableResult public func run(in directory: URL, output:((String) -> Void)? = nil) throws -> Process {
+    @discardableResult public func run(in directory: URL, output: ((String) -> Void)? = nil) throws -> Process {
 
         let process = Process()
         process.launchPath = "/usr/bin/env"
@@ -98,8 +98,8 @@ extension ChaiCommand {
         let outHandle = pipe.fileHandleForReading
         outHandle.waitForDataInBackgroundAndNotify()
 
-        var progressObserver : NSObjectProtocol!
-        progressObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.NSFileHandleDataAvailable, object: outHandle, queue: nil) { notification in
+        var progressObserver: NSObjectProtocol!
+        progressObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.NSFileHandleDataAvailable, object: outHandle, queue: nil) { _ in
             let data = outHandle.availableData
 
             if data.count > 0 {
@@ -113,8 +113,8 @@ extension ChaiCommand {
             }
         }
 
-        var terminationObserver : NSObjectProtocol!
-        terminationObserver = NotificationCenter.default.addObserver(forName: Process.didTerminateNotification, object: process, queue: nil) { notification in
+        var terminationObserver: NSObjectProtocol!
+        terminationObserver = NotificationCenter.default.addObserver(forName: Process.didTerminateNotification, object: process, queue: nil) { _ in
             // Process was terminated. Hence, progress should be 100%
             NotificationCenter.default.removeObserver(terminationObserver)
         }
