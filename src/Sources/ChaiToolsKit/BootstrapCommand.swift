@@ -112,10 +112,8 @@ public class BootstrapCommand: OptionCommand {
             }
 
             try setupReadMeDefaults(projectURL)
-            try setupGitRepo(projectURL)
-            try CurlCommand.post(url: ChaiURL.followCircleCi(project: projectName)).run { output in
-                MessageTools.state(output, color: .cyan)
-            }
+            let repo = try setupGitRepo(projectURL)
+            try setupCircleCi(for: repo)
             MessageTools.state("Boot straps pulled. Time to start walking. 😎", color: .green, level: .silent)
 
         } catch let error as ChaiErrorProtocol {
@@ -170,7 +168,6 @@ public class BootstrapCommand: OptionCommand {
     /// structure to get checked into git.
     ///
     /// - Parameter projectURL: File path URL for the main project directory.
-    // Returns: True if project succeeded or false otherwise
     func setupReadMeDefaults(_ projectURL: URL) throws {
         try setupProjectReadMe(projectURL)
         try setupReadMePlaceholders(projectURL.appendingPathComponent("src", isDirectory: true))
@@ -197,8 +194,9 @@ public class BootstrapCommand: OptionCommand {
     /// Setups the local git repository.
     ///
     /// - Parameter projectURL: File path URL for the main project directory.
-    /// Returns: True if git repo configuration succeeded and false otherwise
-    func setupGitRepo(_ projectURL: URL) throws {
+    /// - Returns: GitRepo if git repo configuration succeeded
+    /// - Throws: Throws if GitRepo fails to configure successfully.
+    func setupGitRepo(_ projectURL: URL) throws -> GitRepo {
 
         // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
@@ -220,5 +218,16 @@ public class BootstrapCommand: OptionCommand {
         }
 
         // Setup remote if it doesn't.
+        return repo
+    }
+
+    func setupCircleCi(for repo: GitRepo) throws {
+        let regexPattern = "([^/]+)(?=\\.git)" // get 'circleiosapplication' out of 'git@bitbucket.org:chaione/circleiosapplication.git'
+        if let remoteURLString = repo.remoteURL?.absoluteString,
+            let projectName = remoteURLString.matches(for: regexPattern).first {
+            try CurlCommand.post(url: ChaiURL.followCircleCi(project: projectName.lowercased())).run { output in
+                MessageTools.state(output, color: .cyan)
+            }
+        }
     }
 }

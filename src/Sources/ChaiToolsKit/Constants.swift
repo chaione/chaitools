@@ -8,6 +8,15 @@
 
 import Foundation
 
+protocol BootstrapConfig {
+
+    func bootstrap(_ projectDirURL: URL) throws
+    init()
+}
+
+let rubyVersion = "2.4.1"
+
+// MARK: - Iteratable Protocol and Extension
 protocol Iteratable {}
 extension RawRepresentable where Self: RawRepresentable {
 
@@ -34,10 +43,18 @@ extension Iteratable where Self: RawRepresentable, Self: Hashable {
     }
 }
 
-protocol BootstrapConfig {
+// MARK: - String Extensions
 
-    func bootstrap(_ projectDirURL: URL) throws
-    init()
+extension String {
+    func matches(for regex: String) -> [String] {
+        do {
+            let regex = try NSRegularExpression(pattern: regex)
+            let nsString = self as NSString
+            let results = regex.matches(in: self, range: NSRange(location: 0, length: nsString.length))
+            return results.map { nsString.substring(with: $0.range)}
+        } catch let error {
+            print("invalid regex: \(error.localizedDescription)")
+            return []
+        }
+    }
 }
-
-let rubyVersion = "2.4.1"
