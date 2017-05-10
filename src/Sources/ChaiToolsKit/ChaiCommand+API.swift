@@ -11,6 +11,8 @@ import ChaiCommandKit
 
 public struct ChaiURL: ChaiURLProtocol {
     public var url: String!
+    // get 'circleiosapplication' out of 'git@bitbucket.org:chaione/circleiosapplication.git'
+    public static let repoNameRegex: String = "([^/]+)(?=\\.git)"
 
     public static var swiftFormat: ChaiURL {
         return ChaiURL(url: "https://github.com/nicklockwood/SwiftFormat/archive/0.28.4.zip")

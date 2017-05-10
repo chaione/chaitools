@@ -222,12 +222,10 @@ public class BootstrapCommand: OptionCommand {
     }
 
     func setupCircleCi(for repo: GitRepo) throws {
-        let regexPattern = "([^/]+)(?=\\.git)" // get 'circleiosapplication' out of 'git@bitbucket.org:chaione/circleiosapplication.git'
-        if let remoteURLString = repo.remoteURL?.absoluteString,
-            let projectName = remoteURLString.matches(for: regexPattern).first {
-            try CurlCommand.post(url: ChaiURL.followCircleCi(project: projectName.lowercased())).run { output in
-                MessageTools.state(output, color: .cyan)
-            }
+        let projectName = try repo.remoteProjectName()
+        MessageTools.exclaim(ChaiURL.followCircleCi(project: projectName).url)
+        try CurlCommand.post(url: ChaiURL.followCircleCi(project: projectName)).run { output in
+            MessageTools.state(output, color: .cyan)
         }
     }
 }
