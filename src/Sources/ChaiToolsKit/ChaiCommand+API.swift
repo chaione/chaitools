@@ -9,10 +9,6 @@
 import Foundation
 import ChaiCommandKit
 
-enum ChaiOneCreds: String {
-    case circleCiToken = "bd7561673da35b62765442032e504d7aec74662b"
-}
-
 public struct ChaiURL: ChaiURLProtocol {
     public var url: String!
 
@@ -25,7 +21,7 @@ public struct ChaiURL: ChaiURLProtocol {
     }
 
     public static func followCircleCi(project: String) -> ChaiURL {
-        let url = "https://circleci.com/api/v1.1/project/bitbucket/chaione/\(project)/follow?circle-token=\(ChaiOneCreds.circleCiToken.rawValue)"
+        let url = "https://circleci.com/api/v1.1/project/bitbucket/chaione/\(project)/follow?circle-token=\(Configuration.circleCiToken.value)"
         return ChaiURL(url: url)
     }
 }
