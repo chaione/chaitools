@@ -31,7 +31,7 @@ public enum GitCommand: ChaiCommand, Equatable {
         func arguments() -> [String] {
             switch self {
             case let .add(urlPath):
-                return ["remote", "add", urlPath, "."]
+                return ["remote", "add", "origin", urlPath]
             case let .remove(urlPath):
                 return ["remote", "remove", urlPath]
             }

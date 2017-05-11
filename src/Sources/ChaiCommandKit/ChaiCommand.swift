@@ -28,6 +28,10 @@ public struct ChaiError: ChaiErrorProtocol {
     }
 }
 
+public protocol ChaiURLProtocol {
+    var url: String! { get set }
+}
+
 @available(OSX 10.12, *)
 
 /// Protocol to handle any commands needed to be run in the terminal.

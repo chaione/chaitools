@@ -8,6 +8,15 @@
 
 import Foundation
 
+protocol BootstrapConfig {
+
+    func bootstrap(_ projectDirURL: URL) throws
+    init()
+}
+
+let rubyVersion = "2.4.1"
+
+// MARK: - Iteratable Protocol and Extension
 protocol Iteratable {}
 extension RawRepresentable where Self: RawRepresentable {
 
@@ -33,11 +42,3 @@ extension Iteratable where Self: RawRepresentable, Self: Hashable {
         return hashValues().map({ $0.rawValue })
     }
 }
-
-protocol BootstrapConfig {
-
-    func bootstrap(_ projectDirURL: URL) throws
-    init()
-}
-
-let rubyVersion = "2.4.1"

@@ -15,5 +15,4 @@ class DummyAndroid: AndroidBootstrap {
 
 @available(OSX 10.12, *)
 class AndroidBootstrapTests: XCTestCase {
-
 }

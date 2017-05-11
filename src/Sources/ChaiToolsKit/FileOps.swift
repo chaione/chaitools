@@ -95,17 +95,12 @@ public class FileOps: NSObject {
     /// Creates a new temporary directory
     ///
     /// - Returns: A directory on the user's temporary path.
-    func createTempDirectory() -> URL? {
-        do {
-            let temporaryDirectoryURL = try FileManager.default.url(for: .itemReplacementDirectory,
-                                                                    in: .userDomainMask,
-                                                                    appropriateFor: FileManager.default.homeDirectoryForCurrentUser,
-                                                                    create: true)
-            return temporaryDirectoryURL
-        } catch {
-            MessageTools.error("Failed to create temporary directory.", level: .verbose)
-        }
-        return nil
+    func createTempDirectory() throws -> URL {
+        let temporaryDirectoryURL = try FileManager.default.url(for: .itemReplacementDirectory,
+                                                                in: .userDomainMask,
+                                                                appropriateFor: FileManager.default.homeDirectoryForCurrentUser,
+                                                                create: true)
+        return temporaryDirectoryURL
     }
 
     /// Convenience method to create a subdirectory of a given directory

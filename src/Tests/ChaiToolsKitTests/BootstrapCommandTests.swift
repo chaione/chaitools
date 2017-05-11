@@ -25,9 +25,7 @@ class BootstrapCommandTests: XCTestCase {
     }
 
     func testBootstrapExecute() {
-
     }
-
 }
 
 // MARK: - TechStack Tests
@@ -39,7 +37,7 @@ extension BootstrapCommandTests {
 
     func testSupportedStacksFormmatedString() {
         var formattedSupportedStacksStr = "Current supported tech stacks are:\n"
-        formattedSupportedStacksStr.append(supportedStackStrings.map{ "- \($0)\n" }.joined())
+        formattedSupportedStacksStr.append(supportedStackStrings.map { "- \($0)\n" }.joined())
 
         XCTAssertEqual(formattedSupportedStacksStr, TechStack.supportedStacksFormattedString())
     }
