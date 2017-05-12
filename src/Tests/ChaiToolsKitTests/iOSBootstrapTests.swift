@@ -38,9 +38,7 @@ class iOSBootstrapTests: XCTestCase {
     }
 
     func tempSrcDirectory() throws -> URL {
-        guard let tempDirectory = FileOps.defaultOps.createTempDirectory() else {
-            throw BootstrapCommandError.generic(message: "Failed to create Temporary directory.")
-        }
+        let tempDirectory = try FileOps.defaultOps.createTempDirectory()
 
         if !FileOps.defaultOps.ensureDirectory(tempDirectory.appendingPathComponent("src", isDirectory: true)) {
             FileOps.defaultOps.createSubDirectory("src", parent: tempDirectory)

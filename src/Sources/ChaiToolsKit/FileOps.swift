@@ -7,11 +7,11 @@
 //
 
 import Foundation
+import ChaiCommandKit
 
-enum FileOpsError: Error {
+enum FileOpsError: ChaiErrorProtocol {
     case directoryMissing
     case directoryAlreadyExists
-    case generic(message: String)
     case unknown
 
     var localizedDescription: String {
@@ -20,8 +20,6 @@ enum FileOpsError: Error {
             return "Destination directory is Missing."
         case .directoryAlreadyExists:
             return "Destination directory already exists."
-        case .generic(let message):
-            return message
         case .unknown:
             return "ChaiTools does not know what happened 😭"
         }
@@ -32,7 +30,7 @@ enum FileOpsError: Error {
 public class FileOps: NSObject {
 
     public static let defaultOps = FileOps()
-    
+
     private override init() {}
 
     /// Depending if the environment is set to DEBUG, method will return the appropriate `URL` object
@@ -62,7 +60,7 @@ public class FileOps: NSObject {
 
         do {
             MessageTools.state("The local directory does not exist. Attempting to create it...", level: .verbose)
-            try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
+            try dirURL.createIfMissing()
             MessageTools.exclaim("Successfully created the directory.", level: .verbose)
             return true
         } catch {
@@ -97,17 +95,12 @@ public class FileOps: NSObject {
     /// Creates a new temporary directory
     ///
     /// - Returns: A directory on the user's temporary path.
-    func createTempDirectory() -> URL? {
-        do {
-            let temporaryDirectoryURL = try FileManager.default.url(for: .itemReplacementDirectory,
-                                                                    in: .userDomainMask,
-                                                                    appropriateFor: FileManager.default.homeDirectoryForCurrentUser,
-                                                                    create: true)
-            return temporaryDirectoryURL
-        } catch {
-            MessageTools.error("Failed to create temporary directory.", level: .verbose)
-        }
-        return nil
+    func createTempDirectory() throws -> URL {
+        let temporaryDirectoryURL = try FileManager.default.url(for: .itemReplacementDirectory,
+                                                                in: .userDomainMask,
+                                                                appropriateFor: FileManager.default.homeDirectoryForCurrentUser,
+                                                                create: true)
+        return temporaryDirectoryURL
     }
 
     /// Convenience method to create a subdirectory of a given directory

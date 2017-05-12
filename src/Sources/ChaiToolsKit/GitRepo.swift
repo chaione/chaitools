@@ -7,44 +7,14 @@
 //
 
 import Foundation
+import ChaiCommandKit
 
-enum GitAction: String {
-    case clone
-    case pull
-    case ginit = "init"
-    case add
-    case commit
-    case remoteAdd = "remote"
-    case push
-
-    func arguments(withRemoteURL url: URL?) -> [String] {
-        if let _url = url {
-            let urlPath = _url.absoluteString.contains("http") ? _url.absoluteString : _url.path
-            switch self {
-            case .clone: return [self.rawValue, urlPath, "."]
-            case .pull: return [self.rawValue, urlPath]
-            case .remoteAdd: return ["remote", "add", "origin", urlPath]
-            case .push: return [self.rawValue, "-u", "origin", "master"]
-            default: return []
-            }
-
-        } else {
-            switch self {
-            case .ginit: return [self.rawValue]
-            case .add: return [self.rawValue, "."]
-            case .commit: return [self.rawValue, "-m \"Initial commit by chaitools\""]
-            default: return []
-            }
-        }
-    }
-}
-
-enum GitRepoError: Error {
+enum GitRepoError: ChaiErrorProtocol {
     case alreadyInitialized
     case missingRemoteURL
     case missingLocalRepo
     case nonEmptyRepo
-    case commandFaliure(message: String)
+    case invalidProjectName
     case unknown
 
     var localizedDescription: String {
@@ -57,8 +27,8 @@ enum GitRepoError: Error {
             return "ChaiTools is missing a Local Repo."
         case .nonEmptyRepo:
             return "Destination directory needs to be empty"
-        case .commandFaliure(let message):
-            return message
+        case .invalidProjectName:
+            return "Remote repo has an invalid name."
         case .unknown:
             return "ChaiTools does not know what happened 😭"
         }
@@ -81,24 +51,28 @@ class GitRepo {
 
     /// Execute the git action
     ///
-    /// - Parameter action: The action to be executed, defined by the GitAction enum
+    /// - Parameter action: The action to be executed, defined by the GitCommand enum
     /// - Returns: True if action succeeded, false otherwise
-    func execute(_ action: GitAction) throws {
+    func execute(_ action: GitCommand) throws {
 
         // It would be nice to check if a repo is clean, and then clean if necessary.
         // HINT: Use NSPipe to pass the output of `git status -s` to `wc -l`
         // if (action == .pull) { clean() }
 
         try verifyGitEnvironment(for: action)
-        let gitCommand = ChaiCommand(
-            launchPath: launchPath,
-            arguments: action.arguments(withRemoteURL: remoteURL),
-            preMessage: "Running `git \(action.rawValue)`...",
-            successMessage: "`git \(action.rawValue)` was a success!",
-            failureMessage: "`git \(action.rawValue)` failed!"
-        )
-        
-        try CommandLine.run(gitCommand, in: localURL)
+
+        try action.run(in: localURL)
+    }
+
+    func remoteProjectName() throws -> String {
+        guard let url = remoteURL?.absoluteString else {
+            throw GitRepoError.missingRemoteURL
+        }
+
+        guard let projectName = url.matches(for: ChaiURL.repoNameRegex).first else {
+            throw GitRepoError.invalidProjectName
+        }
+        return projectName.lowercased()
     }
 
     private func clean() {
@@ -107,26 +81,24 @@ class GitRepo {
         process.execute()
     }
 
-    private func verifyGitEnvironment(for action: GitAction) throws {
+    private func verifyGitEnvironment(for action: GitCommand) throws {
 
-        if (action == .ginit) && (localURL.isGitRepo()) {
+        switch (action, self) {
+        case let (.ginit, selfCopy) where selfCopy.localURL.isGitRepo():
             MessageTools.error("Can't initialize a git repo that's already initialized.", level: .verbose)
             throw GitRepoError.alreadyInitialized
-        }
-
-        if remoteURL == nil && (action == .pull || action == .clone) {
+        case let (.pull(_), selfCopy) where selfCopy.remoteURL == nil,
+             let (.clone(_), selfCopy) where selfCopy.remoteURL == nil:
             MessageTools.error("Can't perform \(action) when missing remote URL.", level: .verbose)
             throw GitRepoError.missingRemoteURL
-        }
-
-        if (action == .pull) && (!localURL.isGitRepo()) {
+        case let (.pull(_), selfCopy) where !selfCopy.localURL.isGitRepo():
             MessageTools.state("A git repo can't be updated if it doesn't exist. 🤔", level: .verbose)
             throw GitRepoError.missingLocalRepo
-        }
-
-        if (action == .clone) && (!localURL.isEmpty()) {
+        case let (.clone(_), selfCopy) where !selfCopy.localURL.isEmpty():
             MessageTools.error("Can't clone a git repo into a non-empty directory.", level: .verbose)
             throw GitRepoError.nonEmptyRepo
+        default:
+            break
         }
 
         guard FileOps.defaultOps.ensureDirectory(localURL) else {
@@ -134,8 +106,22 @@ class GitRepo {
         }
     }
 
-    func clone() throws -> GitRepo {
-        try execute(.clone)
+    @discardableResult func clone() throws -> GitRepo {
+        guard let url = remoteURL else {
+            throw GitRepoError.missingRemoteURL
+        }
+        try execute(GitCommand.clone(url: url.absoluteString))
+        return self
+    }
+
+    @discardableResult func pull() throws -> GitRepo {
+        try execute(GitCommand.pull)
+        return self
+    }
+
+    @discardableResult func addRemote(urlString: String) throws -> GitRepo {
+        remoteURL = URL(string: urlString)
+        try execute(.remote(.add(urlString)))
         return self
     }
 }

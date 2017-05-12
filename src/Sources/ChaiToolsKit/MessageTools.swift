@@ -16,6 +16,20 @@ enum Verbosity: Int {
     case debug
 }
 
+enum LoggerColor: String {
+    case none = "\u{001B}[0;39m"
+    case red = "\u{001B}[0;31m"
+    case green = "\u{001B}[0;32m"
+    case yellow = "\u{001B}[0;33m"
+    case blue = "\u{001B}[0;34m"
+    case cyan = "\u{001B}[0;36m"
+
+    func coloredMessage(_ message: String) -> String {
+        let endColor = "\u{001B}[0;0m"
+        return rawValue + message + endColor
+    }
+}
+
 struct MessageTools {
 
     static func addVerbosityOptions(options: OptionRegistry) {
@@ -40,10 +54,19 @@ struct MessageTools {
     /// - Parameters:
     ///  - message: The message to be displayed to the user
     ///  - level: The verbosity level required to print the message. Defaults to normal.
-    static func state(_ message: String, level: Verbosity = .normal) {
+    static func state(_ message: String, color: LoggerColor? = nil, level: Verbosity = .normal) {
         if verbosity.rawValue >= level.rawValue {
-            print(message)
+            let message = color?.coloredMessage(message) ?? message
+            print("\(message)")
         }
+    }
+
+    static func awaitYesNoInput(question: String, color: LoggerColor = .yellow) -> Bool {
+        return Input.awaitYesNoInput(message: color.coloredMessage(question))
+    }
+
+    static func awaitInput(question: String, color: LoggerColor = .yellow) -> String {
+        return Input.awaitInput(message: color.coloredMessage(question))
     }
 
     /// Use when providing instructions to the user. Prints a message at a given verbosity.
@@ -51,8 +74,8 @@ struct MessageTools {
     /// - Parameters:
     ///  - message: The message to be displayed to the user
     ///  - level: The verbosity level required to print the message. Defaults to normal.
-    static func instruct(_ message: String, level: Verbosity = .normal) {
-        state("💁  \(message)", level: level)
+    static func instruct(_ message: String, color: LoggerColor = .none, level: Verbosity = .normal) {
+        state(color.coloredMessage("💁  \(message)"), level: level)
     }
 
     /// Displays an error to the user. Prints a message at a given verbosity.
@@ -60,8 +83,8 @@ struct MessageTools {
     /// - Parameters:
     ///  - message: The message to be displayed to the user
     ///  - level: The verbosity level required to print the message. Defaults to normal.
-    static func error(_ message: String, level: Verbosity = .normal) {
-        state("❗️ \(message)", level: level)
+    static func error(_ message: String, color: LoggerColor = .red, level: Verbosity = .normal) {
+        state(color.coloredMessage("❗️ error: \(message)"), level: level)
     }
 
     /// Exclaims something to the user. Use for success notifications.
@@ -70,7 +93,7 @@ struct MessageTools {
     /// - Parameters:
     ///  - message: The message to be displayed to the user
     ///  - level: The verbosity level required to print the message. Defaults to normal.
-    static func exclaim(_ message: String, level: Verbosity = .normal) {
-        state("\(message) 🎉", level: level)
+    static func exclaim(_ message: String, color: LoggerColor = .green, level: Verbosity = .normal) {
+        state(color.coloredMessage("\(message) 🎉"), level: level)
     }
 }

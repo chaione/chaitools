@@ -8,6 +8,15 @@
 
 import Foundation
 
+protocol BootstrapConfig {
+
+    func bootstrap(_ projectDirURL: URL) throws
+    init()
+}
+
+let rubyVersion = "2.4.1"
+
+// MARK: - Iteratable Protocol and Extension
 protocol Iteratable {}
 extension RawRepresentable where Self: RawRepresentable {
 
@@ -30,31 +39,6 @@ extension Iteratable where Self: RawRepresentable, Self: Hashable {
     }
 
     static func rawValues() -> [Self.RawValue] {
-        return hashValues().map({$0.rawValue})
-    }
-}
-
-protocol BootstrapConfig {
-
-    func bootstrap(_ projectDirURL: URL) throws
-    init()
-}
-
-// MARK: - Error Enums
-
-extension Error {
-    var description: String {
-        switch self {
-        case (let e as GitRepoError):
-            return e.localizedDescription
-        case (let e as BootstrapCommandError):
-            return e.localizedDescription
-        case (let e as CommandLineError):
-            return e.localizedDescription
-        case (let e as FileOpsError):
-            return e.localizedDescription
-        default:
-            return "unknown error to ChaiTools."
-        }
+        return hashValues().map({ $0.rawValue })
     }
 }

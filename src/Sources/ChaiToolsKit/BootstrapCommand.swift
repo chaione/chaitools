@@ -8,21 +8,19 @@
 
 import Foundation
 import SwiftCLI
+import ChaiCommandKit
 
-enum BootstrapCommandError: Error {
+enum BootstrapCommandError: ChaiErrorProtocol {
     case unrecognizedTechStack
     case projectAlreadyExistAtLocation(projectName: String)
-    case generic(message: String)
     case unknown
 
     var localizedDescription: String {
         switch self {
         case .unrecognizedTechStack:
             return "ChaiTools did not recognize Tech Stack"
-        case .projectAlreadyExistAtLocation(let projectName):
+        case let .projectAlreadyExistAtLocation(projectName):
             return "Project \(projectName) already exists at this location."
-        case .generic(let message):
-            return message
         case .unknown:
             return "ChaiTools does not know what happened 😭"
         }
@@ -48,7 +46,7 @@ enum TechStack: String, Iteratable {
     /// return all supported TechStacks
     static func supportedStacksFormattedString() -> String {
         var supportedStacksStr = "Current supported tech stacks are:\n"
-        let stacks = rawValues().map{ "- \($0)\n" }.joined()
+        let stacks = rawValues().map { "- \($0)\n" }.joined()
         supportedStacksStr.append(stacks)
 
         return supportedStacksStr
@@ -57,11 +55,10 @@ enum TechStack: String, Iteratable {
 
 @available(OSX 10.12, *)
 public class BootstrapCommand: OptionCommand {
-    
+
     public var name: String = "bootstrap"
     public var signature: String = "[<stack>]"
     public var shortDescription: String = "Setup a ChaiOne starter project for the given tech stack"
-    
 
     public func setupOptions(options: OptionRegistry) {
         MessageTools.addVerbosityOptions(options: options)
@@ -83,13 +80,13 @@ public class BootstrapCommand: OptionCommand {
         do {
             var bootstrapper: BootstrapConfig?
 
-            MessageTools.state("These boots are made for walking.", level: .silent)
+            MessageTools.state("These boots are made for walking.", color: .green, level: .silent)
 
             if let stackName = arguments.optionalArgument("stack") {
 
                 guard let stack = TechStack(rawValue: stackName) else {
                     MessageTools.instruct("\(stackName) is an unrecognized tech stack.",
-                        level: .silent)
+                                          level: .silent)
                     MessageTools.state(TechStack.supportedStacksFormattedString())
                     MessageTools.state("Please try again with one of those tech stacks.")
                     MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
@@ -102,7 +99,7 @@ public class BootstrapCommand: OptionCommand {
                 MessageTools.instruct("chaitools bootstrap works best with a tech stack.", level: .silent)
                 MessageTools.state(TechStack.supportedStacksFormattedString())
 
-                guard Input.awaitYesNoInput(message: "❓  Should we setup a base project structure?") else {
+                guard MessageTools.awaitYesNoInput(question: "Should we setup a base project structure?") else {
                     MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
                     return
                 }
@@ -111,17 +108,20 @@ public class BootstrapCommand: OptionCommand {
             }
 
             let projectURL = try setupDirectoryStructure()
-
+            MessageTools.state("Dir: \(projectURL.path)", level: .debug)
             if let bootstrapper = bootstrapper {
                 try bootstrapper.bootstrap(projectURL)
             }
-            
+
             try setupReadMeDefaults(projectURL)
-            try setupGitRepo(projectURL)
-            
-            MessageTools.state("Boot straps pulled. Time to start walking. 😎", level: .silent)
+            let repo = try setupGitRepo(projectURL)
+            try setupCircleCi(for: repo)
+            MessageTools.state("Boot straps pulled. Time to start walking. 😎", color: .green, level: .silent)
+
+        } catch let error as ChaiErrorProtocol {
+            MessageTools.error(error.localizedDescription)
         } catch let error {
-            MessageTools.error(error.description)
+            MessageTools.error(error.localizedDescription)
         }
     }
 
@@ -134,7 +134,7 @@ public class BootstrapCommand: OptionCommand {
     /// Returns: File URL of the base directory for the project
     func setupDirectoryStructure() throws -> URL {
 
-        projectName = Input.awaitInput(message: "❓  What is the name of the project?")
+        projectName = MessageTools.awaitInput(question: "What is the name of the project?")
 
         let projectDirURL = FileOps.defaultOps.outputURLDirectory().appendingPathComponent(projectName, isDirectory: true)
 
@@ -150,7 +150,7 @@ public class BootstrapCommand: OptionCommand {
             throw BootstrapCommandError.unknown
         }
 
-        MessageTools.exclaim("Successfully created \(projectName) project directory.")
+        MessageTools.exclaim("Successfully created \(projectName) project directory.", color: .blue)
         FileOps.defaultOps.createSubDirectory("src", parent: projectDirURL)
         FileOps.defaultOps.createSubDirectory("scripts", parent: projectDirURL)
         FileOps.defaultOps.createSubDirectory("tests", parent: projectDirURL)
@@ -170,7 +170,6 @@ public class BootstrapCommand: OptionCommand {
     /// structure to get checked into git.
     ///
     /// - Parameter projectURL: File path URL for the main project directory.
-    // Returns: True if project succeeded or false otherwise
     func setupReadMeDefaults(_ projectURL: URL) throws {
         try setupProjectReadMe(projectURL)
         try setupReadMePlaceholders(projectURL.appendingPathComponent("src", isDirectory: true))
@@ -183,44 +182,52 @@ public class BootstrapCommand: OptionCommand {
         do {
             if try FileManager.default.contentsOfDirectory(at: sourceURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles).isEmpty {
                 guard FileManager.default.createFile(atPath: sourceURL.appendingPathComponent("ReadMe.md").path,
-                                                     contents: "ReadMe added by chaitools bootstrap \(CLI.version) to maintain directory structure.".data(using: .utf8)) else
-                {
+                                                     contents: "ReadMe added by chaitools bootstrap \(CLI.version) to maintain directory structure.".data(using: .utf8)) else {
                     throw BootstrapCommandError.unknown
                 }
             }
         } catch {
             MessageTools.error("Failed to setup ReadMe in \(sourceURL)", level: .verbose)
             MessageTools.error("Error creating ReadMe: \(error)", level: .debug)
-            throw BootstrapCommandError.generic(message: "Failed to setup ReadMe in \(sourceURL)")
+            throw ChaiError.generic(message: "Failed to setup ReadMe in \(sourceURL)")
         }
     }
 
     /// Setups the local git repository.
     ///
     /// - Parameter projectURL: File path URL for the main project directory.
-    /// Returns: True if git repo configuration succeeded and false otherwise
-    func setupGitRepo(_ projectURL: URL) throws {
+    /// - Returns: GitRepo if git repo configuration succeeded
+    /// - Throws: Throws if GitRepo fails to configure successfully.
+    func setupGitRepo(_ projectURL: URL) throws -> GitRepo {
 
         // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
-        MessageTools.state("local Repo is \(repo.localURL)")
-        try repo.execute(GitAction.ginit)
-        try repo.execute(GitAction.add)
-        try repo.execute(GitAction.commit)
+        MessageTools.state("local Repo is \(repo.localURL)", color: .blue)
+        try repo.execute(.ginit)
+        try repo.execute(.add)
+        try repo.execute(.commit(message: "Initial commit by chaitools"))
 
         MessageTools.exclaim("Successfully setup local git repo for project \(projectName).")
 
         // Prompt if remote exists.
-        let remoteRepo = Input.awaitInput(message: "❓  Enter the remote repo for \(projectName). Press <enter> to skip.")
+        let remoteRepo = MessageTools.awaitInput(question: "Enter the remote repo for \(projectName). Press <enter> to skip.")
         if remoteRepo != "" {
-            repo.remoteURL = URL(string: remoteRepo)
 
-            try repo.execute(GitAction.remoteAdd)
-            try repo.execute(GitAction.push)
+            try repo.addRemote(urlString: remoteRepo)
+            try repo.execute(.push)
 
             MessageTools.exclaim("Successfully pushed to git remote for project \(projectName).")
         }
 
         // Setup remote if it doesn't.
+        return repo
+    }
+
+    func setupCircleCi(for repo: GitRepo) throws {
+        let projectName = try repo.remoteProjectName()
+        MessageTools.exclaim(ChaiURL.followCircleCi(project: projectName).url)
+        try CurlCommand.post(url: ChaiURL.followCircleCi(project: projectName)).run { output in
+            MessageTools.state(output, color: .cyan)
+        }
     }
 }

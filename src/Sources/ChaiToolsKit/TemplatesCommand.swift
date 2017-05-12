@@ -65,7 +65,7 @@ public class TemplatesCommand: OptionCommand {
     func installTemplates() throws {
         MessageTools.state("Attempting to install Xcode templates...")
         for template in templates {
-            try template.repo.execute(GitAction.clone)
+            try template.repo.clone()
         }
         MessageTools.exclaim("Successfully installed Xcode templates.")
     }
@@ -74,7 +74,7 @@ public class TemplatesCommand: OptionCommand {
         MessageTools.state("Attempting to update Xcode templates...")
         // Checks if all is true
         for template in templates {
-            try template.repo.execute(GitAction.pull)
+            try template.repo.pull()
         }
         MessageTools.exclaim("Successfully updated Xcode templates.")
     }
