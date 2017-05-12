@@ -10,7 +10,7 @@ import Foundation
 import ChaiCommandKit
 
 public struct ChaiURL: ChaiURLProtocol {
-    public var url: String!
+    public var url: String
     // get 'circleiosapplication' out of 'git@bitbucket.org:chaione/circleiosapplication.git'
     public static let repoNameRegex: String = "([^/]+)(?=\\.git)"
 
