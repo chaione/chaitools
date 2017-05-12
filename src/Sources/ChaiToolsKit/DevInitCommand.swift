@@ -78,6 +78,7 @@ public class DevInitCommand: OptionCommand {
         try installYarnPackage(package: "ember-cli")
         try installYarnPackage(package: "react")
         try installYarnPackage(package: "react-native-cli")
+        try installYarnPackage(package: "tsrn")
 
         MessageTools.state("Updating installed packages")
         try YarnCommand.upgrade(nil).run { output in
