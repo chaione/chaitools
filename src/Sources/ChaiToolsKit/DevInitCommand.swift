@@ -52,11 +52,6 @@ public class DevInitCommand: OptionCommand {
     }
 
     func installRubyVersion() throws {
-
-        try RbenvCommand.rbinit.run { output in
-            MessageTools.state(output, level: .debug)
-        }
-
         // Install fixed Ruby version (using rbenv, based on a configuration file)
         MessageTools.state("Installing ruby version \(rubyVersion)")
         if !RbenvCommand.isInstalled(version: rubyVersion) {
@@ -78,6 +73,7 @@ public class DevInitCommand: OptionCommand {
         try installYarnPackage(package: "ember-cli")
         try installYarnPackage(package: "react")
         try installYarnPackage(package: "react-native-cli")
+        try installYarnPackage(package: "tsrn")
 
         MessageTools.state("Updating installed packages")
         try YarnCommand.upgrade(nil).run { output in
@@ -129,7 +125,15 @@ public class DevInitCommand: OptionCommand {
             MessageTools.state(output, level: .debug)
         }
 
-        try installHomebrewFormula(formula: "rbenv")
+        try installHomebrewFormula(formula: "rbenv") {
+            do {
+                try RbenvCommand.rbinit.run { output in
+                    MessageTools.state(output, level: .debug)
+                }
+            } catch {
+                // intentionally supressing b/c it's not really an error
+            }
+        }
         try installHomebrewFormula(formula: "node")
         try installHomebrewFormula(formula: "yarn") {
             MessageTools.state("Please add the following to your shell profile:", color: .yellow, level: .normal)
