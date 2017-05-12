@@ -14,6 +14,7 @@ enum GitRepoError: ChaiErrorProtocol {
     case missingRemoteURL
     case missingLocalRepo
     case nonEmptyRepo
+    case invalidProjectName
     case unknown
 
     var localizedDescription: String {
@@ -26,6 +27,8 @@ enum GitRepoError: ChaiErrorProtocol {
             return "ChaiTools is missing a Local Repo."
         case .nonEmptyRepo:
             return "Destination directory needs to be empty"
+        case .invalidProjectName:
+            return "Remote repo has an invalid name."
         case .unknown:
             return "ChaiTools does not know what happened 😭"
         }
@@ -59,6 +62,17 @@ class GitRepo {
         try verifyGitEnvironment(for: action)
 
         try action.run(in: localURL)
+    }
+
+    func remoteProjectName() throws -> String {
+        guard let url = remoteURL?.absoluteString else {
+            throw GitRepoError.missingRemoteURL
+        }
+
+        guard let projectName = url.matches(for: ChaiURL.repoNameRegex).first else {
+            throw GitRepoError.invalidProjectName
+        }
+        return projectName.lowercased()
     }
 
     private func clean() {

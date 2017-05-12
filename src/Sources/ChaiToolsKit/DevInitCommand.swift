@@ -179,22 +179,17 @@ public class DevInitCommand: OptionCommand {
 
         if !FileManager.default.fileExists(atPath: qlInstallPath.appendingPathComponent("Provisioning.qlgenerator").path) {
             MessageTools.state("Installing Provisioning Quick Look...")
-            guard let tempDirectory = FileOps.defaultOps.createTempDirectory() else {
-                throw ChaiError.generic(message: "Failed to create temp directory to hold 'QuickLook Plugin'.")
-            }
 
             do {
+                let tempDirectory = try FileOps.defaultOps.createTempDirectory()
                 // download latest version of provisioning quicklook to temp directory
-                try CurlCommand.download(url: .provisioningQuickLook).run(in: tempDirectory)
-                // Making sure directory exists inside of `tmp` directory "tmp/swiftformat-<verion>/Provisioning.qlgenerator"
-                guard let tempQuickLookPath = tempDirectory.firstItem()?.firstItem()?.file("Provisioning.qlgenerator").path else {
-                    throw ChaiError.generic(message: "Failed to find Provisioning Plugin inside of tmp directory.")
-                }
-
-                // Copy plugin into "~/Library/QuickLook"
-                try ShellCommand.copyDirectory(directory: tempQuickLookPath, to: qlInstallPath.path).run { output in
-                    MessageTools.state(output, level: .debug)
-                }
+                try Downloader.download(url: ChaiURL.provisioningQuickLook)
+                    .run(in: tempDirectory)
+                    .move(
+                        file: tempDirectory.firstItem()?.firstItem()?.file("Provisioning.qlgenerator"),
+                        to: qlInstallPath) { output in
+                        MessageTools.state(output, level: .debug)
+                    }
 
                 // restart qlmanager
                 try ShellCommand.command(arguments: ["qlmanage", "-r"]).run { output in
