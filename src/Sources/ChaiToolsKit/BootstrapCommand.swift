@@ -31,6 +31,7 @@ enum BootstrapCommandError: ChaiErrorProtocol {
 enum TechStack: String, Iteratable {
     case android
     case ios
+    case ember
     /// Returns the BootstrapConfig for the TechStack
     ///
     /// - Returns: BootstrapConfig for the TechStack
@@ -38,6 +39,7 @@ enum TechStack: String, Iteratable {
         switch self {
         case .android: return AndroidBootstrap()
         case .ios: return iOSBootstrap()
+        case .ember: return EmberBootstrap()
         }
     }
 
