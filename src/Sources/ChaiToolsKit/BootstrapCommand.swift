@@ -108,9 +108,8 @@ public class BootstrapCommand: OptionCommand {
             let projectName = createProjectName()
 
             let projectURL = try bootstrapper.setUpDirectoryStructure(projectName: projectName)
-            
-            MessageTools.state("Dir: \(projectURL.path)", level: .debug)
 
+            MessageTools.state("Dir: \(projectURL.path)", level: .debug)
 
             try bootstrapper.bootstrap(projectURL, projectName: projectName)
             let repo = try bootstrapper.setupGitRepo(projectURL, projectName: projectName)
@@ -131,8 +130,6 @@ public class BootstrapCommand: OptionCommand {
         let projectName = MessageTools.awaitInput(question: "What is the name of the project?")
         return projectName
     }
-
-
 
     func setupCircleCi(for repo: GitRepo) throws {
         let projectName = try repo.remoteProjectName()

@@ -10,7 +10,6 @@ import Foundation
 import SwiftCLI
 import ChaiCommandKit
 
-
 @available(OSX 10.12, *)
 class GenericBootstrap: BootstrapConfig {
 
@@ -48,9 +47,8 @@ class GenericBootstrap: BootstrapConfig {
         FileOps.defaultOps.createSubDirectory("scripts", parent: projectDirURL)
         FileOps.defaultOps.createSubDirectory("tests", parent: projectDirURL)
         FileOps.defaultOps.createSubDirectory("docs", parent: projectDirURL)
-        
+
         return projectDirURL
-        
     }
 
     /// Adds a dummy ReadMe.md file to each directory in the default system.

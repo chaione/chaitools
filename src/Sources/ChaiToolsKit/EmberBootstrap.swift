@@ -13,13 +13,13 @@ import ChaiCommandKit
 @available(OSX 10.12, *)
 class EmberBootstrap: BootstrapConfig {
 
-    func setUpDirectoryStructure(projectName: String) throws -> URL {
+    func setUpDirectoryStructure(projectName _: String) throws -> URL {
         return FileOps.defaultOps.outputURLDirectory()
     }
+
     required init() {}
 
-
-    func bootstrap(_ projectDirURL: URL, projectName: String) throws {
+    func bootstrap(_: URL, projectName: String) throws {
 
         MessageTools.state("Creating project using ember-cli")
         // run ember-cli bootstrap
