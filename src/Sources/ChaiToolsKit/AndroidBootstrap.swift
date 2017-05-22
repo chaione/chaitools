@@ -10,16 +10,16 @@ import Foundation
 import ChaiCommandKit
 
 @available(OSX 10.12, *)
-class AndroidBootstrap: BootstrapConfig {
+class AndroidBootstrap: GenericBootstrap {
 
     required init() {
-        projectURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")
+        projectJumpStartURL = URL(string: "git@github.com:moldedbits/android-jumpstart.git")
     }
 
-    var projectURL: URL!
+    var projectJumpStartURL: URL!
     var fileOps: FileOps = FileOps.defaultOps
 
-    func bootstrap(_ projectDirURL: URL) throws {
+    override func bootstrap(_ projectDirURL: URL, projectName: String) throws {
         let repo = try downloadJumpStart()
         try cloneAndroidJumpStartRepo(repo)
         try moveGitignoreToRoot(repo, projectDirURL: projectDirURL)
@@ -29,7 +29,7 @@ class AndroidBootstrap: BootstrapConfig {
     func downloadJumpStart() throws -> GitRepo {
         let tempDir = try fileOps.createTempDirectory()
 
-        let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: projectURL)
+        let repo = GitRepo(withLocalURL: tempDir, andRemoteURL: projectJumpStartURL)
         MessageTools.state("Androids wear 🚀 boots!")
         return repo
     }

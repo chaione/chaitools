@@ -62,8 +62,6 @@ public class BootstrapCommand: OptionCommand {
         MessageTools.addVerbosityOptions(options: options)
     }
 
-    private var projectName: String = ""
-
     public init() {}
 
     /// Executes the bootstrap command
@@ -76,7 +74,7 @@ public class BootstrapCommand: OptionCommand {
     public func execute(arguments: CommandArguments) throws {
 
         do {
-            var bootstrapper: BootstrapConfig?
+            var bootstrapper: BootstrapConfig!
 
             MessageTools.state("These boots are made for walking.", color: .green, level: .silent)
 
@@ -102,18 +100,22 @@ public class BootstrapCommand: OptionCommand {
                     return
                 }
 
-                bootstrapper = nil
+                bootstrapper = GenericBootstrap()
             }
 
-            let projectURL = try setupDirectoryStructure()
+            let projectName = createProjectName()
+
+            let projectURL = try bootstrapper.setUpDirectoryStructure(projectName: projectName)
+            
             MessageTools.state("Dir: \(projectURL.path)", level: .debug)
-            if let bootstrapper = bootstrapper {
-                try bootstrapper.bootstrap(projectURL)
-            }
 
-            try setupReadMeDefaults(projectURL)
-            let repo = try setupGitRepo(projectURL)
-            try setupCircleCi(for: repo)
+
+            try bootstrapper.bootstrap(projectURL, projectName: projectName)
+            let repo = try bootstrapper.setupGitRepo(projectURL, projectName: projectName)
+            if let _ = repo.remoteURL {
+                // User set a remote URL
+                try setupCircleCi(for: repo)
+            }
             MessageTools.state("Boot straps pulled. Time to start walking. 😎", color: .green, level: .silent)
 
         } catch let error as ChaiErrorProtocol {
@@ -123,103 +125,12 @@ public class BootstrapCommand: OptionCommand {
         }
     }
 
-    /// Setups the expected project folder structure:
-    /// |- <project_name>/
-    /// |-- docs/
-    /// |-- scripts/
-    /// |-- src/
-    /// |-- tests/
-    /// Returns: File URL of the base directory for the project
-    func setupDirectoryStructure() throws -> URL {
-
-        projectName = MessageTools.awaitInput(question: "What is the name of the project?")
-
-        let projectDirURL = FileOps.defaultOps.outputURLDirectory().appendingPathComponent(projectName, isDirectory: true)
-
-        // Do not overwrite existing projects
-        guard !FileOps.defaultOps.doesDirectoryExist(projectDirURL) else {
-            throw BootstrapCommandError.projectAlreadyExistAtLocation(projectName: projectName)
-        }
-
-        // create directory based on project name
-        MessageTools.state("Creating new project directory for project \(projectName)...")
-
-        guard FileOps.defaultOps.ensureDirectory(projectDirURL) else {
-            throw BootstrapCommandError.unknown
-        }
-
-        MessageTools.exclaim("Successfully created \(projectName) project directory.", color: .blue)
-        FileOps.defaultOps.createSubDirectory("src", parent: projectDirURL)
-        FileOps.defaultOps.createSubDirectory("scripts", parent: projectDirURL)
-        FileOps.defaultOps.createSubDirectory("tests", parent: projectDirURL)
-        FileOps.defaultOps.createSubDirectory("docs", parent: projectDirURL)
-
-        return projectDirURL
+    func createProjectName() -> String {
+        let projectName = MessageTools.awaitInput(question: "What is the name of the project?")
+        return projectName
     }
 
-    func setupProjectReadMe(_ projectURL: URL) throws {
-        guard FileManager.default.createFile(atPath: projectURL.appendingPathComponent("ReadMe.md").path, contents: "#Welcome to the \(projectName) project\nProject created with chaitools bootstrap \(CLI.version).".data(using: .utf8)) else {
-            throw BootstrapCommandError.unknown
-        }
-    }
 
-    /// Adds a dummy ReadMe.md file to each directory in the default system.
-    /// Only add ReadMe if the directory is empty as we want the directory
-    /// structure to get checked into git.
-    ///
-    /// - Parameter projectURL: File path URL for the main project directory.
-    func setupReadMeDefaults(_ projectURL: URL) throws {
-        try setupProjectReadMe(projectURL)
-        try setupReadMePlaceholders(projectURL.appendingPathComponent("src", isDirectory: true))
-        try setupReadMePlaceholders(projectURL.appendingPathComponent("scripts", isDirectory: true))
-        try setupReadMePlaceholders(projectURL.appendingPathComponent("tests", isDirectory: true))
-        try setupReadMePlaceholders(projectURL.appendingPathComponent("docs", isDirectory: true))
-    }
-
-    func setupReadMePlaceholders(_ sourceURL: URL) throws {
-        do {
-            if try FileManager.default.contentsOfDirectory(at: sourceURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles).isEmpty {
-                guard FileManager.default.createFile(atPath: sourceURL.appendingPathComponent("ReadMe.md").path,
-                                                     contents: "ReadMe added by chaitools bootstrap \(CLI.version) to maintain directory structure.".data(using: .utf8)) else {
-                    throw BootstrapCommandError.unknown
-                }
-            }
-        } catch {
-            MessageTools.error("Failed to setup ReadMe in \(sourceURL)", level: .verbose)
-            MessageTools.error("Error creating ReadMe: \(error)", level: .debug)
-            throw ChaiError.generic(message: "Failed to setup ReadMe in \(sourceURL)")
-        }
-    }
-
-    /// Setups the local git repository.
-    ///
-    /// - Parameter projectURL: File path URL for the main project directory.
-    /// - Returns: GitRepo if git repo configuration succeeded
-    /// - Throws: Throws if GitRepo fails to configure successfully.
-    func setupGitRepo(_ projectURL: URL) throws -> GitRepo {
-
-        // Run git init
-        let repo = GitRepo(withLocalURL: projectURL)
-        MessageTools.state("local Repo is \(repo.localURL)", color: .blue)
-        try repo.execute(.ginit)
-        try repo.execute(.add)
-        try repo.execute(.commit(message: "Initial commit by chaitools"))
-
-        MessageTools.exclaim("Successfully setup local git repo for project \(projectName).")
-
-        // Prompt if remote exists.
-        let remoteRepo = MessageTools.awaitInput(question: "Enter the remote repo for \(projectName). Press <enter> to skip.")
-        if remoteRepo != "" {
-
-            try repo.addRemote(urlString: remoteRepo)
-            try repo.execute(.push)
-
-            MessageTools.exclaim("Successfully pushed to git remote for project \(projectName).")
-        }
-
-        // Setup remote if it doesn't.
-        return repo
-    }
 
     func setupCircleCi(for repo: GitRepo) throws {
         let projectName = try repo.remoteProjectName()
