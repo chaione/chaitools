@@ -16,7 +16,6 @@ class GenericBootstrap: BootstrapConfig {
     required init() {}
 
     func bootstrap(_ projectDirURL: URL, projectName: String) throws {
-        try setupReadMeDefaults(projectDirURL, projectName: projectName)
     }
 
     /// Setups the expected project folder structure:

@@ -18,7 +18,7 @@ class iOSBootstrap: GenericBootstrap {
     required init() {}
 
     override func bootstrap(_ projectDirURL: URL, projectName: String) throws {
-        try super.bootstrap(projectDirURL, projectName: projectName)
+
         try AppleScriptCommand.openXcode.run(in: projectDirURL)
 
         guard MessageTools.awaitYesNoInput(question: "Has Xcode finished creating a project?") else {
@@ -41,7 +41,7 @@ class iOSBootstrap: GenericBootstrap {
         try runBundle(command: .exec(arguments: ["calabash-ios", "download"]), in: frameworkDirectory)
         try runFastlaneBootstrapChaiToolsSetup(in: srcDirectory)
         try runFastlaneBootstrap(in: srcDirectory)
-
+        try setupReadMeDefaults(projectDirURL, projectName: projectName)
         MessageTools.state("Opening project with Xcode")
         try openXcode(inDirectory: srcDirectory)
     }
