@@ -78,7 +78,7 @@ public class BootstrapCommand: OptionCommand {
     public func execute(arguments: CommandArguments) throws {
 
         do {
-            var bootstrapper: BootstrapConfig!
+            var bootstrapper: BootstrapConfig = GenericBootstrap()
 
             MessageTools.state("These boots are made for walking.", color: .green, level: .silent)
 
@@ -92,7 +92,7 @@ public class BootstrapCommand: OptionCommand {
                     MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
                     return
                 }
-
+                // change bootstrapper to stack bootstrapper
                 bootstrapper = stack.bootstrapper()
 
             } else {
@@ -103,8 +103,6 @@ public class BootstrapCommand: OptionCommand {
                     MessageTools.state("See you later, Space Cowboy! 💫", level: .silent)
                     return
                 }
-
-                bootstrapper = GenericBootstrap()
             }
 
             let projectName = createProjectName()

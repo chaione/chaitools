@@ -19,11 +19,12 @@ class AndroidBootstrap: GenericBootstrap {
     var projectJumpStartURL: URL!
     var fileOps: FileOps = FileOps.defaultOps
 
-    override func bootstrap(_ projectDirURL: URL, projectName _: String) throws {
+    override func bootstrap(_ projectDirURL: URL, projectName: String) throws {
         let repo = try downloadJumpStart()
         try cloneAndroidJumpStartRepo(repo)
         try moveGitignoreToRoot(repo, projectDirURL: projectDirURL)
         try moveEverythingElse(repo, projectDirURL: projectDirURL)
+        try setupReadMeDefaults(projectDirURL, projectName: projectName)
     }
 
     func downloadJumpStart() throws -> GitRepo {

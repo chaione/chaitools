@@ -43,10 +43,10 @@ extension BootstrapConfig {
         MessageTools.exclaim("Successfully setup local git repo for project \(projectName).")
 
         // Prompt if remote exists.
-        let remoteRepo = MessageTools.awaitInput(question: "Enter the remote repo for \(projectName). Press <enter> to skip.")
-        if remoteRepo != "" {
+        let remoteRepoSting = MessageTools.awaitInput(question: "Enter the remote repo for \(projectName). Press <enter> to skip.")
+        if remoteRepoSting != "" {
 
-            try repo.addRemote(urlString: remoteRepo)
+            try repo.addRemote(urlString: remoteRepoSting)
             try repo.execute(.push)
 
             MessageTools.exclaim("Successfully pushed to git remote for project \(projectName).")
