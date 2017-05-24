@@ -13,6 +13,7 @@ import Foundation
 public enum BundleCommand: ChaiCommand {
 
     /// run this instead of `install` to make
+    case install
     // sure computers packages are up-to-date
     case update
 
@@ -27,6 +28,8 @@ public enum BundleCommand: ChaiCommand {
         switch self {
         case .update:
             return ["update"]
+        case .install:
+            return ["install"]
         case let .exec(arguments):
             return ["exec"] + arguments
         }

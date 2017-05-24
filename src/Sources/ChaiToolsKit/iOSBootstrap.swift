@@ -11,13 +11,14 @@ import SwiftCLI
 import ChaiCommandKit
 
 @available(OSX 10.12, *)
-class iOSBootstrap: BootstrapConfig {
+class iOSBootstrap: GenericBootstrap {
 
     var fileOps: FileOps = FileOps.defaultOps
     var fastlaneRemoteURL = URL(string: "git@bitbucket.org:chaione/build-scripts.git")
     required init() {}
 
-    func bootstrap(_ projectDirURL: URL) throws {
+    override func bootstrap(_ projectDirURL: URL, projectName: String) throws {
+        try super.bootstrap(projectDirURL, projectName: projectName)
         try AppleScriptCommand.openXcode.run(in: projectDirURL)
 
         guard MessageTools.awaitYesNoInput(question: "Has Xcode finished creating a project?") else {
@@ -34,7 +35,7 @@ class iOSBootstrap: BootstrapConfig {
 
         let srcDirectory = projectDirURL.subDirectories("src")
 
-        try runBundle(command: .update, in: srcDirectory)
+        try runBundle(command: .install, in: srcDirectory)
 
         let frameworkDirectory = try srcDirectory.subDirectories("Frameworks").createIfMissing()
         try runBundle(command: .exec(arguments: ["calabash-ios", "download"]), in: frameworkDirectory)

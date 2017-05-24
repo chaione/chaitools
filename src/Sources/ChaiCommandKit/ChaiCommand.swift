@@ -16,7 +16,7 @@ public protocol ChaiErrorProtocol: Error {
 
 extension ChaiErrorProtocol {
 
-    public static func generic(message: String) -> Error {
+    public static func generic(message: String) -> ChaiError {
         return ChaiError(message: message)
     }
 }
@@ -29,7 +29,7 @@ public struct ChaiError: ChaiErrorProtocol {
 }
 
 public protocol ChaiURLProtocol {
-    var url: String! { get set }
+    var url: String { get set }
 }
 
 @available(OSX 10.12, *)
@@ -53,10 +53,9 @@ extension ChaiCommand {
     ///
     /// - Returns: `[ChaiCommandArguments]`
     private func binaryWithArguments() -> ChaiCommandArguments {
-        guard let binary = type(of: self).binary else {
-            return arguments()
-        }
-        return [binary] + arguments()
+        let args: [String?] = [Self.binary] + arguments()
+        // since `Self.binary` can be nil, we'll `flatMap` it
+        return args.flatMap { $0 }
     }
 
     /// Executes command.

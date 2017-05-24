@@ -22,7 +22,7 @@ enum GitRepoError: ChaiErrorProtocol {
         case .alreadyInitialized:
             return "Local git repo is already initialized."
         case .missingRemoteURL:
-            return "ChaiTools is missing a remote URL to pull from."
+            return "ChaiTools is missing a remote URL."
         case .missingLocalRepo:
             return "ChaiTools is missing a Local Repo."
         case .nonEmptyRepo:
