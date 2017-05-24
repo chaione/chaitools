@@ -140,6 +140,7 @@ public class DevInitCommand: OptionCommand {
             MessageTools.state("export PATH=\"$PATH:`yarn global bin`\"", color: .yellow, level: .normal)
         }
         try installHomebrewFormula(formula: "watchman")
+        try installHomebrewFormula(formula: "elixir")
 
         MessageTools.state("Updating installed packages")
         try HomebrewCommand.upgrade(nil).run { output in

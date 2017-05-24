@@ -34,6 +34,7 @@ enum TechStack: String, Iteratable {
     case ember
     case rails
     case reactNative = "react-native"
+    case elixir
     /// Returns the BootstrapConfig for the TechStack
     ///
     /// - Returns: BootstrapConfig for the TechStack
@@ -44,6 +45,7 @@ enum TechStack: String, Iteratable {
         case .reactNative: return ReactNativeBootstrap()
         case .ember: return EmberBootstrap()
         case .rails: return RailsBootstrap()
+        case .elixir: return ElixirBootstrap()
         }
     }
 
