@@ -33,7 +33,7 @@ enum TechStack: String, Iteratable {
     case ios
     case ember
     case rails
-    case reactNative
+    case reactNative = "react-native"
     /// Returns the BootstrapConfig for the TechStack
     ///
     /// - Returns: BootstrapConfig for the TechStack

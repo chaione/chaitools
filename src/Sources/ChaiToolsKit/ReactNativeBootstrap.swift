@@ -8,18 +8,22 @@
 
 import Foundation
 import SwiftCLI
+import ChaiCommandKit
 
 @available(OSX 10.12, *)
 class ReactNativeBootstrap: BootstrapConfig {
 
     required init() {}
 
-    func bootstrap(_ projectDirURL: URL) throws {
-        // make sure npm is installed
-        // make sure react-native cli is installed
-        // make sure tsrn is installed
-        // run tsrn
-        MessageTools.exclaim("Time to cause a reaction")
+    func setUpDirectoryStructure(projectName: String) throws -> URL {
+        return FileOps.defaultOps.outputURLDirectory().appendingPathComponent(projectName, isDirectory: true)
     }
 
+    func bootstrap(_: URL, projectName: String) throws {
+        MessageTools.state("Creating new React Native project with TypeScript support.")
+        try ShellCommand.command(arguments: ["tsrn", projectName]).run(in: FileOps.defaultOps.outputURLDirectory()) { output in
+            MessageTools.state(output, level: .debug)
+        }
+        MessageTools.exclaim("Time to cause a reaction")
+    }
 }
