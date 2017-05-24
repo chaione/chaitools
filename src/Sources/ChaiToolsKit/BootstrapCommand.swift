@@ -32,6 +32,7 @@ enum TechStack: String, Iteratable {
     case android
     case ios
     case ember
+    case rails
     /// Returns the BootstrapConfig for the TechStack
     ///
     /// - Returns: BootstrapConfig for the TechStack
@@ -40,6 +41,7 @@ enum TechStack: String, Iteratable {
         case .android: return AndroidBootstrap()
         case .ios: return iOSBootstrap()
         case .ember: return EmberBootstrap()
+        case .rails: return RailsBootstrap()
         }
     }
 

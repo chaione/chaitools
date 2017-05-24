@@ -12,7 +12,7 @@ import XCTest
 @available(OSX 10.12, *)
 class BootstrapCommandTests: XCTestCase {
 
-    let supportedStackStrings = ["android", "ios", "ember"]
+    let supportedStackStrings = ["android", "ios", "ember", "rails"]
 
     override func setUp() {
         super.setUp()
