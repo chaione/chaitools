@@ -13,8 +13,8 @@ import ChaiCommandKit
 @available(OSX 10.12, *)
 class EmberBootstrap: BootstrapConfig {
 
-    func setUpDirectoryStructure(projectName _: String) throws -> URL {
-        return FileOps.defaultOps.outputURLDirectory()
+    func setUpDirectoryStructure(projectName: String) throws -> URL {
+        return FileOps.defaultOps.outputURLDirectory().appendingPathComponent(projectName, isDirectory: true)
     }
 
     required init() {}
