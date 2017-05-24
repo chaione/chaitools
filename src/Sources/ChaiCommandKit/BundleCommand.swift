@@ -9,10 +9,10 @@
 import Foundation
 
 @available(OSX 10.12, *)
-/// Applescript ChaiCommands
+/// BundleCommand ChaiCommands
 public enum BundleCommand: ChaiCommand {
 
-    /// run this instead of `install` to make
+    /// install gems using version from `Gemfile.lock`
     case install
     // sure computers packages are up-to-date
     case update
