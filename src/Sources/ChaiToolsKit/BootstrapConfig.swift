@@ -30,8 +30,6 @@ extension BootstrapConfig {
     /// - Returns: GitRepo if git repo configuration succeeded
     /// - Throws: Throws if GitRepo fails to configure successfully.
     func setupGitRepo(_ projectURL: URL, projectName: String) throws -> GitRepo {
-
-        // Run git init
         let repo = GitRepo(withLocalURL: projectURL)
         MessageTools.state("local Repo is \(repo.localURL)", color: .blue)
         if repo.localURL.isGitRepo() {

@@ -21,7 +21,6 @@ class RailsBootstrap: BootstrapConfig {
     func bootstrap(_: URL, projectName: String) throws {
 
         MessageTools.state("Creating new rails project")
-        // run ember-cli bootstrap
         try ShellCommand.command(arguments: ["rails", "new", projectName]).run(in: FileOps.defaultOps.outputURLDirectory())
         MessageTools.state("This 🚂 is leaving the station")
     }
