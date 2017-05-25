@@ -92,20 +92,8 @@ class iOSBootstrap: GenericBootstrap {
 
             try ShellCommand
                 .copyDirectory(
-                    directory: repo.localURL.subDirectories("ios/fastlane").path,
-                    to: srcDirectory.subDirectories("fastlane").path)
-                .run(in: directory)
-
-            try ShellCommand
-                .copyFile(
-                    file: repo.localURL.subDirectories("ios/Gemfile").path,
-                    to: srcDirectory.file("Gemfile").path)
-                .run(in: directory)
-
-            try ShellCommand
-                .copyFile(
-                    file: repo.localURL.subDirectories("ios/circle.yml").path,
-                    to: directory.file("circle.yml").path)
+                    directory: repo.localURL.subDirectories("ios/.").path,
+                    to: srcDirectory.path)
                 .run(in: directory)
 
             MessageTools.exclaim("Successfully downloaded latest ChaiTools Fastlane scripts")
