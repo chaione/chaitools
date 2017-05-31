@@ -17,6 +17,8 @@ enum Verbosity: Int {
 }
 
 enum LoggerColor: String {
+    static var includeColor = true
+
     case none = "\u{001B}[0;39m"
     case red = "\u{001B}[0;31m"
     case green = "\u{001B}[0;32m"
@@ -25,6 +27,10 @@ enum LoggerColor: String {
     case cyan = "\u{001B}[0;36m"
 
     func coloredMessage(_ message: String) -> String {
+        guard LoggerColor.includeColor else {
+            return message
+        }
+
         let endColor = "\u{001B}[0;0m"
         return rawValue + message + endColor
     }
@@ -33,6 +39,10 @@ enum LoggerColor: String {
 struct MessageTools {
 
     static func addVerbosityOptions(options: OptionRegistry) {
+        options.add(flags: ["--no-color"], usage: "All logs will be published with no colors.") {
+            LoggerColor.includeColor = false
+        }
+
         options.add(flags: ["-v", "--verbose"], usage: "chaitools is more verbose while it executes") {
             MessageTools.verbosity = .verbose
         }
