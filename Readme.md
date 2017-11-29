@@ -1,6 +1,6 @@
-#Brew some awesome apps with ChaiTools
+# Brew some awesome apps with ChaiTools
 
-##Installation
+## Installation
 
 ChaiTools can be installed using Homebrew and a custom Homebrew tap.
 
@@ -8,7 +8,11 @@ ChaiTools can be installed using Homebrew and a custom Homebrew tap.
 
 ```brew install chaitools```
 
-##Current Actions
+For Xcode9, you might need to append `--no-sandbox` option.
+
+```brew install chaitools --no-sandbox```
+
+## Current Actions
 
 * `templates` - Install, update, or delete Xcode templates
 * `bootstrap` - Bootstraps a new C1 project.
